@@ -10,8 +10,8 @@
 
 | 세부내용    | 완료여부           | 경로    | 참고자료    |
 | ----------- | ------------------ | ------- | ----------- |
-| `기획서 작성` | :white_check_mark: |https://lab.ssafy.com/-/ide/project/s10-webmobile3-sub2/S10P12A104/tree/master/-/KimYoonji/01.15/%EA%B8%B0%ED%9A%8D%EC%84%9C_3.PNG/기획서_3.PNG <br> https://lab.ssafy.com/-/ide/project/s10-webmobile3-sub2/S10P12A104/tree/master/-/KimYoonji/01.15/%EA%B8%B0%ED%9A%8D%EC%84%9C_3.PNG/기획서_4.PNG |  |
-| `와이어프레임 설계` | :white_check_mark: |https://lab.ssafy.com/-/ide/project/s10-webmobile3-sub2/S10P12A104/tree/master/-/KimYoonji/01.15/%EA%B8%B0%ED%9A%8D%EC%84%9C_3.PNG/와이어프레임_UI.PNG |  |
+| `기획서 작성` | :white_check_mark: |https://lab.ssafy.com/-/ide/project/s10-webmobile3-sub2/S10P12A104/tree/master/-/KimYoonji/01.15/기획서_3.PNG <br> https://lab.ssafy.com/-/ide/project/s10-webmobile3-sub2/S10P12A104/tree/master/-/KimYoonji/01.15/기획서_4.PNG |  |
+| `와이어프레임 설계` | :white_check_mark: |https://lab.ssafy.com/-/ide/project/s10-webmobile3-sub2/S10P12A104/tree/master/-/KimYoonji/01.15/와이어프레임_UI.PNG |  |
 
 ---
 

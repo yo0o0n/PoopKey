@@ -1,0 +1,39 @@
+!SESSION 2024-01-16 10:39:01.623 -----------------------------------------------
+eclipse.buildId=Version 1.14.0
+java.version=17.0.8.1
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=ko_KR
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2024-01-16 10:39:09.442
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2024-01-16 10:39:09.444
+!MESSAGE Log4j2 initialized with config file C:\Users\SSAFY\STM32CubeIDE\workspace_1.14.0\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2024-01-16 10:39:11.768
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY org.eclipse.cdt.core 1 0 2024-01-16 10:41:04.349
+!MESSAGE Indexed 'esp8266test' (20 sources, 79 headers) in 2.09 sec: 4,136 declarations; 17,895 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.0091%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2024-01-16 10:50:53.627
+!MESSAGE Indexed 'ESP8266cppTest' (0 sources, 0 headers) in 0 sec: 0 declarations; 0 references; 0 unresolved inclusions; 0 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2024-01-16 10:50:56.155
+!MESSAGE Indexed 'ESP8266cppTest' (20 sources, 79 headers) in 1.33 sec: 4,136 declarations; 17,895 references; 0 unresolved inclusions; 1 syntax errors; 2 unresolved names (0.0091%)
+!SESSION 2024-01-16 17:53:32.621 -----------------------------------------------
+eclipse.buildId=Version 1.14.0
+java.version=17.0.8.1
+java.vendor=Eclipse Adoptium
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=ko_KR
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2024-01-16 17:53:53.462
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2024-01-16 17:53:53.464
+!MESSAGE Log4j2 initialized with config file C:\Users\SSAFY\Desktop\sub2\S10P12A104\KimYoungrae\workspace_1.14.0\.metadata\.log4j2.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2024-01-16 17:53:57.931
+!MESSAGE Started RMI Server, listening on port 41337

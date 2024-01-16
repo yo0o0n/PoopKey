@@ -19,7 +19,12 @@
 
 ---
 
+## 1월 16일(월) - 사용자 및 관리자 와이어프레임(피그마) 완료
 
+| 세부내용    | 완료여부           | 경로    | 참고자료    |
+| ----------- | ------------------ | ------- | ----------- |
+| `사용자 와이어프레임 설계` | :white_check_mark: |https://lab.ssafy.com/-/ide/project/s10-webmobile3-sub2/S10P12A104/tree/master/-/KimYoonji/01.16/사용자.PNG |  |
+| `관리자 와이어프레임 설계` | :white_check_mark: |https://lab.ssafy.com/-/ide/project/s10-webmobile3-sub2/S10P12A104/tree/master/-/KimYoonji/01.16/관리자.PNG |  |
 
 
 

@@ -6,60 +6,61 @@
 
 <br>
 
-## 1월 8일(월) - Javascript 복습
+## 1월 8일(월) - 워크 프레임 제작 및 피그마 공부 및 공유
 
 | 세부내용    | 완료여부           | 경로    | 참고자료    |
 | ----------- | ------------------ | ------- | ----------- |
-| `명세서 JS ` | :white_check_mark: | `./javascript/` | `JS 재입문 - https://developer.mozilla.org/ko/docs/Web/JavaScript/Language_overview` |
-| `filter / map / reduce` | :white_check_mark: | `경로2` | `1학기 실습코드` |
+| `피그마 기초적 사용법 학습` | :white_check_mark: | `./img/` | `-` |
+| `워크 프레임 제작` | :white_check_mark: | `./img/` | `-` |
 
 ---
 
 <br>
 
-## 1월 9일(화) - CSS복습 및 react 공부
+## 1월 9일(화) - 라즈베리파이 세팅(OpenCV포함) + 하드웨어 검수 + ESP8266 소켓 통신 구현 및 공부
 
 | 세부내용                  | 완료여부             | 경로    | 참고자료                                                                                            |
 | ------------------------- | -------------------- | ------- | --------------------------------------------------------------------------------------------------- |
-| `생활코딩 React 영상강의` | :white_check_mark: | `./react-app/src/` | `생활코딩 https://youtube.com/playlist?list=PLuHgQVnccGMCOGstdDZvH41x0Vtvwyxu7&si=1VqiTTl-7rDHB1Kc` |
-| `CSS 정렬 복습` | :white_large_square: | `./javascript/` | `1학기 실습코드`                                                                                         |
+| `라즈베리파이 세팅` | :white_check_mark: | `-` | `-` |
+| `하드웨어 검수` | :white_large_square: | `-` | `-`|
+| `ESP8266 소켓 통신 구현 및 공부` | :white_large_square: | `-` | `-`|
 
 ---
 
 
 <br>
 
-## 1월 10일(수) - react 공부 및 stm32 펌웨어 개발
+## 1월 10일(수) - 
 
 | 세부내용    | 완료여부             | 경로    | 참고자료    |
 | ----------- | -------------------- | ------- | ----------- |
-| `생활코딩 React 영상강의` | :white_check_mark: | `./react-app/src/` | `생활코딩 https://youtube.com/playlist?list=PLuHgQVnccGMCOGstdDZvH41x0Vtvwyxu7&si=1VqiTTl-7rDHB1Kc` |
-| `servo motor 제어` | :white_check_mark: | `./STM32F103RB/workspace_1.14.0/servo_ctrl/Core/Src/` | `stm32 reference manual` |
+| `-` | :white_check_mark: | `-` | `-` |
+| `-` | :white_check_mark: | `-` | `-` |
 
 ---
 
 <br>
 
-## 1월 11일(목) - 페이지 만들기 및 ra6e1 펌웨어 개발
+## 1월 11일(목) - 
 
 | 세부내용    | 완료여부             | 경로    | 참고자료    |
 | ----------- | -------------------- | ------- | ----------- |
-| `리액트로 임의의 페이지 만들기` | :white_large_square: | `./react-app/src/` | `참고자료1` |
-| `servo motor 제어` | :white_large_square: | `-` | `ra6e1 reference manual` |
-| `git 협업 방법 정리` | :white_check_mark: | `./README.md `| `-`| 
+| `-` | :white_large_square: | `-` | `-` |
+| `-` | :white_large_square: | `-` | `-` |
+| `-` | :white_check_mark: | `-`| `-`| 
 ---
 
 <br>
 
-## 1월 12일(금) - 아이디어 선정 및 명세서 작성으로 인한 금주 미해결 과제 보강
+## 1월 12일(금) - 
 
 | 세부내용    | 완료여부             | 경로    | 참고자료    |
 | ----------- | -------------------- | ------- | ----------- |
-| `react강의 2개 강의` | :white_check_mark:   | `-` | `-` |
-| ` filter / map / reduce ` | :white_large_square: | `-` | `-` |
-| ` css ` | :white_large_square: | `-` | `-` |
-| ` 임의 페이지 만들기 ` | :white_large_square: | `-` | `-` |
-| ` ra6e1 servo motor 제어 ` | :white_large_square: | `-` | `-` |
+| `-` | :white_check_mark:   | `-` | `-` |
+| `-` | :white_large_square: | `-` | `-` |
+| `-` | :white_large_square: | `-` | `-` |
+| `-` | :white_large_square: | `-` | `-` |
+| `-` | :white_large_square: | `-` | `-` |
 
 ---
 

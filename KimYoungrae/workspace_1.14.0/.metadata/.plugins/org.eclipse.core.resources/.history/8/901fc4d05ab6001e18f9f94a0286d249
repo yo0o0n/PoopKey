@@ -75,10 +75,8 @@ uint32_t micros(){
 }
 */
 
-
-// Tick을 설정하는 함수 1tick == (1 / 숫자)를 의미한다.
 HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
-	  if (HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 100000) == 0) {
+	  if (HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 1000000) == 0) {
 		  printf("HAL_OK\r\n");
 	    return HAL_OK;
 	  } else {

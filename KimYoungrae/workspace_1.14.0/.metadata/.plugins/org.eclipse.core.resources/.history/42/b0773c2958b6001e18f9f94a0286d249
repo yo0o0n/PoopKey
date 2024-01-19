@@ -75,14 +75,10 @@ uint32_t micros(){
 }
 */
 
-
-// Tick을 설정하는 함수 1tick == (1 / 숫자)를 의미한다.
 HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
-	  if (HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 100000) == 0) {
-		  printf("HAL_OK\r\n");
+	  if (HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 10000) == 0) {
 	    return HAL_OK;
 	  } else {
-		  printf("HAL_ERROR\r\n");
 	    return HAL_ERROR;
 	}
 }
@@ -160,7 +156,7 @@ int main(void)
 	  printf("%lu\r\n", diff);
 
 	  //printf("%lu \r\n", micros());
-	  HAL_Delay(100000);
+	  HAL_Delay(1000);
 
   }
   /* USER CODE END 3 */

@@ -3,7 +3,6 @@
 ## 목차
 
 
-
 ## printf()
 
 디버깅을 위해서 출력은 필수이다.
@@ -92,6 +91,87 @@ Setup > Serial Port
 
 <img src='./img/tera_term_03.PNG'>
 
+
+
+## 펌웨어 단에서 모터 제어하기
+
+<br>
+
+
+### 구성 환경
+- Board  : STM32F103RB
+- IDE : STM32CubeIDE
+- peripherals : MG996R servo motor
+
+<br>
+
+### 개요
+경험의 가치를 포함하며, 단가가 8만원(model-B 4GB기준) 라즈베리파이가 아닌 2만원 stm보드를 사용하기로 정했습니다.
+
+기존의 라즈베리파이를 이용한 servo motor의 제어는 파이썬에서 라이브러리를 통해 원하는 각도를 입력하면 되는 방식이지만, stm보드는 직접 세팅하고 만들어야한다.
+
+<br>
+
+### 과정
+servo motor의 제어를 위해선 PWM신호를 입력으로 주어야 한다.
+
+MG996R datasheet를 읽고
+이때 신호는 주기 20ms이며, 1~2ms의 duty cycle로 0~180도의 동작한다는 것을 알았다. 
+
+<img src="./img/pwm.PNG">
+
+stm32F103RB의 경우, 위 사진처럼 PWM신호는 TIM로 발생시킨다. 신호를 generate를 위한 시스템 클럭과 분주기들의 설정 시킨다.
+
+일단 TIM2를 PWM신호 발생 타이머로 선택했다. 
+TIM2는 아래 이미지와 같이 APB1의 클럭을 기준으로 하는걸 알 수 있다.
+
+<img src="./img/scalar.PNG">
+
+
+
+<img src="./img/sysclk.PNG">
+
+마찬가지로 TIM 레지스터의 config도 GUI를 통해 설정한다
+
+<img src="./img/pinConfig.PNG">
+
+이러면 8Mhz / (16 * 10000) = 50Hz가 된다. 50Hz == 20ms
+
+
+출처 : rm0008 - stm32F103 reference manual
+
+<br>
+
+### 코드
+config를 통해 generate된 주소명과 API를 이용하여 모터를 제어한다.
+
+'''
+HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_1);
+'''
+
+타이머를 PWM용으로 시작한다.
+
+__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 500);
+
+HAL_Delay(500);
+
+__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 750);
+
+HAL_Delay(500);
+
+__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 1000);
+
+HAL_Delay(500);
+
+이떄 500은 10000을 20ms라 할때, 1ms를 의미한다. 마찬가지로 1000은 2ms를 의미한다
+
+<br>
+
+### 결과
+예상한 각도는 0도 90도 180도로 움직일거라 생각했지만,
+결과는 0도 45도 90도로 나왔다.
+
+어디서 계산이 잘못된건지 더 공부해 봐야할거 같다.
 
 
 

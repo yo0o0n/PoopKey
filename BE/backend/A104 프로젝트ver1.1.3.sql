@@ -1,6 +1,10 @@
 -- 공통프로젝트 PoopKey DATABASE --
 -- ver1.1.1
 -- 수정사항 : 모든 테이블의 PK에 auto_increment 직접추가
+-- ver1.1.2
+-- 수정사항 : item 테이블의 tissue_status column 제거(SQL에서 계산되므로 불필요함)
+-- ver1.1.3
+-- 수정사항 : user 테이블의 비밀번호, 이메일 NOT NULL로 바꿈
 DROP SCHEMA IF EXISTS `poopkey` ;
 
 -- -----------------------------------------------------
@@ -77,8 +81,7 @@ CREATE TABLE `item` (
 	`item_id`	bigint(20)	NOT NULL PRIMARY KEY AUTO_INCREMENT,
 	`stall_id`	bigint(20)	NOT NULL,
 	`tissue`	int(3)	NOT NULL	DEFAULT 0	COMMENT '0부터 100까지 정수로 퍼센트 표시',
-	`tissue_change_number`	int	NOT NULL	DEFAULT 0,
-	`tissue_status`	int	NOT NULL	DEFAULT 0	COMMENT '0 : 휴지 충분, 1 : 휴지 부족'
+	`tissue_change_number`	int	NOT NULL	DEFAULT 0
 );
 
 CREATE TABLE `block` (
@@ -90,8 +93,8 @@ CREATE TABLE `block` (
 );
 CREATE TABLE `user` (
 	`user_id`	bigint(20)	NOT NULL PRIMARY KEY AUTO_INCREMENT,
-	`password`	varchar(255)	NULL,
-	`email`	varchar(255)	NULL	COMMENT '이메일 주소가 아이디 역할',
+	`password`	varchar(255)	NOT NULL,
+	`email`	varchar(255)	NOT NULL	COMMENT '이메일 주소가 아이디 역할',
 	`phone`	varchar(20)	NULL,
 	`created_date`	timestamp	NOT NULL,
 	`name`	varchar(100)	NOT NULL,
@@ -189,18 +192,18 @@ INSERT INTO toilet VALUES
 (11, 11, 0),
 (12, 12, 0);
 INSERT INTO item VALUES
-(1, 1, 100, 0, 0),
-(2, 2, 3, 1, 1), -- 휴지 부족
-(3, 3, 95, 4, 0),
-(4, 4, 76, 0, 0),
-(5, 5, 83, 5, 0),
-(6, 6, 4, 0, 1), -- 휴지 부족
-(7, 7, 60, 0, 0),
-(8, 8, 62, 2, 0),
-(9, 9, 2, 0, 1), -- 휴지 부족
-(10, 10, 100, 3, 0),
-(11, 11, 99, 0, 0),
-(12, 12, 71, 0, 0);
+(1, 1, 100, 0),
+(2, 2, 3, 1), -- 휴지 부족
+(3, 3, 95, 4),
+(4, 4, 76, 0),
+(5, 5, 83, 5),
+(6, 6, 4, 0), -- 휴지 부족
+(7, 7, 60, 0),
+(8, 8, 62, 2),
+(9, 9, 2, 0), -- 휴지 부족
+(10, 10, 100, 3),
+(11, 11, 99, 0),
+(12, 12, 71, 0);
 INSERT INTO report VALUES
 (1, 1, 1, '청소가 안 된 부분이 있는 것 같아요', CURRENT_TIMESTAMP, 0),
 (2, 8, 3, '고장이 났어요!!', CURRENT_TIMESTAMP, 1);
@@ -210,4 +213,3 @@ CURRENT_TIMESTAMP, '최싸피', NULL, '인천광역시 부평구');
 INSERT INTO bookmark VALUES
 (1, 1, CURRENT_TIMESTAMP, 'SSAFY 서울 캠퍼스'),
 (2, 1, CURRENT_TIMESTAMP, '국립중앙박물관');
-

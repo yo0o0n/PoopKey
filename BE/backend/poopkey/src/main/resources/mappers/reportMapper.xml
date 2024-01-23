@@ -5,9 +5,7 @@
 <mapper namespace="com.project.poopkey.model.dao.ReportDao">
     <!-- 신고등록하기 -->
     <insert id="insert" parameterType="Report" useGeneratedKeys="true" keyProperty="reportId">
-        INSERT INTO report
-        (stall_id, restroom_id, content,
-            user_report_reason) VALUES
-        (#{stallId}, #{restroomId}, #{content}, #{userReportReason})
+        INSERT INTO report VALUES
+        (#{reportId}, #{stallId}, #{restroomId}, #{content}, CURRENT_TIMESTAMP, #{userReportReason})
     </insert>
 </mapper>

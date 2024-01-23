@@ -36,7 +36,7 @@
 - 이제 코드를 generate시킨다.
 
 - main.c에서 
-```
+```c
 /* USER CODE BEGIN Includes */
 #include<stdio.h>
 /* USER CODE END Includes */
@@ -146,13 +146,15 @@ TIM2는 아래 이미지와 같이 APB1의 클럭을 기준으로 하는걸 알 
 ### 코드
 config를 통해 generate된 주소명과 API를 이용하여 모터를 제어한다.
 
-'''
+```c
 HAL_TIM_PWM_Start(&htim2,TIM_CHANNEL_1);
-'''
+```
 
 타이머를 PWM용으로 시작한다.
 
+```c
 __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 500);
+
 
 HAL_Delay(500);
 
@@ -163,7 +165,7 @@ HAL_Delay(500);
 __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 1000);
 
 HAL_Delay(500);
-
+```
 이떄 500은 10000을 20ms라 할때, 1ms를 의미한다. 마찬가지로 1000은 2ms를 의미한다
 
 <br>
@@ -176,6 +178,20 @@ HAL_Delay(500);
 
 <br><br><br><br>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 초음파 센서 작동
 들어가기 앞서 초음파 센서 작동원리에 대해 의견이 달라서 정리하였다.
 - Trigger로 부터 초음파를 발사하는 시점부터 Echo로 초음파가 들어오는 시점의 시간
@@ -185,7 +201,7 @@ HAL_Delay(500);
 
 기존 코드(printf()까지)에서 이어서 시작한다.
 
-```
+```c
 
 (중략)
 
@@ -290,7 +306,7 @@ Tick이란 시스템에 있어서 시간 단위이며, 아래 함수로 부터 �
 - HAL_InitTick(TICK_INT_PRIORITY)
 Tick Interrupt의 주기를 설정한다. 
 
-```
+```c
 
 HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
 	  if (HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 100000) == 0) {
@@ -317,7 +333,7 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
 ### 함수를 통한 코드
 /* USER CODE BEGIN WHILE */ 부터  /* USER CODE END 3 */ 까지
 
-```
+```c
 
 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, RESET);
 HAL_Delay(5);
@@ -330,7 +346,7 @@ HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, RESET);
 Trigger로 부터 초음파를 20 Tick동안 쏜다.
 
 
-```
+```c
 
 st = HAL_GetTick();
 while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9)==GPIO_PIN_RESET);
@@ -341,7 +357,7 @@ ed = HAL_GetTick();
 
 받고 끝날때 까지의 시간을 기록한다.
 
-```
+```c
 
 diff = ed -st;
 distance = diff * 0.034 / 2;
@@ -356,6 +372,8 @@ printf("%lu\r\n", diff);
 
 
 ### 초음파 결론
+
+```c
 HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
 	  if (HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 1000) == 0) {
 	    return HAL_OK;
@@ -363,9 +381,12 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
 	    return HAL_ERROR;
 	}
 }
+```
 
 로 세팅하면 diff가 2 3 4 5로 나타난다.
 
+
+```c
 HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
 	  if (HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 10000) == 0) {
 	    return HAL_OK;
@@ -373,6 +394,7 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
 	    return HAL_ERROR;
 	}
 }
+```
 
 로 세팅하면 diff가 20 21 22 ~ 48 49 50 ...
 로 10배 더 세분화된다.
@@ -403,7 +425,7 @@ HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
 
 
 
- ## 타이머
+## 타이머
 
 TIM1을 기준으로 작성함. (8MHz)
 
@@ -417,7 +439,7 @@ TIM1을 기준으로 작성함. (8MHz)
 
 
 
- ```
+```c
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -598,6 +620,531 @@ static void MX_GPIO_Init(void) // gpio.c에 있을 수도 있음
 /* USER CODE END MX_GPIO_Init_2 */
 }
 
+```
+
+<br><br>
+
+## 초음파 advanced (아직 해보진 않음)
+
+### 개요
+기존의 초음파 코드는 Tick interrupt의 Period를 조작하는 방식(아래 코드 참조)으로 진행함(위에(챕터 초음파) 자세한 코드가 있음)
+
+```c
+HAL_StatusTypeDef HAL_InitTick(uint32_t TickPriority) {
+	  if (HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 100000) == 0) {
+		  printf("HAL_OK\r\n");
+	    return HAL_OK;
+	  } else {
+		  printf("HAL_ERROR\r\n");
+	    return HAL_ERROR;
+	}
+}
+
+(중략)
+
+if (HAL_InitTick(TICK_INT_PRIORITY) != HAL_OK) {
+	Error_Handler();
+}
+
+```
+
+하지만 이번엔 위 챕터 TIM를 통해서 defualt Tick Interrupt의 Period (1000Hz)를 기준으로 한다.
+
+TIM 챕터에서 주기가 1KHz임에도 Tick을 1증가 시키는 척도인 클럭의 몇번 움직였는가?를 확인할
+
+```c
+__HAL_TIM_GET_COUNTER(&htim1);
+```
+를 사용했었다.
 
 
- ```
+### 진행 과정 (사진 28장)
+<br>
+사진 1
+<img src='./img/TIM_setting_01.PNG'>
+Clock config하는 사진입니다. HSI(고속 내부 클럭)으로 바꿔 주시고 8Mhz인걸 확인해주세요. APB1 Prescalar를 /1로 하고, 오른쪽에 있는게 마지막을 제외하고 전부 8로 나와야 합니다.
+
+<br>
+
+사진 2
+<img src='./img/TIM_setting_02.PNG'>
+코드를 생성하는 설정을 진행하겠습니다.
+위 처럼 진행하고 Generate Pheriparal ~를 체크해 주세요.
+
+이거 까먹으면 코드 위치가 이상해지고, 생성이 안되는 불상사가 발생합니다.
+
+만약, 까먹은 상태로 아래것들을 진행하셨다면 프로젝트부터 다시 생성해서 [사진1]부터 다시 진행하세요.
+
+<br>
+
+사진 3
+<img src='./img/TIM_setting_03.PNG'>
+
+타이머 세팅입니다. 따로 핀 설정은 없으며, Timers를 선택하시고 TIM1을 눌러주새요.
+
+그러면 사진 우측과 같이 TIM1 Mode andConfiguration이 뜰겁니다.
+
+여기서 Clock source를 Internal clock(== HSI, 보드에 내장된 고속 클럭)를 선택해 주시고
+
+NVIC Setting(인터럽트 세팅)은 
+
+TIM1 update Interrupt와 TIM1 capture compare Interrupt를 체크해 주세요.
+
+안 그러면 Timer에서 Tick이 증가하는 인터럽트 코드를 수정하지 못해요.
+
+<br>
+
+사진 4
+<img src='./img/TIM_setting_04.PNG'>
+
+이번엔 초음파의 PIN설정을 해주겠습니다.
+
+PA_8과 PA_9를 GPIO PIN으로 만들겠습니다.
+
+PA_9는 INPUT으로 Echo와 연결합니다.
+
+PA_8은 OUTPUT으로 TRIG와 연결합니다. 
+
+초음파는 TRIG에서 쏴서 Echo로 들어갑니다.
+
+<br>
+
+사진 5
+<img src='./img/TIM_setting_05.PNG'>
+이제 pheriparal에 해당하는 코드들을 Generate하겠습니다.
+
+<br>
+
+사진 6
+
+<img src='./img/TIM_setting_06.PNG'>
+
+이제 printf()를 뚫어 주겠습니다.
+
+사진과 같은 위치에다가 
+
+```c
+/* USER CODE BEGIN Includes */
+#include <stdio.h>
+/* USER CODE END Includes */
+```
+를 해주세요.
+
+다른 주석 위치에 작성하시면 안됩니다.
+
+<br>
+
+사진 7
+
+<img src='./img/TIM_setting_07.PNG'>
+
+printf()를 override해야하는데 printf()의 기본인 putchar를 override를 해서, 결과적으로 printf()를 override하는 방향으로 가겠습니다.
+
+사진과 같은 코드를 작성해 주세요.
+
+```c
+/* USER CODE BEGIN PFP */
+#ifdef __GNUC__
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
+#endif
+
+PUTCHAR_PROTOTYPE
+{
+  HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+  return ch;
+}
+/* USER CODE END PFP */
+```
+
+<br>
+
+사진 8
+
+<img src='./img/TIM_setting_08.PNG'>
+
+이제 printf()가 정상 작동하는지 확인하겠습니다.
+
+```c
+while (1)
+  {
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+	  printf("Hello World~~!\r\n");
+    HAL_Delay(1000);
+  }
+  /* USER CODE END 3 */
+```
+
+<br>
+
+사진 9
+
+<img src='./img/TIM_setting_09.PNG'>
+이제 코드를 실행 해봅시다.
+
+<br>
+
+
+사진 10
+
+<img src='./img/TIM_setting_10.PNG'>
+
+출력을 보기 위해 Tera Term에서 사진과 같이 선택합니다.
+
+<br>
+
+사진 11
+
+<img src='./img/TIM_setting_11.PNG'>
+
+마찬가지로 baud rate도 같게 설정합니다.(UART2의 기본 baud rate는 115200입니다.)
+
+<br>
+
+사진 12
+
+<img src='./img/TIM_setting_12.PNG'>
+
+출력이 잘 되는걸 확인합니다.
+
+<br>
+
+
+사진 13
+
+<img src='./img/TIM_setting_13.PNG'>
+
+tim.c에 MX_TIM1_Init()이 Genetate 된걸 확인해 주세요.
+
+나중에 tim.c를 수정할거니 잘 기억해 주세요.
+
+해당 코드 또는 tim.c가 없다면 사진2를 다시 확인하세요.
+
+<br>
+
+사진 14
+
+<img src='./img/TIM_setting_14.PNG'>
+
+uart.c에 MX_USART2_UART_Init()이 Generate된걸 확인 해 주세요.
+
+해당 코드 또는 uart.c가 없다면 사진2를 다시 확인하세요.
+
+<br>
+
+사진 15
+
+<img src='./img/TIM_setting_15.PNG'>
+
+gpio.c에서 MX_GPIO_Init()가 Generate된걸 확인해 주세요.
+
+해당 코드 또는 gpio.c가 없다면 사진2를 다시 확인하세요.
+
+<br>
+
+사진 16
+
+<img src='./img/TIM_setting_16.PNG'>
+
+이제 사진 14에서 tim.c를 수정한다고 했는데
+
+사진처럼 
+
+```c
+htim1.Init.Prescalar = 0;
+```
+을
+```c
+htim1.Init.Prescalar = 7;
+```
+로 바꿔주세요.
+
+이 코드의 의미는 8-1 = 7인데 8Mhz의 클럭을 /8하여 1Mhz로 하겠다는 것 입니다.(앞자리가 8이면 계산하기 힘들잖아요)
+
+<br>
+
+사진 17
+
+<img src='./img/TIM_setting_17.PNG'>
+
+이번엔 TIM를 테스트 해보겠습니다.
+
+다음과 같이 코드를 작성하세요.
+
+```c
+/* USER CODE BEGIN 0 */
+uint32_t overflows = 0U;
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) { // 제네레이트 없음
+	if(htim->Instance == TIM1) {
+		overflows++;
+	}
+}
+
+
+uint32_t GetMicroSec(void){ // 제네레이트 없음
+	uint32_t count = __HAL_TIM_GET_COUNTER(&htim1);
+	uint32_t overflow = overflows;
+	if (__HAL_TIM_GET_FLAG(&htim1, TIM_FLAG_UPDATE) && (count < 0x8000)) {
+	        overflow++;
+	}
+
+	return(overflow << 16) + count;
+}
+
+/* USER CODE END 0 */
+```
+
+<br>
+
+사진 18
+
+<img src='./img/TIM_setting_18.PNG'>
+
+```c
+/* USER CODE BEGIN WHILE */
+  HAL_TIM_Base_Init(&htim1);         // 제네레이트 없음
+  __HAL_TIM_SET_COUNTER(&htim1, 0);  // 제네레이트 없음
+  HAL_TIM_Base_Start_IT(&htim1);     // 제네레이트 없음
+ while (1)
+  {
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+	  //printf("Hello World~~!\r\n");
+
+	  uint32_t start = GetMicroSec();
+	  HAL_Delay(100);
+	  uint32_t end = GetMicroSec();
+	  printf("\r\n diff : %lu \r\n", end - start);
+
+    HAL_Delay(1000);
+  }
+```
+
+<br>
+
+사진 19
+
+<img src='./img/TIM_setting_19.PNG'>
+
+사진과 같이 출력되면 성공입니다.
+
+출력의 숫자값은 us(마이크로 초)를 의미합니다.
+
+저희 코드에서는 start와 end사이에 HAL_Delay(100)을 주었습니다.(0.1초를 의미함. why? -> 1Tick은 1ms이므로)
+
+출력이 101,000us이므로 101ms와 같습니다. 오차가 1ms가 있습니다.
+
+<br>
+
+
+사진 20
+
+<img src='./img/TIM_setting_20.PNG'>
+
+이제 이번 챕터의 목표인 TIM을 이용한 초음파 센서를 해야합니다.
+
+사진은 stm32F103RB의 핀맵입니다.
+
+여기서 VCC로 5V를, GND로 GND를, PA_9로 Echo를, PA_8로  Trig를 각각 연결해주세요.
+
+별도의 저항은 필요 없습니다. 점퍼선은 F-M이 필요합니다.
+
+<br>
+
+사진 21
+
+<img src='./img/TIM_setting_21.PNG'>
+
+사진과 같이 코드를 추가하세요 (사진에서 distance의 타입을 float로 변경해주세요 ㅠㅜ)
+
+```c
+uint32_t st;
+uint32_t ed;
+uint32_t diff;
+float distance;
+```
+
+<br>
+
+사진 22
+
+<img src='./img/TIM_setting_22.PNG'>
+
+사진과 같이 해주세요 (기존 확인용 코드 주석 꼭 해야합니다.)
+
+
+<br>
+
+사진 23
+
+<img src='./img/TIM_setting_23.PNG'>
+
+stm32F103RB에는 FPU가 없습니다.  따라서 별도의 설정이 필요합니다.
+
+사진과 같이 해당하는 프로젝트를 우클릭하시고 Properties를 눌러주세요.
+
+
+<br>
+
+
+사진 24
+
+<img src='./img/TIM_setting_24.PNG'>
+
+다음과 같은 순서로 체크하세요.
+
+중간에 사진25와 같이 뜰텐데 Rebuid Index 해주셔야 헙니다.
+
+<br>
+
+사진 25
+
+<img src='./img/TIM_setting_25.PNG'>
+
+(설명 없음)
+
+<br>
+
+사진 26
+
+<img src='./img/TIM_setting_26.PNG'>
+
+이미 바꾸셨겠지만, distance의 type을 float로 바꿔 주세요.
+
+<br>
+
+
+사진 27
+
+<img src='./img/TIM_setting_27.PNG'>
+
+```c
+while (1)
+  {
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+	  //printf("Hello World~~!\r\n");
+
+	  //uint32_t start = GetMicroSec();
+	  //HAL_Delay(100);
+	  //uint32_t end = GetMicroSec();
+	  //printf("\r\n diff : %lu \r\n", end - start);
+
+
+	  // GPIO를 쓰거나 읽는 방법 예시
+	  //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, SET);
+	  // HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9)==GPIO_PIN_SET
+
+
+
+	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, RESET);
+	  HAL_Delay(5);
+	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, SET);
+	  HAL_Delay(20);
+	  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, RESET);
+
+	  //printf("right after : %lu\r\n", HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9));
+
+	  while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9)==GPIO_PIN_RESET);
+	  st = GetMicroSec();
+	  while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9)==GPIO_PIN_SET);
+	  ed = GetMicroSec();
+
+	  diff = ed -st;
+	  distance = diff * 0.034 / 2;
+	  printf("%.3f\r\n", distance);
+
+
+	  HAL_Delay(1000);
+  }
+  /* USER CODE END 3 */
+```
+
+HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, RESET)같은 함수들은 기존의 초음파 챕터에 설명이 되어 있습니다.
+
+<br>
+
+사진 28
+
+<img src='./img/TIM_setting_28.PNG'>
+
+다음과 같이 출력이 나오면 됩니다.
+
+아직 거리에 대한 오차가 있으니, 아이디어가 있으면 알려주세요
+
+
+
+<br><br>
+
+
+
+
+
+
+
+## Tilt 센서(기울기 센서)
+
+### 개요
+해당 tilt 센서(SW-520D)는 LOW/HIGH만 있다.
+왜냐하면, 해당 센서의 내부는 떨어진 선 두 개와 움직이는 금속 구슬 하나가 안에 있다.
+이 움직으는 금속 구슬이 두 선을 쇼트 시키면 전기가 통하는 방식이다.
+
+### 핀 셋팅
+
+<img src='./img/tilt_sensor.png'>
+
+회로는 아래 사진으로 대체한다. PA_8 핀을 입력 모드로 받는다.
+
+해당 회로는 구슬이 선들을 쇼트 시키면 GND로 신호가 빠져나간다. 
+샌서를 세우면 두 선이 쇼트 되므로 PA_8에 신호가 가지 않아 LOW가 출력된다.
+
+반대로 기울이면 두 선이 오픈이므로 GND로 신호가 빠져나가지 못하여 PA_8로 HIGH신호가 들어간다.
+
+
+### config
+
+사진으로 대체한다.
+<img src='./img/GPIO_READ_01.PNG'>
+<img src='./img/GPIO_READ_02.PNG'>
+<img src='./img/GPIO_READ_03.PNG'>
+
+
+
+### 코드
+```c
+/* USER CODE BEGIN WHILE */
+  while (1)
+  {
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+	  is_horizon = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_8);
+	  printf("Digital Read test\r\n");
+	  printf("is_horizon : %lu\r\n", is_horizon);
+
+	  HAL_Delay(1000);
+  }
+/* USER CODE END 3 */
+```
+해당 코드의 printf()를 뚫는건 생략하겠음 (모르면 첫 챕터 printf() 뚫기를 참조하시오.)
+
+
+### 결과
+<img src='./img/tilt.PNG'>
+
+
+<br><br>
+
+
+
+
+
+
+## 비접촉 온도센서(IR방식) - gy-906(비주류 이름) // MLX90614(주류 이름)
+

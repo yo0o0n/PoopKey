@@ -27,7 +27,8 @@ function 함수명() {
 	console.log(...);
     }
 
-    function 이벤트함수2() {
+    function 이벤트함수2(e) {
+        console.log(e.target.value);
 	...
 	return ...
     }
@@ -42,6 +43,7 @@ function 함수명() {
             console.log(30);
         }}
     >
+    <input type="text" onChange={이벤트함수명2} />
     );
 }
 
@@ -56,6 +58,7 @@ import 함수명 from '경로';
 이벤트에 함수를 넣을 시 
 함수명 과 함수명()은 다른 의미를 가짐
 
+input에서 값 가져오려면 e.target.value
 
 <br>
 

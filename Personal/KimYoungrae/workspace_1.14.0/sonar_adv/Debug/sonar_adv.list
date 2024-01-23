@@ -1283,7 +1283,7 @@ int main(void)
  8000d58:	68fb      	ldr	r3, [r7, #12]
  8000d5a:	1ad3      	subs	r3, r2, r3
  8000d5c:	607b      	str	r3, [r7, #4]
-	  distance = diff * 0.034 / 2;
+	  distance = diff * 0.034 /2;
  8000d5e:	6878      	ldr	r0, [r7, #4]
  8000d60:	f7ff fb40 	bl	80003e4 <__aeabi_ui2d>
  8000d64:	a312      	add	r3, pc, #72	; (adr r3, 8000db0 <main+0xe8>)

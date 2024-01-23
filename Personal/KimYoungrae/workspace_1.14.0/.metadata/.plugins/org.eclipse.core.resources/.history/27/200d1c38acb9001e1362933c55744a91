@@ -167,7 +167,7 @@ int main(void)
 	  ed = GetMicroSec();
 
 	  diff = ed -st;
-	  distance = diff * 0.034 /2;
+	  distance = diff * 0.034 /2f;
 	  printf("%.3f\r\n", distance);
 
 

@@ -1148,3 +1148,204 @@ HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, RESET)같은 함수들은 기존의 초음�
 
 ## 비접촉 온도센서(IR방식) - gy-906(비주류 이름) // MLX90614(주류 이름)
 
+이번 프로젝트에서는 사용자 정의 라이브러리를 사용하는 방법을 포함하고 있습니다.
+
+이를 통해 본인이 ESP제외하고 지금까지 만든 디바이스들을 함수화 및 라이브러리화를 할 수 있게 해야한다.
+
+사진 1 
+
+<img src='./img/mlx_07.PNG'>
+
+MLX90614는 I2C (SDA, SCL)을 사용합니다.
+
+따라서 해당하는 핀을 보드에서 설정해주어야 합니다.
+
+사진과 같이 
+
+PB_8과 PB_9를 설정해주세요.
+
+그리고 Connectivity에서 I2C1의 설정을 진행해 주세요.
+
+<br>
+
+사진 2
+
+<img src='./img/mlx_08.PNG'>
+
+MLX90614와 보드를 직접 연결하여도 상관이 없습니다.
+
+이떄 SCL은 SCL에 SDA는 SDA에 연결합니다. ( UART처럼 꼬아서 하시면 안됩니다! )
+
+<br>
+
+사진 3
+
+<img src='./img/mlx_09.PNG'>
+
+저희의 Clock 설정은 이렇게 계속 진행합니다.
+
+코드 제네레이트는 생략하겠습니다. (모르시면 초음파 adv를 참고해 주세요)
+
+<br>
+
+사진 4
+
+<img src='./img/mlx_01.PNG'>
+
+사용자 정의 라이브러리를 위한 폴더 UserLib를 Drivers폴더 아래에 생성합니다.
+
+만든 UserLib아래에 폴더 Inc 와 폴더 Src를 만듭니다.
+
+폴더 Inc에 mlx90614.h를 생성합니다.
+
+폴더 Src에 mlx90614.c를 생성합니다. (확장자를 제외하고, 헤더 파일과 이름이 같아야 합니다.)
+
+각 파일에 아래의 코드를 넣어주세요.
+
+header
+```c
+/*
+ * mlx90614.h
+ *
+ *  Created on: Jan 23, 2024
+ *      Author: SSAFY
+ */
+
+#ifndef USERLIB_INC_MLX90614_H_
+#define USERLIB_INC_MLX90614_H_
+
+
+
+#endif /* USERLIB_INC_MLX90614_H_ */
+
+#ifndef MLX90614_H_
+#define MLX90614_H_
+
+#include "stm32f1xx_hal.h"
+
+#define MLX90614_I2C_ADDR 0x5A << 1  // mlx90614 I2C 주소
+
+float MLX90614_ReadTemperature(void);
+
+#endif /* MLX90614_H_ */
+
+```
+
+source
+```c
+#include "mlx90614.h"
+
+extern I2C_HandleTypeDef hi2c1; // I2C 핸들러
+
+float MLX90614_ReadTemperature(void) {
+  uint8_t data[3];
+  HAL_I2C_Mem_Read(&hi2c1, MLX90614_I2C_ADDR, 0x07, I2C_MEMADD_SIZE_8BIT, data, 3, HAL_MAX_DELAY);
+
+  int16_t rawTemperature = (data[1] << 8) | data[0];
+  float temperature = rawTemperature * 0.02 - 273.15;
+
+  return temperature;
+}
+```
+
+MLX90614_I2C_ADDR 는 slave Adress를 의미합니다.
+
+slave Adress는 보드가 디바이스에  접근하기 위한 주소입니다.
+
+근데 left shitf를 왜 하는지는 아직 이해를 완전히 못했습니다.
+
+
+
+<br>
+
+
+사진 5
+
+<img src='./img/mlx_02.PNG'>
+
+사용자 정의 라이브러리를 사용하기 위한 path를 설정해 주어야 합니다.
+
+각 순서대로 진행하여 주십시오.
+
+<br>
+
+사진 6
+
+<img src='./img/mlx_03.PNG'>
+
+```c
+/* USER CODE BEGIN Includes */
+#include <stdio.h>
+#include "mlx90614.h"
+/* USER CODE END Includes */
+```
+
+```#include "mlx90614.h"```를 해줍니다.
+
+여기서 같은 include인데 왜 <>와 ""를 구분하여 쓰냐면, <>는 원래 있는 header를 의미하고, ""는 사용자가 만든 header를 의미합니다.
+
+
+<br><br><br>
+### TODO 여기 좀더 작성해야함
+<br><br><br>
+
+<br>
+
+사진 7
+
+<img src='./img/mlx_04.PNG'>
+
+```c
+  /* USER CODE BEGIN 2 */
+  float temperature = 0;
+  /* USER CODE END 2 */
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+  while (1)
+  {
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+	  temperature = MLX90614_ReadTemperature();
+	  printf("temperature : %f \r\n", temperature);
+	  HAL_Delay(500);
+  }
+  /* USER CODE END 3 */
+```
+
+마찬가지로 float를 printf()하려면 FPU가 없는 보드이므로 설정을 해주어야 합니다. 
+
+모를 경우 [초음파 adv - 사진24]를 참고하여 주십시오.
+
+<br>
+
+사진 8
+
+<img src='./img/mlx_05.PNG'>
+
+상온에서의 결과입니다.
+
+<br>
+
+사진 9
+
+<img src='./img/mlx_06.PNG'>
+
+손을 접촉했을 때 결과입니다.
+
+예상과 다르게 5cm 이내의 접촉이 이루어져야만 온도의 변화가 생겼습니다.
+
+실제 시현시에는 거의 접촉하는 식으로 가야할 듯 합니다.
+
+<br>
+
+
+
+## 전자식 도어
+
+Tilt와 동일하게 GPIO를 READ하는 방식이었음.
+생략
+
+## ESP 끝판왕
+

@@ -76,6 +76,51 @@ PUTCHAR_PROTOTYPE
 
 ```
 
+아니면 아래처럼 한다.
+
+printf(), scanf() 다른 방법
+
+```c
+
+/* PFP */
+int _write(int fd, char *ptr, int len)
+{
+	HAL_UART_Transmit(&huart2, (unsigned char*)ptr, len, HAL_MAX_DELAY);
+	return len;
+}
+
+int _read(int file, char *ptr, int len)
+{
+	HAL_UART_Receive(&huart2, (unsigned char*)ptr, len, HAL_MAX_DELAY);
+	return len;
+}
+
+int __io_putchar(int ch)
+{
+	HAL_UART_Transmit(&huart2, (unsigned char*)&ch, 1, HAL_MAX_DELAY);
+	return ch;
+}
+
+int __io_getchar(void)
+{
+	uint8_t ch = 0;
+	HAL_UART_Receive(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+	return ch;
+}
+/* PFP */
+
+
+
+/* main */
+
+setvbuf(stdin, NULL, _IONBF, 0);
+setvbuf(stdout, NULL, _IONBF, 0);
+
+/* main */
+```
+
+
+
 - 이제 tera term에서 사진과 같이 진행한다.
 
 ST보드와 연결된 포트를 선택한다.

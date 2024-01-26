@@ -18,10 +18,13 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "usart.h"
+#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -40,8 +43,6 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-UART_HandleTypeDef huart2;
-UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN PV */
 
@@ -49,16 +50,38 @@ UART_HandleTypeDef huart3;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-static void MX_USART2_UART_Init(void);
-static void MX_USART3_UART_Init(void);
 /* USER CODE BEGIN PFP */
+int _write(int fd, char *ptr, int len)
+{
+	HAL_UART_Transmit(&huart2, (unsigned char*)ptr, len, HAL_MAX_DELAY);
+	return len;
+}
+
+int _read(int file, char *ptr, int len)
+{
+	HAL_UART_Receive(&huart2, (unsigned char*)ptr, len, HAL_MAX_DELAY);
+	return len;
+}
+
+int __io_putchar(int ch)
+{
+	HAL_UART_Transmit(&huart2, (unsigned char*)&ch, 1, HAL_MAX_DELAY);
+	return ch;
+}
+
+int __io_getchar(void)
+{
+	uint8_t ch = 0;
+	HAL_UART_Receive(&huart2, (uint8_t *)&ch, 1, HAL_MAX_DELAY);
+	return ch;
+}
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void sendATCommand(const char *command);
+HAL_StatusTypeDef receiveResponse(char *response, uint16_t timeout);
 /* USER CODE END 0 */
 
 /**
@@ -93,15 +116,79 @@ int main(void)
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
 
+  uint8_t AT[20] = {0, };
+  AT[0] = 'A';
+  AT[1] = 'T';
+
+  uint8_t rev[100] = {0, };
+  // uint8_t s[256] = {0, };
+
+  setvbuf(stdin, NULL, _IONBF, 0);
+  setvbuf(stdout, NULL, _IONBF, 0);
+
+  // AP?��?��
+
+  printf("send AT\r\n");
+
+  //strlen((char *)buffer)
+  //HAL_UART_Transmit(&huart3, AT, strlen((char *)AT), 1000);
+  uint8_t Tret = HAL_UART_Transmit(&huart3, AT, strlen((char *)AT), HAL_MAX_DELAY);
+  //HAL_StatusTypeDef Tret = HAL_UART_Transmit_IT(&huart3, AT, strlen((char *)AT));
+  //uint8_t Tret = HAL_UART_Transmit_IT(&huart3, AT, strlen((char *)AT));
+
+  if(Tret == 0x00) {
+	  printf("Trans OK \r\n");
+  }
+  else {
+	  printf("Trans Error \r\n");
+  }
+
+  //printf("%s", WIFI_ACCESS);
+  //HAL_Delay(10);
+
+
+  rev[0] = 0;
+  //HAL_UART_Receive(&huart3, rev, 100, 1000);
+  uint8_t ret = HAL_UART_Receive(&huart3, rev, 5, HAL_MAX_DELAY);
+  //HAL_StatusTypeDef ret = HAL_UART_Receive_IT(&huart3, rev, 5);
+  //uint8_t ret = HAL_UART_Receive_IT(&huart3, rev, 5);
+  HAL_Delay(100);
+
+  //printf("RE %lu\r\n", ret);
+  if(ret == 0x00) {
+  	printf("REC OK \r\n");
+  }
+  else {
+  	printf("REC Error \r\n");
+  }
+  printf("AP : %c \r\n", rev[0]);
+  memset(rev, 0, 100);
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  char response[50];
+
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  //sendATCommand("AT");
+
+	  // ?��?��?�� 받습?��?��.
+	  //if (receiveResponse(response, 1000) == HAL_OK)
+	  //{
+	    // "OK" ?��?��?�� STM32?���??? ?��?��?��?��?��.
+	  //  HAL_UART_Transmit(&huart3, (uint8_t *)response, strlen(response), HAL_MAX_DELAY);
+	  //}
+	  printf("... \r\n");
+
+	  HAL_Delay(1000);
+
   }
   /* USER CODE END 3 */
 }
@@ -121,9 +208,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI_DIV2;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL16;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
@@ -133,126 +218,48 @@ void SystemClock_Config(void)
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
   {
     Error_Handler();
   }
-}
-
-/**
-  * @brief USART2 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART2_UART_Init(void)
-{
-
-  /* USER CODE BEGIN USART2_Init 0 */
-
-  /* USER CODE END USART2_Init 0 */
-
-  /* USER CODE BEGIN USART2_Init 1 */
-
-  /* USER CODE END USART2_Init 1 */
-  huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
-  huart2.Init.WordLength = UART_WORDLENGTH_8B;
-  huart2.Init.StopBits = UART_STOPBITS_1;
-  huart2.Init.Parity = UART_PARITY_NONE;
-  huart2.Init.Mode = UART_MODE_TX_RX;
-  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart2) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART2_Init 2 */
-
-  /* USER CODE END USART2_Init 2 */
-
-}
-
-/**
-  * @brief USART3 Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USART3_UART_Init(void)
-{
-
-  /* USER CODE BEGIN USART3_Init 0 */
-
-  /* USER CODE END USART3_Init 0 */
-
-  /* USER CODE BEGIN USART3_Init 1 */
-
-  /* USER CODE END USART3_Init 1 */
-  huart3.Instance = USART3;
-  huart3.Init.BaudRate = 115200;
-  huart3.Init.WordLength = UART_WORDLENGTH_8B;
-  huart3.Init.StopBits = UART_STOPBITS_1;
-  huart3.Init.Parity = UART_PARITY_NONE;
-  huart3.Init.Mode = UART_MODE_TX_RX;
-  huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart3.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart3) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USART3_Init 2 */
-
-  /* USER CODE END USART3_Init 2 */
-
-}
-
-/**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_GPIO_Init(void)
-{
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-/* USER CODE BEGIN MX_GPIO_Init_1 */
-/* USER CODE END MX_GPIO_Init_1 */
-
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOC_CLK_ENABLE();
-  __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin : B1_Pin */
-  GPIO_InitStruct.Pin = B1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : LD2_Pin */
-  GPIO_InitStruct.Pin = LD2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
-
-  /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
-
-/* USER CODE BEGIN MX_GPIO_Init_2 */
-/* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
+void sendATCommand(const char *command)
+{
+  HAL_UART_Transmit(&huart3, (uint8_t *)command, strlen(command), HAL_MAX_DELAY);
+  //HAL_UART_Transmit(&huart3, (uint8_t *)"\r\n", 2, HAL_MAX_DELAY);
+}
 
+HAL_StatusTypeDef receiveResponse(char *response, uint16_t timeout)
+{
+  uint8_t rxBuffer[50];
+  uint32_t startTime = HAL_GetTick();
+
+  memset(response, 0, sizeof(response));
+
+  while (HAL_GetTick() - startTime < timeout)
+  {
+    if (HAL_UART_Receive(&huart3, rxBuffer, sizeof(rxBuffer), 100) == HAL_OK)
+    {
+      strcat(response, (char *)rxBuffer);
+
+      // "OK" ?��?��?�� ?��?��?��?��?���??? ?��?��?��?��?��.
+      if (strstr(response, "OK") != NULL)
+      {
+    	  printf("OK found!\r\n");
+        return HAL_OK;
+      }
+    }
+  }
+  printf("Cant access\r\n");
+  return HAL_TIMEOUT;
+}
 /* USER CODE END 4 */
 
 /**

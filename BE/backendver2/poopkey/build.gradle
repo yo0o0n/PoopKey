@@ -47,3 +47,9 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-starter-webmvc-ui
 	implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.2.0'
 }
+
+// 센서쪽 netty 통신을 위해 추가
+dependencies {
+	// https://mvnrepository.com/artifact/io.netty/netty-all
+	implementation group: 'io.netty', name: 'netty-all', version: '4.1.24.Final'
+}

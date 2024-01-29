@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.project.poopkey.application.main.dao.StatisticDao">
+    <resultMap id="statisticMap" type="Statistic">
+        <id property="buildingName" column="building_name"/>
+        <id property="floor" column="floor"/>
+        <id property="gender" column="gender"/>
+        <collection property="list" ofType="StallStatistic" resultMap="stallStatisticResultMap">
+            <id property="usedNumber" column="used_number"/>
+            <id property="lastCleanDate" column="last_clean_date"/>
+            <id property="tissueChangeNumber" column="tissue_change_number"/>
+            <id property="breakNumber" column="break_number"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="stallStatisticResultMap" type="StallStatistic">
+        <id property="usedNumber" column="usedNumber"/>
+        <result property="lastCleanDate" column="lastCleanDate"/>
+        <result property="tissueChangeNumber" column="tissueChangeNumber"/>
+        <result property="breakNumber" column="breakNumber"/>
+    </resultMap>
+
+    <select id="selectOne" resultMap="statisticMap">
+        SELECT b.building_name,
+        r.floor AS floor,
+        r.gender AS gender,
+        st.used_number AS usedNumber,
+        st.last_clean_date AS lastCleanDate,
+        st.tissue_change_number AS tissueChangeNumber,
+        st.break_number AS breakNumber
+        FROM statistic AS st
+        INNER JOIN stall AS s
+        ON st.stall_id =s.stall_id
+        INNER JOIN restroom AS r
+        ON r.restroom_id = s.restroom_id
+        INNER JOIN building AS b
+        ON b.building_id = r.building_id
+        WHERE b.building_name = #{buildingName}
+        AND r.floor = #{floor}
+        AND r.gender = #{gender}
+    </select>
+</mapper>

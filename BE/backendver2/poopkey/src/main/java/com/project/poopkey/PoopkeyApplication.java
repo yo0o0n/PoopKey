@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.context.annotation.ComponentScan;
 
 // 아직 시큐리티 인증 부분을 구현하지 않았다.
-@ComponentScan(basePackages = "com.project.poopkey.netty")
+@ComponentScan(basePackages = {"com.project.poopkey.netty","com.project.poopkey.clientsocket"})
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 public class PoopkeyApplication {
 

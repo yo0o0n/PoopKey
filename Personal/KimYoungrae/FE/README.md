@@ -2,7 +2,7 @@
 ## 컴포넌트
 컴포넌트는 component라는 폴더 아래에 만드는게 일반적
 
-```
+```javascript
 function 함수명() {
 
     return (태그들);
@@ -21,7 +21,7 @@ export defualt 함수명
 
 ## 이벤트
 
-```
+```javascript
 function 함수명() {
     function 이벤트함수1() {
 	console.log(...);
@@ -63,7 +63,7 @@ input에서 값 가져오려면 e.target.value
 <br>
 
 ## CSS 
-```
+```javascript
 css파일명 : 컴포넌트이름.module.css
 
 import styles from "./css파일명";
@@ -970,3 +970,1068 @@ DayList.js와 유사하나 url의 day값을 가져오기 위한게 살짝 다름
 
 
 ## 커스텀 훅
+json-server --watch ./src/DB/data.json --port 3001 다시 하자
+
+```javascript
+// 수정 전 Day
+
+//import dummy from '../DB/data.json'
+import { useParams} from 'react-router-dom';
+import { useEffect , useState } from 'react';
+import Word from './Word'
+export default function Day() {
+    
+    
+
+
+    const a = useParams();
+    //console.log(a); // /day/2이면 day:'2'가 콘솔에 나옴 => 문자임에 조심하라!
+    // 만약 <Route path="/day/:day">에서 :id로 바꾸면 id:'2'가 콘솔에 나온다.
+
+    //console.log(wordList);
+    const day = Number(a.day);
+
+    const [words, setWords] = useState([]);
+
+    useEffect(()=>{
+        fetch(`http://localhost:3001/words?day=${day}`)
+        // 이러면 promise형태로 반환함 async/await에서 말하는 그거 맞음
+        .then(res=>{
+            // fetch가 되면 == .then
+            return res.json()
+            // 여기서 res는 http응답이고 실제 json은 아니라 .json()을 해야함
+            //  이러면 json으로 변환되고, promise로 반환된다. (이게 뭔소리지??)
+        })
+        .then(data=>{
+            // 위에걸 완료했다면
+            setWords(data)
+        })
+    }, [day]);
+
+    // const wordList = dummy.words.filter(word=>Number(word.day)===day);
+    
+    return <>
+    <h2>Day {day}</h2>
+    <table>
+        <tbody>
+            {words.map(word=>(
+                <Word word={word} key={word.id}/>
+            ))}
+
+        </tbody>
+    </table>
+    </>
+}
+```
+
+useEffect()부분을 사용자 Hook으로 만들어 url만 넣으면 되는걸로 바꾸겠다.
+
+src/hooks폴더를 만들고, useFetch.js를 만든다.
+
+
+```javascript
+
+// useFetch.js
+import { useEffect, useState } from "react"
+
+export default function useFetch(url) {
+    
+
+    const [data, setData] = useState([]);
+
+    useEffect(()=>{
+        fetch(url)
+        // 이러면 promise형태로 반환함 async/await에서 말하는 그거 맞음
+        .then(res=>{
+            // fetch가 되면 == .then
+            return res.json()
+            // 여기서 res는 http응답이고 실제 json은 아니라 .json()을 해야함
+            //  이러면 json으로 변환되고, promise로 반환된다. (이게 뭔소리지??)
+        })
+        .then(data=>{
+            // 위에걸 완료했다면
+            setData(data)
+        })
+    }, [url]);
+
+    return data;
+}
+
+```
+
+
+```javascript
+
+// DayList.js
+import { useState, useEffect } from "react";
+import {Link} from "react-router-dom";
+import useFetch from "../hooks/useFetch";
+// import dummy from '../DB/data.json'
+
+export default function DayList() {
+    const days = useFetch("http://localhost:3001/days");
+    
+    console.log("days object");
+    console.log(days);
+    
+ 
+    return <>
+        
+        <ul className="list_day">
+            {days.map(item =>(
+                <li key={item.id}>
+                    <Link to={`/day/${item.day}`}>Day {item.day}</Link>
+                </li>
+            ))}
+            
+        </ul>
+
+
+     </>;
+}
+
+```
+
+
+```javascript
+//import dummy from '../DB/data.json'
+import { useParams} from 'react-router-dom';
+import { useEffect , useState } from 'react';
+import useFetch from '../hooks/useFetch';
+import Word from './Word'
+export default function Day() {
+    
+    
+
+
+    const a = useParams();
+    //console.log(a); // /day/2이면 day:'2'가 콘솔에 나옴 => 문자임에 조심하라!
+    // 만약 <Route path="/day/:day">에서 :id로 바꾸면 id:'2'가 콘솔에 나온다.
+
+    //console.log(wordList);
+    const day = Number(a.day);
+
+
+    const words = useFetch(`http://localhost:3001/words?day=${day}`);
+
+
+    return <>
+    <h2>Day {day}</h2>
+    <table>
+        <tbody>
+            {words.map(word=>(
+                <Word word={word} key={word.id}/>
+            ))}
+
+        </tbody>
+    </table>
+    </>
+}
+```
+
+
+
+
+
+## CRUD에서 PUT / DELETE
+
+현재 DAY1~3암거나 들어가서 
+왼쪽 외웠는지 안 외웠는지를 체크하고
+
+새로 고침하면 state가 날라가서 기억을 못함.
+
+따라서 DB에 저장하는게 좋음
+
+이걸 해보겠다.
+
+즉, data.json의 words에서 각 isDone의 값을 수정하겠음.
+
+```javascript
+// Word.js    바꾸기전
+
+import { useState } from "react";
+
+export default function Word(props) {
+    const [isShow, setIsShow] = useState(false);
+    const [isDone, setIsDone] = useState(props.word.isDone);
+    // state는 해당 컴포넌트에 있는걸 바꿔야지 props는 건드는거 아님 ㅎㅎ
+
+    function toggleShow() {
+        setIsShow(!isShow);
+    }
+
+    function toggleDone() {
+        setIsDone(!isDone);
+    }
+
+    return <>
+    <tr className={isDone ? "off" : ""} key={props.word.id}>
+        <td>
+            <input type="checkbox" checked={isDone}
+            onChange={toggleDone}></input>
+        </td>
+        <td>
+            {props.word.eng}
+        </td>
+        <td>
+            {isShow && props.word.kor}
+            {/* 이거 처음본다. true/false인 isShow와 &&를 한다니! */}
+        </td>
+        <td>
+            <button onClick={toggleShow}>뜻 {isShow ? '숨기기' : '보이기'}</button>
+            {/* 이벤트 onClick 꼭 기억하자 */}
+            {/* isShow가 true면 숨기기로 나오겠다. */}
+            <button className="btn_del">삭제</button>
+        </td>
+    </tr>
+    </>;
+}
+
+```
+
+
+
+```javascript
+import { useState, useEffect } from "react";
+
+export default function Word(props) {
+    const [isShow, setIsShow] = useState(false);
+    const [isDone, setIsDone] = useState(props.word.isDone);
+    // state는 해당 컴포넌트에 있는걸 바꿔야지 props는 건드는거 아님 ㅎㅎ
+
+    function toggleShow() {
+        setIsShow(!isShow);
+    }
+
+    function toggleDone() { // 여길 바꾸겠음
+        // setIsDone(!isDone);
+        fetch(`http://localhost:3001/words/${props.word.id}`, {
+            method : 'PUT',
+            headers : {
+                'Content-Type' : 'application/json',
+                // Content-Type은 보내는 리소스의 타입을 의미함.
+                // 타입을 json으로 보내주겠음.
+                // 타입은 이미지 json 등등 다양함
+            },
+            body : JSON.stringify({
+                ...props.word,
+                isDone : !isDone,
+            }),
+        })
+        .then(res=>{
+            if(res.ok) {
+                setIsDone(!isDone);
+            }
+        });
+    }
+
+    return <>
+    <tr className={isDone ? "off" : ""} key={props.word.id}>
+        <td>
+            <input type="checkbox" checked={isDone}
+            onChange={toggleDone}></input>
+        </td>
+        <td>
+            {props.word.eng}
+        </td>
+        <td>
+            {isShow && props.word.kor}
+            {/* 이거 처음본다. true/false인 isShow와 &&를 한다니! */}
+        </td>
+        <td>
+            <button onClick={toggleShow}>뜻 {isShow ? '숨기기' : '보이기'}</button>
+            {/* 이벤트 onClick 꼭 기억하자 */}
+            {/* isShow가 true면 숨기기로 나오겠다. */}
+            <button className="btn_del">삭제</button>
+        </td>
+    </tr>
+    </>;
+}
+
+```
+
+### 잠깐! 깨달은게 있다!
+나는 fetch()가 useEffect()의 일부분인줄 알았으나, js의 기본 메소드로
+axios와 비슷하다.
+
+다만, axios는 가져와야하고 axios쪽이 확장성이 더 높다.
+
+그러니 axios로 해야겠다.
+
+이제 isDone을 json에다 put (UPDATE) 해서 새로고침해도 반영이 된다.
+
+```javascript
+function toggleDone() { // 여길 바꾸겠음
+    const [isDone, setIsDone] = useState(props.word.isDone);
+
+    fetch(`http://localhost:3001/words/${props.word.id}`, {
+        method : 'PUT',
+        headers : {
+            'Content-Type' : 'application/json',
+            // Content-Type은 보내는 리소스의 타입을 의미함.
+            // 타입을 json으로 보내주겠음.
+            // 타입은 이미지 json 등등 다양함
+        },
+        body : JSON.stringify({
+            ...props.word,
+            isDone : !isDone,
+        }),
+    })
+    .then(res=>{
+        if(res.ok) {
+            setIsDone(!isDone);
+        }
+    });
+}
+```
+
+body에 데이터를 실어 보낸다.
+
+이때, json 형태로 보내기 위해 
+JSON.stringfy({오브젝트});해야함
+
+
+
+UPDATE 처럼 DELETE도 해보자
+
+
+```javascript
+import { useState, useEffect } from "react";
+
+export default function Word(props) {
+
+    // word를 state로 하겠음
+    // 왜냐하면 DELETE를 했을 때, 새로 랜더링해야하는데 state로 하면 편하니까.
+    const [word, setWord] = useState(props.word);
+
+    const [isShow, setIsShow] = useState(false);
+    const [isDone, setIsDone] = useState(props.word.isDone);
+    // state는 해당 컴포넌트에 있는걸 바꿔야지 props는 건드는거 아님 ㅎㅎ
+
+    function toggleShow() {
+        setIsShow(!isShow);
+    }
+
+    function toggleDone() { // 여길 바꾸겠음
+        // setIsDone(!isDone);
+        fetch(`http://localhost:3001/words/${props.word.id}`, {
+            method : 'PUT',
+            headers : {
+                'Content-Type' : 'application/json',
+                // Content-Type은 보내는 리소스의 타입을 의미함.
+                // 타입을 json으로 보내주겠음.
+                // 타입은 이미지 json 등등 다양함
+            },
+            body : JSON.stringify({
+                ...props.word,
+                isDone : !isDone,
+            }),
+        })
+        .then(res=>{
+            if(res.ok) {
+                setIsDone(!isDone);
+            }
+        });
+    }
+
+    function del() {
+        if(window.confirm('진짜 삭제할꺼야?')) {
+            fetch(`http://localhost:3001/words/${props.word.id}`, {
+                method : 'DELETE',
+            }).then(res=>{
+                // .then 이후는 새로 랜더링하기 위한거임
+                if(res.ok) {
+                    setWord({id:0});
+                }
+            })
+
+        }
+    }
+
+    if (word.id === 0) { // id가 0이면 null을 하는데 null이면 아래 return을 안 해서 아무것도 안뜸.
+        return null;
+    }
+
+    return <>
+    <tr className={isDone ? "off" : ""} key={props.word.id}>
+        <td>
+            <input type="checkbox" checked={isDone}
+            onChange={toggleDone}></input>
+        </td>
+        <td>
+            {props.word.eng}
+        </td>
+        <td>
+            {isShow && props.word.kor}
+            {/* 이거 처음본다. true/false인 isShow와 &&를 한다니! */}
+        </td>
+        <td>
+            <button onClick={toggleShow}>뜻 {isShow ? '숨기기' : '보이기'}</button>
+            {/* 이벤트 onClick 꼭 기억하자 */}
+            {/* isShow가 true면 숨기기로 나오겠다. */}
+            <button className="btn_del" onClick={del}>삭제</button>
+        </td>
+    </tr>
+    </>;
+}
+```
+
+DB에서만 DELETE를 하면 바로 해당 페이지에 적용이 안 된다.
+
+따라서 word 객체를 state로 만들고 word 객체의 id를 0으로 만든다.
+
+id가 0이면 return null로 한다. 이러면 아래쪽 return 문 대신에 null이 리턴되는데
+
+null을 받으면 아무것도 안 뜬다.
+
+
+## 이제 마지막 CRUD의 POST=CREATAE를 해보자!
+컴포넌트로 CreateWord.js를 만들겠음
+
+
+```javascript
+// App.js
+
+import './App.css';
+import Header from './component/Header'
+import DayList from './component/DayList';
+import Day from './component/Day';
+import EmptyPage from './component/EmptyPage';
+import CreateWord from './component/CreateWord';
+import {BrowserRouter, Route, Switch} from 'react-router-dom';
+
+
+function App() {
+  return (
+    <BrowserRouter>
+      <div className="App">
+        <Header />
+        <Switch>
+          <Route exact path="/">
+            <DayList />
+          </Route>
+          
+          <Route path="/day/:day">
+            <Day />
+          </Route>
+
+          <Route path="/create_word">
+            <CreateWord />
+          </Route>
+
+          <Route> 
+            {/* Route안에 path가 없으면 가장 조건으로 접근함...  주의! 이건 항상 가장 마지막에 해야함*/}
+            <EmptyPage />
+          </Route>
+        </Switch>
+      </div>
+    </BrowserRouter>
+    
+  );
+}
+
+export default App;
+
+```
+
+App.js에선 <Route>로 라우트를 하나 추가하고
+
+해당 라우트(url)로 가면 CreateWord 컴포넌트가 Switch내에 랜더링 되게 함.
+
+마찬가지로 화면 윗단인 Header 컴포넌트도 수정하자.
+
+```javascript
+// Header.js
+
+import {Link} from 'react-router-dom'
+export default function Header() {
+    return (
+        <div className='header'>
+            <h1>
+                <Link to="/"> 토익 영단어 </Link>
+            </h1>
+            <div className="menu">
+                <Link to="/create_word" className="link">   
+                 단어추가
+                </Link>
+
+                <Link to="#x" className="link"> 
+                {/* 아직 탈 링크가 없음 이럴 때 #x를 하는듯 */}
+                 Day 추가
+                </Link>
+
+            </div>
+
+        </div>
+    );
+}
+```
+여기서 중요한건 아직 링크가 없는 경우 #x로 한다는 것.
+
+<Link>는 <a>와 비슷하다는걸 항상 명심하자.
+
+
+
+
+```javascript
+// CreateWords.js 중간과정
+
+import useFetch from "../hooks/useFetch"
+import { useRef } from "react";
+
+export default function CreateWord() {
+    const days = useFetch(`http://localhost:3001/days`);
+    
+
+    function onSubmit(e) {
+        e.preventDefault();
+        // form 내부의 버튼을 눌렀을 때 새로고침 막는거
+
+        // 이제 각 ref에 잘 담기는지 확인하자
+        console.log(engRef.current.value)
+        console.log(korRef.current.value)
+        console.log(dayRef.current.value)
+        // 잘 나오는걸 확인 할 수 있다.
+
+    } 
+
+    const engRef = useRef(null);
+    const korRef = useRef(null);
+    const dayRef = useRef(null);
+    // useRef란?
+    // DOM에 접근하게 해준다 (querySelector 같은거)
+    // 스크롤 위치를 확인하거나 포커를 주거나 할 때 사용함
+
+
+
+    return <form onSubmit={onSubmit}>
+        <div className="input_area">
+            <label>Eng</label>
+            {/* 각 입력부분마다 ref를 연결한다. */}
+            <input type="text" placeholder="computer" ref={engRef}></input>
+        </div>
+
+        <div className="input_area">
+            <label>Kor</label>
+            <input type="text" placeholder="컴퓨터" ref={korRef}></input>
+        </div>
+
+        <div className="input_area">
+            <label>Day</label>
+            {/* select - option 기억하자 */}
+            <select ref={dayRef}>
+                {days.map(day=>(
+                    <option key={day.id} value={day.day}>{day.day}</option>
+                ))}
+            </select>
+            {/*  map(day=>())) =>다음에 ()이야!!! */}
+        </div>
+        <button>저장</button>
+        {/*  */}
+    </form>
+}
+```
+
+너무 길어서 POST 직전에서 끊었다.
+
+복습할 부분은 
+
+select - option 구문
+
+변수.map(반복변수=> () ) 
+
+태그를 { }안에 넣을 수 있음.
+
+<form> 태그안의 버튼은 submit 기능을 함.
+또한 버튼을 누르면 form태그의 특성상 새로고침이 일어남.
+이를 보기 싫어서 e.preventDefault();를 함수로 만들고 onSubmit={함수명} 하였음.
+
+useRef는 querySelector랑 동일함.
+
+다만 값에 접근하기 위해선 다음과 같이 해야함. 
+
+engRef.current.value
+
+
+<br><br>
+
+이제 진짜로 단어를 추가해보자
+
+일단 data.json에 word에 해당하는 필드가 무엇인지 확인하자.
+
+id / day / eng / kor / isDone이 있다.
+
+POST시 id는 자동적으로 다음 순서를 입력한다.
+
+isDone은 초기값으로 false를 고정하곘음
+
+따라서 넣을 땐 day / eng / kor / isDone을 넣고,
+isDone의 값은 고정하자.
+
+
+```javascript
+// CreateWord.js
+
+import useFetch from "../hooks/useFetch"
+import { useRef } from "react";
+
+export default function CreateWord() {
+    const days = useFetch(`http://localhost:3001/days`);
+
+    function onSubmit(e) {
+        e.preventDefault();
+        // form 내부의 버튼을 눌렀을 때 새로고침 막는거
+
+        // 이제 각 ref에 잘 담기는지 확인하자
+        console.log(engRef.current.value)
+        console.log(korRef.current.value)
+        console.log(dayRef.current.value)
+        // 잘 나오는걸 확인 할 수 있다.
+
+
+        // Word.js에서 PUT에 해당하는 부분을 긁어와 수정하겠다.
+        // POST 코드
+        fetch(`http://localhost:3001/words/`, {
+            //  주소는 ${props.word.id} 제거 해 주자.
+            method : 'POST',
+            headers : {
+                'Content-Type' : 'application/json',
+                // Content-Type은 보내는 리소스의 타입을 의미함.
+                // 타입을 json으로 보내주겠음.
+                // 타입은 이미지 json 등등 다양함
+            },
+            body : JSON.stringify({
+                day : dayRef.current.value,
+                eng : engRef.current.value,
+                kor : korRef.current.value,
+                isDone : false,
+            }),
+        })
+        .then(res=>{
+            if(res.ok) {
+                alert("단어 추가 완료!")
+            }
+        });
+    }
+
+
+
+    
+
+    const engRef = useRef(null);
+    const korRef = useRef(null);
+    const dayRef = useRef(null);
+    // useRef란?
+    // DOM에 접근하게 해준다 (querySelector 같은거)
+    // 스크롤 위치를 확인하거나 포커를 주거나 할 때 사용함
+
+
+
+    return <form onSubmit={onSubmit}>
+        <div className="input_area">
+            <label>Eng</label>
+            {/* 각 입력부분마다 ref를 연결한다. */}
+            <input type="text" placeholder="computer" ref={engRef}></input>
+        </div>
+
+        <div className="input_area">
+            <label>Kor</label>
+            <input type="text" placeholder="컴퓨터" ref={korRef}></input>
+        </div>
+
+        <div className="input_area">
+            <label>Day</label>
+            {/* select - option 기억하자 */}
+            <select ref={dayRef}>
+                {days.map(day=>(
+                    <option key={day.id} value={day.day}>{day.day}</option>
+                ))}
+            </select>
+            {/*  map(day=>())) =>다음에 ()이야!!! */}
+        </div>
+        <button>저장</button>
+        {/*  */}
+    </form>
+}
+```
+
+POST까지 해보았다.
+
+form의 내용들을 채워넣고 버튼을 누르면 alert가 뜨고 실제로 data.json에 추가된다.
+
+여기서 id값은 중복이 없는 임의의 값이 된다.
+
+```javascript
+body : JSON.stringify({
+    day : dayRef.current.value,
+    eng : engRef.current.value,
+    kor : korRef.current.value,
+    isDone : false,
+}),
+```
+가 가장 중요한 부분
+
+
+
+
+## 단어를 추가하면 그 날짜에 해당하는 페이지로 자동적으로 가서 보여주도록 하자. useHistory
+
+
+```javascript
+// CreateWord.js
+
+import { useHistory } from "react-router-dom";
+import useFetch from "../hooks/useFetch"
+import { useRef } from "react";
+
+export default function CreateWord() {
+    const days = useFetch(`http://localhost:3001/days`);
+    const history = useHistory();
+
+    function onSubmit(e) {
+        e.preventDefault();
+        // form 내부의 버튼을 눌렀을 때 새로고침 막는거
+
+        // 이제 각 ref에 잘 담기는지 확인하자
+        console.log(engRef.current.value)
+        console.log(korRef.current.value)
+        console.log(dayRef.current.value)
+        // 잘 나오는걸 확인 할 수 있다.
+
+
+        // Word.js에서 PUT에 해당하는 부분을 긁어와 수정하겠다.
+        // POST 코드
+        fetch(`http://localhost:3001/words/`, {
+            //  주소는 ${props.word.id} 제거 해 주자.
+            method : 'POST',
+            headers : {
+                'Content-Type' : 'application/json',
+                // Content-Type은 보내는 리소스의 타입을 의미함.
+                // 타입을 json으로 보내주겠음.
+                // 타입은 이미지 json 등등 다양함
+            },
+            body : JSON.stringify({
+                day : dayRef.current.value,
+                eng : engRef.current.value,
+                kor : korRef.current.value,
+                isDone : false,
+            }),
+        })
+        .then(res=>{
+            if(res.ok) {
+                alert("단어 추가 완료!");
+                // 해당 페이지로 이동 Link to와 유사하다.
+                history.push(`/day/${dayRef.current.value}`);
+            }
+        });
+    }
+
+
+
+    
+
+    const engRef = useRef(null);
+    const korRef = useRef(null);
+    const dayRef = useRef(null);
+    // useRef란?
+    // DOM에 접근하게 해준다 (querySelector 같은거)
+    // 스크롤 위치를 확인하거나 포커를 주거나 할 때 사용함
+
+
+
+    return <form onSubmit={onSubmit}>
+        <div className="input_area">
+            <label>Eng</label>
+            {/* 각 입력부분마다 ref를 연결한다. */}
+            <input type="text" placeholder="computer" ref={engRef}></input>
+        </div>
+
+        <div className="input_area">
+            <label>Kor</label>
+            <input type="text" placeholder="컴퓨터" ref={korRef}></input>
+        </div>
+
+        <div className="input_area">
+            <label>Day</label>
+            {/* select - option 기억하자 */}
+            <select ref={dayRef}>
+                {days.map(day=>(
+                    <option key={day.id} value={day.day}>{day.day}</option>
+                ))}
+            </select>
+            {/*  map(day=>())) =>다음에 ()이야!!! */}
+        </div>
+        <button>저장</button>
+    </form>
+}
+
+```
+
+
+여기서 중요한 부분은
+
+```javascript
+const history = useHistory();
+```
+와
+```javascript
+.then(res=>{
+            if(res.ok) {
+                alert("단어 추가 완료!");
+                // 해당 페이지로 이동 Link to와 유사하다.
+                history.push(`/day/${dayRef.current.value}`);
+            }
+        });
+```
+이다.
+
+history.push(경로)를 하면 Link to 태그를 클릭한거처럼 작동한다.
+
+해당 코드에선 POST후 응답이 ok면 자동적으로 한다.
+
+
+## 마찬가지로 DAY도 늘려보자 DAY5 DAY6 ...
+컴포넌트로 CreateDay.js를 만들자
+
+```javascript
+// CreateDay.js
+import { useHistory } from "react-router-dom";
+import useFetch from "../hooks/useFetch"
+
+export default function CreateWord() {
+    const days = useFetch(`http://localhost:3001/days`);
+    const history = useHistory(); 
+    function addDay() {
+        fetch(`http://localhost:3001/days/`, {
+            //  주소는 ${props.word.id} 제거 해 주자.
+            method : 'POST',
+            headers : {
+                'Content-Type' : 'application/json',
+                // Content-Type은 보내는 리소스의 타입을 의미함.
+                // 타입을 json으로 보내주겠음.
+                // 타입은 이미지 json 등등 다양함
+            },
+            body : JSON.stringify({
+                day : days.length + 1,
+            }),
+        })
+        .then(res=>{
+            if(res.ok) {
+                alert("단어 추가 완료!");
+                // 해당 페이지로 이동 Link to와 유사하다.
+                history.push(`/`);
+            }
+        });
+    }
+
+    return <>
+        <div>현재 일수 : {days.length}일</div>
+        <button onClick={addDay}>Day 추가</button>
+    </>
+}
+
+```
+
+여기서 새로웠던 부분은 days.length
+
+
+
+
+
+## 마지막으로 SPA인 리액트는 로딩이 오래 걸린다. 로딩이면 로딩중인걸 표시하자.
+
+네트워크 설정을 3G로 바꾸고 새로고침을 해보자
+
+어디를 불러오느라 느린지 바로 알 수 있다.
+
+보통 Fetch(= axios)하는 부분이 느리다.
+
+그 부분만 return 으로 데이터 길이가 0(=로딩중)이니까
+
+
+```javascript
+import { useState, useEffect } from "react";
+import {Link} from "react-router-dom";
+import useFetch from "../hooks/useFetch";
+// import dummy from '../DB/data.json'
+
+export default function DayList() {
+    const days = useFetch("http://localhost:3001/days");
+
+    if(days.length === 0) {
+        return <span>Now Loading...</span>
+    }
+    
+   
+    return <>
+        
+        <ul className="list_day">
+            {days.map(item =>(
+                <li key={item.id}>
+                    <Link to={`/day/${item.day}`}>Day {item.day}</Link>
+                </li>
+            ))}
+            
+        </ul>
+
+
+     </>;
+}
+```
+
+```javascript
+if(days.length === 0) {
+    return <span>Now Loading...</span>
+}
+```
+를 추가해서 길이가 0 == 데이터 로딩 중인걸 따로 처리했다.
+
+
+
+
+마찬가지로 CreateWord에서도 추가 버튼을 마구 누르면 계속 들어가는데 
+로딩중이라는 state를 하나 선언한다.
+
+```javascript
+import { useHistory } from "react-router-dom";
+import useFetch from "../hooks/useFetch"
+import { useRef, useState } from "react";
+
+export default function CreateWord() {
+    const days = useFetch(`http://localhost:3001/days`);
+    const history = useHistory();
+    const [isLoading, setIsLoading] = useState(false); 
+
+    function onSubmit(e) {
+        e.preventDefault();
+
+        if(!isLoading) {
+            setIsLoading(true);
+
+
+            // form 내부의 버튼을 눌렀을 때 새로고침 막는거
+
+            // 이제 각 ref에 잘 담기는지 확인하자
+            console.log(engRef.current.value)
+            console.log(korRef.current.value)
+            console.log(dayRef.current.value)
+            // 잘 나오는걸 확인 할 수 있다.
+
+
+            // Word.js에서 PUT에 해당하는 부분을 긁어와 수정하겠다.
+            // POST 코드
+            fetch(`http://localhost:3001/words/`, {
+                //  주소는 ${props.word.id} 제거 해 주자.
+                method : 'POST',
+                headers : {
+                    'Content-Type' : 'application/json',
+                    // Content-Type은 보내는 리소스의 타입을 의미함.
+                    // 타입을 json으로 보내주겠음.
+                    // 타입은 이미지 json 등등 다양함
+                },
+                body : JSON.stringify({
+                    day : dayRef.current.value,
+                    eng : engRef.current.value,
+                    kor : korRef.current.value,
+                    isDone : false,
+                }),
+            })
+            .then(res=>{
+                if(res.ok) {
+                    alert("단어 추가 완료!");
+                    // 해당 페이지로 이동 Link to와 유사하다.
+                    history.push(`/day/${dayRef.current.value}`);
+                    setIsLoading(false);
+                }
+            });
+        }
+    }
+
+
+
+    
+
+    const engRef = useRef(null);
+    const korRef = useRef(null);
+    const dayRef = useRef(null);
+    // useRef란?
+    // DOM에 접근하게 해준다 (querySelector 같은거)
+    // 스크롤 위치를 확인하거나 포커를 주거나 할 때 사용함
+
+
+
+    return <form onSubmit={onSubmit}>
+        <div className="input_area">
+            <label>Eng</label>
+            {/* 각 입력부분마다 ref를 연결한다. */}
+            <input type="text" placeholder="computer" ref={engRef}></input>
+        </div>
+
+        <div className="input_area">
+            <label>Kor</label>
+            <input type="text" placeholder="컴퓨터" ref={korRef}></input>
+        </div>
+
+        <div className="input_area">
+            <label>Day</label>
+            {/* select - option 기억하자 */}
+            <select ref={dayRef}>
+                {days.map(day=>(
+                    <option key={day.id} value={day.day}>{day.day}</option>
+                ))}
+            </select>
+            {/*  map(day=>())) =>다음에 ()이야!!! */}
+        </div>
+        <button>{isLoading ? "Now Saving..." : "저장"}</button>
+    </form>
+}
+```
+
+```javascript
+const [isLoading, setIsLoading] = useState(false); 
+
+if(!isLoading) {
+    setIsLoading(true);
+...
+
+    setIsLoading(false);
+}
+
+<button>{isLoading ? "Now Saving..." : "저장"}</button>
+
+```
+
+이러한 것들을 추가하였다.
+
+
+## 끝~
+
+
+
+
+
+
+
+<br><br><br><br><br><br>
+<br><br><br><br><br><br>
+
+
+
+
+
+
+
+
+
+
+## 이제 CSS다. Tail Wind
+
+
+
+
+
+
+
+
+
+

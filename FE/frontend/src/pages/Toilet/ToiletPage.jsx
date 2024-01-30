@@ -1,34 +1,47 @@
 // ToiletPage.js
 import styles from "./ToiletPage.module.css";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { getRestRoom } from "../../util/API";
+import { useLocation, useParams } from "react-router-dom";
 import FloorBar from "../../components/toilet/FloorBar";
 import ToiletStatus from "../../components/toilet/ToiletStatus";
 
 const ToiletPage = () => {
-  const [toiletData, setToiletData] = useState();
-  const [selectFloor, setSelectFloor] = useState();
+  const { buildingId } = useParams();
+  const [restroomData, setRestroomData] = useState();
+  const [selectFloor, setSelectFloor] = useState(1);
+  const location = useLocation();
 
   useEffect(() => {
     const getToiletData = async () => {
       try {
-        const response = await axios.get(
-          "https://jsonplaceholder.typicode.com/posts"
-        );
-        console.log(response);
-        setToiletData(response);
+        const response = await getRestRoom(buildingId);
+        setRestroomData(response);
       } catch (e) {
         console.log(e);
       }
     };
     getToiletData();
-    setSelectFloor("1층에 대한 데이터를 삽입");
-  }, []);
+  }, [buildingId]);
+
+  useEffect(() => {
+    if (location.state != null) {
+      setSelectFloor(Number(location.state.floor));
+    }
+  }, [location]);
+
+  const handleFloorClick = (floor) => {
+    setSelectFloor(floor);
+  };
+  console.log(selectFloor);
 
   return (
     <div className={styles.toiletContainer}>
-      <ToiletStatus selectFloor={selectFloor} />
-      <FloorBar onSelectFloor={setSelectFloor} toiletData={toiletData} />
+      <ToiletStatus selectFloor={selectFloor} restroomData={restroomData} />
+      <FloorBar
+        handleFloorClick={handleFloorClick}
+        restroomData={restroomData}
+      />
     </div>
   );
 };

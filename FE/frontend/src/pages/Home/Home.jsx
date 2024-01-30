@@ -1,32 +1,51 @@
 // ToiletPage.js
+import styles from "./Home.module.css";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Link } from "react-router-dom";
+import { getAllBuilding } from "../../util/API";
+import { useNavigate } from "react-router-dom";
 import LoginHeader from "../../layouts/LoginHeader";
 
 const Home = () => {
-  const [toiletData, setToiletData] = useState();
-  const [selectFloor, setSelectFloor] = useState([]);
-
+  const [buildingData, setBuildingData] = useState();
+  const navigate = useNavigate();
   useEffect(() => {
-    const getToiletData = async () => {
+    const getBuildingData = async () => {
       try {
-        const response = await axios.get(
-          "https://jsonplaceholder.typicode.com/posts"
-        );
+        const response = await getAllBuilding();
         console.log(response);
-        setToiletData(response);
+        setBuildingData(response);
       } catch (e) {
         console.log(e);
       }
     };
-    getToiletData();
+    getBuildingData();
   }, []);
+
+  const handleBuildingClick = (buildingId) => {
+    console.log(buildingId);
+    navigate(`/toilet/${buildingId}`);
+  };
 
   return (
     <>
       <LoginHeader />
       <h1>건물 선택이 띄워질 HomePage 입니다.</h1>
+      <div>
+        <div>
+          {buildingData &&
+            buildingData.map((building) => (
+              <div
+                className={styles.building}
+                key={building.buildingId}
+                onClick={() => {
+                  handleBuildingClick(building.buildingId);
+                }}
+              >
+                {building.buildingName}
+              </div>
+            ))}
+        </div>
+      </div>
     </>
   );
 };

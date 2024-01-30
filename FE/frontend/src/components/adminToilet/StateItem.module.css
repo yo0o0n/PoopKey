@@ -1,0 +1,42 @@
+/* EmotionItem */
+.StateItem {
+    cursor: pointer;
+    border-radius: 5px;
+  
+    padding-top: 20px;
+    padding-bottom: 20px;
+  
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-items: center;
+  }
+  
+  .StateItem img {
+    width: 50%;
+    margin-bottom: 10px;
+  }
+  
+  .StateItemItem span {
+    font-size: 18px;
+  }
+  
+  .StateItem_off {
+    background-color: #ececec;
+  }
+  
+  .StateItem_on_0 {
+    background-color: #64c964;
+    color: white;
+  }
+
+  .StateItem_on_1 {
+    background-color: #fd8446;
+    color: white;
+  }
+  
+  .StateItem_on_2 {
+    background-color: #fd565f;
+    color: white; 
+  }

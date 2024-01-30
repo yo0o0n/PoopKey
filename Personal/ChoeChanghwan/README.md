@@ -6,7 +6,7 @@ PA8번 핀 상태를 읽기만 하므로 내가 구성한 회로도..<br>
 *PA8번 핀을 input모드로 했는데 어떻게 제대로 동작할까? (pull-up모드가 아니여도 동작했음)
 
 오리지날 회로도<br>
-<img src="./tilt_origin.png" width=300px height=300px>
+<img src="./tilt_origin.PNG" width=300px height=300px>
 
 26번째 줄에 #include <stdio.h> 추가
 ```c

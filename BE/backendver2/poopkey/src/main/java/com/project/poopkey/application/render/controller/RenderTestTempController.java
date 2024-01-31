@@ -31,4 +31,10 @@ public class RenderTestTempController {
         List<FloorCongestion> list = floorCongestionService.findFloorCongestionList(buildingId);
         return new ResponseEntity<List<FloorCongestion>>(list, HttpStatus.OK);
     }
+
+    @GetMapping("/api/tmptest3")
+    private ResponseEntity<List<RestroomRender>> test3(@RequestParam("buildingId")int buildingId, @RequestParam("floor")int floor){
+        List<RestroomRender> list = restroomRenderService.findRestroomRenderList(buildingId, floor);
+        return new ResponseEntity<List<RestroomRender>>(list, HttpStatus.OK);
+    }
 }

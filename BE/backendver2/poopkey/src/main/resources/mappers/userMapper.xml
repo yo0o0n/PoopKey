@@ -7,4 +7,8 @@
         INSERT INTO user (user_id, password, email)
         VALUES (#{userId}, #{password}, #{email})
     </insert>
+    <select id="selectOne" parameterType="String" resultType="User">
+        SELECT * FROM user
+        WHERE email = #{email}
+    </select>
 </mapper>

@@ -20,7 +20,6 @@ public class NettySocketServerHandler extends ChannelInboundHandlerAdapter {
     @Autowired
     private SensorUpdateService sensorUpdateService;
 
-    // 웹소켓핸들러 @Autowire!
     @Autowired
     private WebSocketRenderHandler webSocketRenderHandler;
 

@@ -50,4 +50,25 @@
         ON i.stall_id = s.stall_id
         WHERE r.restroom_id = #{restroomId}
     </select>
+    <select id="selectList" resultMap="restroomRenderMap">
+        SELECT r.restroom_id AS restroomId,
+        r.gender AS gender,
+        r.floor AS floor,
+        r.width AS width,
+        r.height AS height,
+        s.stall_id AS stallId,
+        s.status AS status,
+        IF(i.tissue &lt;= 5, '휴지없음', '') AS tissueStatus,
+        s.content AS content,
+        s.row AS `row`,
+        s.col AS col,
+        '(프론트쪽에서 URL 포맷을 결정해야돼)' AS detailURL
+        FROM restroom r
+        INNER JOIN stall s
+        ON r.restroom_id = s.restroom_id
+        LEFT OUTER JOIN item i
+        ON i.stall_id = s.stall_id
+        WHERE r.building_id = #{buildingId}
+        AND r.floor = #{floor}
+    </select>
 </mapper>

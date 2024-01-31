@@ -51,31 +51,23 @@ public class WebSocketRenderHandler extends TextWebSocketHandler {
         System.out.println(payload+": 이게 바로 보낸 메시지.");
         // 오브젝트 매퍼
         JsonNode jsonNode = objectMapper.readTree(payload);
-        int buildingId = jsonNode.get("buildingId").asInt();
+        int buildingId = jsonNode.get("buildingId").asInt(); // json에서 해당 정보 추출
         int restroomId = jsonNode.get("restroomId").asInt();
         System.out.println("buildingId는:"+buildingId);
         System.out.println("restroomId는:"+restroomId);
         map.put(session, new RenderInfoKey(buildingId, restroomId));
-//        예시 :
-//        {
-//            "buildingId": 2,
-//            "restroomId": 4
-//        }
-        List<FloorCongestion> list = floorCongestionService.findFloorCongestionList(buildingId);
-        RestroomRender restroomRender = restroomRenderService.findRestroomRender(restroomId);
+        List<FloorCongestion> list = floorCongestionService.findFloorCongestionList(buildingId); // 화장실 혼잡 리스트 정보
+        RestroomRender restroomRender = restroomRenderService.findRestroomRender(restroomId); // 화장실 내부 정보
         TextMessage renderInfo1 = new TextMessage(objectMapper.writeValueAsString(list));
         TextMessage renderInfo2 = new TextMessage(objectMapper.writeValueAsString(restroomRender));
-        for( WebSocketSession ws : sessions){
+        for(WebSocketSession ws : sessions){
+            // 연결된 모든 세션에 정보 렌더링
             ws.sendMessage(renderInfo1);
             ws.sendMessage(renderInfo2);
         }
     }
 
-    // 어려움. 센서에서 클라이언트로 정보의 흐름이 이동할 때는
-    // 클라이언트 단에서 입력받은 json 정보가 없는 것이기 때문에, 어떤 정보를 보내야 할 지 애매함.
-    // session에 저장된 정보를 가져와서 쓰는 방법이 가장 이상적으로 보이지만,
-    // 아 맞다 map 같은 자료구조에 그냥 저장하고 있다가 클라이언트단 정보가 바뀌면 그냥 바꿔주기만 하면 되지!!.
-    // 조금 쉬고 구현해보자.
+    /**센서에서 입력 신호가 들어왔을 때 DB 트랜잭션이 끝나고 화면에 렌더링 되는 정보를 실시간으로 보내줌*/
     public void sendMsgToClient() throws IOException {
         System.out.println("이거는 센서쪽 신호가 클라이언트 쪽으로 전달되는 현상");
         for( WebSocketSession ws : sessions){
@@ -92,8 +84,8 @@ public class WebSocketRenderHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        map.remove(session);
-        sessions.remove(session);
+        map.remove(session); // buildingId와 restroomId 정보를 제거
+        sessions.remove(session); // 세션정보 제거
         System.out.println("웹소켓 연결이 종료됨");
     }
 }

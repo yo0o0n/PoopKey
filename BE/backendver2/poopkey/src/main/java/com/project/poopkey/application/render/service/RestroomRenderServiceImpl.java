@@ -5,6 +5,8 @@ import com.project.poopkey.application.render.dto.RestroomRender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class RestroomRenderServiceImpl implements RestroomRenderService{
 
@@ -14,5 +16,10 @@ public class RestroomRenderServiceImpl implements RestroomRenderService{
     @Override
     public RestroomRender findRestroomRender(int restroomId) {
         return restroomRenderDao.selectOne(restroomId);
+    }
+
+    @Override
+    public List<RestroomRender> findRestroomRenderList(int buildingId, int floor) {
+        return restroomRenderDao.selectList(buildingId, floor);
     }
 }

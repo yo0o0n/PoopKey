@@ -1,0 +1,5 @@
+.state_list_wrapper {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    gap: 2%;
+  }

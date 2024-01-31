@@ -1,0 +1,33 @@
+/* FllorBar.css */
+.floorBar {
+  width: 15%;
+  background-color: white;
+  padding: 10px;
+  order: 2;
+  max-height: 100%;
+  margin-right: 0;
+}
+
+.floorList {
+  overflow-y: auto;
+  /* Y축 스크롤 추가 */
+  height: 100%;
+}
+
+.floorList div {
+  margin: auto;
+  width: 70px;
+  cursor: pointer;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 50px;
+  font-weight: 900;
+  color: white;
+  text-align: center;
+  border: 1px solid #C47D4A;
+  background-color: #C47D4A;
+}
+
+.floorList div:hover {
+  background-color: #a5693e;
+}

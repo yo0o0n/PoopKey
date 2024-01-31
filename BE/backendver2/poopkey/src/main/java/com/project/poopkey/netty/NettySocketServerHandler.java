@@ -1,7 +1,7 @@
 package com.project.poopkey.netty;
 
-import com.project.poopkey.application.main.service.ItemService;
 import com.project.poopkey.application.main.service.SensorUpdateService;
+import com.project.poopkey.clientsocket.WebSocketRenderHandler;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -12,13 +12,17 @@ import org.springframework.stereotype.Component;
 
 import java.nio.charset.Charset;
 
-@ComponentScan(basePackages = "com.project.poopkey.application.main")
+@ComponentScan(basePackages = {"com.project.poopkey.application.main", "com.project.poopkey.clientsocket"})
 @Component
 @ChannelHandler.Sharable
 public class NettySocketServerHandler extends ChannelInboundHandlerAdapter {
 
     @Autowired
     private SensorUpdateService sensorUpdateService;
+
+    // 웹소켓핸들러 @Autowire!
+    @Autowired
+    private WebSocketRenderHandler webSocketRenderHandler;
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
@@ -58,6 +62,7 @@ public class NettySocketServerHandler extends ChannelInboundHandlerAdapter {
                 break;
 
         }
+        webSocketRenderHandler.sendMsgToClient(); // 업데이트 된 정보를 클라이언트에 랜더링
     }
 
     @Override

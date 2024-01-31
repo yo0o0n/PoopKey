@@ -1,7 +1,14 @@
 import styles from "./ToiletDetail.module.css";
+import { useParams, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import ToiletReport from "../../components/toilet/ToiletReport";
 
 const ToiletDetatil = () => {
-  // 화장실칸 id, 화장실 id, content (Null), 신고사유 (select 태그 이용 위생:0, 파손:1, 기타:2)
-  return <>여기는 화장실 디테일이다. </>;
+  return (
+    <div>
+      <ToiletReport />
+    </div>
+  );
 };
 export default ToiletDetatil;
+//select/ option -> useParams로 경로 데이터 받아서, 신고 요청 + 통계데이터 받아와서 일부 띄워주기 -> 통계데이터는 화장실 id로 호출

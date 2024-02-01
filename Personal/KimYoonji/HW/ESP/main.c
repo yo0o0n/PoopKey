@@ -23,8 +23,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdio.h>
-#include <string.h>
+#include<stdio.h>
+#include<string.h>
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -80,15 +81,290 @@ int __io_getchar(void)
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint8_t BBOX[50];
-uint8_t BBOX_count = 0;
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-	if(huart == &huart1) {
-		HAL_UART_Receive_IT(&huart1, &BBOX[BBOX_count++], 1);
-	}
+
+
+// AT command
+
+
+uint16_t strlength(uint8_t str[]) {
+    uint16_t ret = 0U;
+
+    while(str[ret++]);
+
+    return --ret;
 }
 
+// ?��?�� ?���? ?��보자
+#define UART_RX_BUFFER_SIZE 1024
+#define true 1
+#define false 0
+
+typedef struct {
+    uint8_t buffer[UART_RX_BUFFER_SIZE];
+    uint8_t temp;
+    uint8_t rxd; // receive data
+    volatile uint16_t input_p;
+    volatile uint16_t output_p;
+} uart_hal_rx_type;
+
+uart_hal_rx_type GBOX;
+
+uint8_t BBOX[4096];
+uint8_t buff;
+volatile uint8_t BBOX_count = 0;
+
+
+//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+//    if(huart->Instance == USART1) {
+//        BBOX[BBOX_count++] = buff;
+//        if(buff == '\0'){
+//            HAL_UART_Transmit_IT(&huart2, BBOX, strlen(BBOX));
+//            memset(BBOX, 0 , sizeof(BBOX));
+//            BBOX_count = 0;
+//        }
+//        HAL_UART_Receive_IT(&huart1, &buff, 1);
+////        HAL_UART_Receive_IT(huart, GBOX.buffer[GBOX.input_p++], 1);
+//
+//    }
+//
+////    else if(huart->Instance == USART2) {
+////        HAL_UART_Receive_IT(huart, &sendGarbage, 1);
+////    }
+//}
+
+
+uint8_t Send_sign[] = "send fail\r\n";
+uint8_t Success_sign[] = "success\r\n";
+uint8_t Error_sign[] = "error\r\n";
+uint8_t None_sign[] = "none\r\n";
+
+uint8_t AT_COMMAND(uint8_t *cmd, uint8_t repeat, uint16_t timeout){
+
+
+    while(repeat > 0){
+        memset(BBOX, 0, sizeof(BBOX));
+        BBOX_count = 0;
+//        printf("%s", cmd);
+        if(HAL_UART_Transmit(&huart1, cmd, strlen((char *)cmd), 100) == HAL_OK) {
+            if(strstr(BBOX, cmd) != 0)
+                break;
+        }
+        repeat--;
+    }
+    if(repeat == 0){
+        //HAL_UART_Transmit(&huart2, Send_sign, strlen((char *)Send_sign), 100);
+        printf("send fail\r\n");
+        return false;
+    }
+    HAL_Delay(10);
+    while(timeout > 0){
+
+        if (strstr((char *)BBOX, "OK") != 0){
+            //HAL_UART_Transmit(&huart2, Success_sign, strlen((char *)Success_sign), 100);
+            printf("OK\r\n");
+            return true;
+        }
+        else if (strstr((char *)BBOX, "ERROR") != 0){
+            //HAL_UART_Transmit(&huart2, Error_sign, strlen((char *)Error_sign), 100);
+            printf("Error\r\n");
+            return false;
+        }
+        timeout -= 10;
+        HAL_Delay(10);
+    }
+    printf("None\r\n");
+    //HAL_UART_Transmit(&huart2, None_sign, strlen((char *)None_sign), 100);
+    //HAL_UART_Transmit(&huart2, BBOX, strlen((char *)BBOX), 100);
+    return false;
+}
+
+
+//uint8_t print(UART_HandleTypeDef *huart, uint8_t* data, uint16_t time) {
+//    HAL_UART_Transmit(huart, Send_sign, strlen((char *)Send_sign), 100);
+//}
+
+
+
+
+// -------------------------- AT command Funtion START ----------------------------------------
+
+
+// AT
+uint8_t SendAT() {
+    uint8_t res = AT_COMMAND((uint8_t *)"AT\r\n", 10, 1000);
+    if(res)
+        return false;
+    return true;
+}
+
+
+// AT+RST
+uint8_t EspReset() {
+    uint8_t res = AT_COMMAND((uint8_t *)"AT+RST\r\n", 10, 10000);
+    if(res)
+        return false;
+    return true;
+}
+
+
+
+// AT CWJAP
+uint8_t WifiAccess() {
+    uint8_t res = AT_COMMAND((uint8_t *)"AT+CWJAP=\"netis_mesh_5G 2\",\"104vnqzl\"\r\n" , 10, 1000);
+//    uint8_t res = AT_COMMAND((uint8_t *)"AT+CWJAP=\"vnqzl\",\"104vnqzl\"" , 10, 1000);
+    if(res)
+        return false;
+    return true;
+}
+
+
+uint8_t ConnectTcp(uint8_t is_MUX, uint8_t target) {
+    uint8_t res = 0U;
+
+
+    // AT_COMMAND((uint8_t *)"AT\r\n", 10, 1000);
+
+    if(is_MUX) { // multi
+        if(target == 0) { // rasp
+            res = AT_COMMAND((uint8_t *)"AT+CIPSTART=0,\"TCP\",\"192.168.0.41\",12345", 10, 1000);
+        }
+        else { // AWS
+            res = AT_COMMAND((uint8_t *)"AT+CIPSTART=1,\"TCP\",\"0.0.0.0\",0", 10, 1000);
+        }
+    }
+    else { // single
+        res = AT_COMMAND((uint8_t *)"AT+CIPSTART=0,\"TCP\",\"192.168.0.41\",12345", 10, 1000);
+    }
+
+    if(res)
+        return false;
+    return true;
+}
+
+// Rasp Send data size & data // target => 0 is rasp // 1 is AWS    // data is real data
+uint8_t SendData(uint8_t size, uint8_t is_MUX, uint8_t target, uint8_t data) {
+    uint8_t str[50] = {0, };
+    uint8_t res = 0U;
+
+    if(is_MUX == 0) {
+        sprintf(str, "AT+CIPSEND=%u", size);
+
+        res = AT_COMMAND(str, 10, 1000);
+
+        res = AT_COMMAND(data, 10, 1000);
+    }
+    else {
+        sprintf(str, "AT+CIPSEND=%u,%u", target, size);
+
+        res = AT_COMMAND(str, 10, 1000);
+
+        res = AT_COMMAND(data, 10, 1000);
+    }
+
+
+    if(res)
+        return false;
+    return true;
+}
+
+
+
+// MUX mode
+uint8_t SetMux(uint8_t flag) {
+    uint8_t res = 0U;
+
+    if(flag) { // MUX
+        res = AT_COMMAND((uint8_t *)"AT+MUX=1", 10, 1000);
+    }
+    else {
+        res = AT_COMMAND((uint8_t *)"AT+MUX=0", 10, 1000);
+    }
+
+}
+
+
+uint8_t RaspiTCPSocketAccess() {
+    uint8_t res = AT_COMMAND((uint8_t *)"AT+CIPSTART=\"TCP\",\"192.168.0.41\",12345" , 10, 1000);
+    if(res)
+        return false;
+    return true;
+}
+
+
+// -------------------------- AT command Function END ----------------------------------------
+
+// un used Function
+//uint8_t SendData(uint16_t len, uint8_t data[]) {
+//    uint8_t msg[1024] = {0, };
+//
+//    // data length when push
+//    sprintf(msg,"AT+CIPSEND=%u", len);
+//
+//
+//    // len
+//    if(HAL_UART_Trasmit(&huart1, msg, strlength(msg)) != HAL_OK) {
+//        return 1;
+//    }
+//
+//    HAL_Delay(10);
+//
+//
+//
+//    BBOX[BBOX_count + 1] = '\0';
+//    if(strstr(BBOX, "OK") == 0) {
+//        return 1;
+//    }
+//    else{
+//        HAL_UART_Transmit(&huart2, BBOX, strlength(BBOX), 1000);
+//
+//        memset(BBOX, 0, sizeof(BBOX));
+//        BBOX_count = 0;
+//    }
+//
+//
+//
+//
+//
+//    // Data
+//    if(HAL_UART_Trasmit(&huart1, data, strlength(data)) != HAL_OK) {
+//        return 1;
+//    }
+//
+//    HAL_Delay(10);
+//
+//
+//
+//    BBOX[BBOX_count + 1] = '\0';
+//    if(strstr(BBOX, "OK") == 0) {
+//        return 1;
+//    }
+//    else{
+//        HAL_UART_Transmit(&huart2, BBOX, strlength(BBOX), 1000);
+//
+//        memset(BBOX, 0, sizeof(BBOX));
+//        BBOX_count = 0;
+//    }
+//
+//
+//    return 0;
+//}
+
+
+
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+    if(huart->Instance == USART1) {
+        BBOX[BBOX_count++] = buff;
+//        if(strstr((char *)BBOX, "\r\n") != 0){
+//            HAL_UART_Transmit(&huart2, BBOX, BBOX_count, 100);
+//        }
+//        HAL_UART_Transmit(&huart2, buff, 1, 100);
+        //printf("%c", (char)buff);
+        HAL_UART_Receive_IT(huart, &buff, 1);
+    }
+
+}
 /* USER CODE END 0 */
 
 /**
@@ -98,6 +374,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+    setvbuf(stdin, NULL, _IONBF, 0);
+    setvbuf(stdout, NULL, _IONBF, 0);
 
   /* USER CODE END 1 */
 
@@ -122,23 +400,74 @@ int main(void)
   MX_USART2_UART_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  HAL_UART_RxCpltCallback(&huart1);
-  uint8_t send_AT[] = "AT\r\n";
-  uint8_t command[] = "AT+CWJAP=\"asdf\",\"1q2w3e4r\"\r\n";
-  HAL_UART_Transmit_IT(&huart1, command , strlen(command));
+
+  // test Is non call  OK?
+  //  HAL_UART_RxCpltCallback(&huart1);
+
+
+  //uint8_t startText[] = "HI\r\n";
+  //HAL_UART_Transmit(&huart2, startText, strlength(startText), 100);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+//  uint8_t send_AT[] = "AT\r\n";
+//  HAL_UART_Transmit(&huart1, send_AT, strlength(send_AT), 1000);
+
+  // Wait for Interrupt
+  HAL_UART_Receive_IT(&huart1, &buff, 1);
+
+//  HAL_Delay(100);
+//
+  //EspReset();
+//
+//
+//  HAL_Delay(100);
+//
+//  SetMux(0);
+////
+////  HAL_Delay(100);
+////
+////  EspReset();
+//
+//
+//  HAL_Delay(100);
+//
+//  SendAT();
+//
+//  HAL_Delay(100);
+
+  WifiAccess();
+
+  HAL_Delay(100);
+
+  //ConnectTcp(0, 0, (uint8_t *)"192.168.0.41", (uint8_t)12345);
+//  RaspiTCPSocketAccess();
+//  HAL_Delay(100);
+//  HAL_UART_Transmit(&huart1, send_AT, strlength(send_AT), 100);
+//  HAL_Delay(100);
+
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  //HAL_UART_Transmit_IT(&huart1, send_AT, sizeof(send_AT));
-	  //HAL_Delay(100);
-	  HAL_UART_Transmit(&huart2, BBOX, strlen(BBOX), 100);
-	  HAL_Delay(1000);
+
+      // change [1] ==> HAL_UART_Transmit -> HAL_UART_Transmit_IT
+
+
+
+
+
+
+//      uint16_t len = strlen(BBOX);
+//      uint8_t len_str[15] = {0, };
+//      sprintf(len_str, "len=%u\r\n", len);
+//      HAL_UART_Transmit(&huart2, BBOX, len, 100);
+//      HAL_Delay(100);
+//      HAL_UART_Transmit(&huart2, len_str, strlength(len_str), 100);
+      HAL_Delay(1000);
 
   }
   /* USER CODE END 3 */

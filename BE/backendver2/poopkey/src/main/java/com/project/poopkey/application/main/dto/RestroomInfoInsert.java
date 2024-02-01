@@ -13,6 +13,10 @@ import java.util.List;
 @Setter
 @ToString
 public class RestroomInfoInsert {
+    // 아래 두 줄은 마이바티스 insert 인덱스 계산에 사용
+    private int index; // restroom_id
+    private long stallIndex;
+
     private int buildingId;
     private int floor;
     private int gender;

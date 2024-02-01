@@ -1,6 +1,7 @@
 package com.project.poopkey.application.main.controller;
 
 import com.project.poopkey.application.main.dto.Restroom;
+import com.project.poopkey.application.main.dto.RestroomInfoInsert;
 import com.project.poopkey.application.main.service.RestroomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,12 +32,18 @@ public class RestroomController {
         return new ResponseEntity<List<Restroom>>(list, HttpStatus.OK);
     }
 
-    @GetMapping("/master/restroom/master")
+    @GetMapping("/master/restroom/select")
     public ResponseEntity<?> restroomMasterFindList(@RequestParam("buildingId") int buildingId){
         List<Restroom> list = restroomService.findRestroomList(buildingId);
         if(list==null || list.size()==0)
             return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
         return new ResponseEntity<List<Restroom>>(list, HttpStatus.OK);
+    }
+
+    @PostMapping("/master/restroom/insert")
+    public ResponseEntity<Void> restroomAdd(@RequestBody RestroomInfoInsert restroomInfoInsert){
+        restroomService.addRestroom(restroomInfoInsert);
+        return new ResponseEntity<Void>(HttpStatus.CREATED);
     }
 
 }

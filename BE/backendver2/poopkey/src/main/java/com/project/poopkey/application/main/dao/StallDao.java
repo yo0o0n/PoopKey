@@ -7,5 +7,4 @@ public interface StallDao {
     /** 화장실 칸 세부정보 표시(공통) */
     public Stall selectOne(long stallId);
 
-    public void insertOne(RestroomInfoInsert restroomInfoInsert);
 }

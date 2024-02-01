@@ -12,6 +12,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class StallInfoInsert {
+    private long stallId;
     private int content;
     private int row;
     private int col;

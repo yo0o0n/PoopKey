@@ -41,4 +41,28 @@
         AND r.floor = #{floor}
         AND r.gender = #{gender}
     </select>
+
+    <insert id="insertOne" parameterType="RestroomInfoInsert">
+        <selectKey order="BEFORE" keyProperty="stallIndex" resultType="long">
+            SELECT MAX(stall_id) FROM stall;
+        </selectKey>
+        <bind name="toilet_num" value="0"/>
+        <!-- 여기서 제일 중요한 건 화장실 인 칸의 stallId를 획득하는 것 -->
+        <!-- list의 인덱스 범위 기반으로 계산 -->
+        <foreach collection="list" item="item" index="idx">
+            <if test="item.content==1">
+                <bind name="toilet_num" value="@java.lang.Math@addExact(toilet_num, 1)"/>
+            </if>
+        </foreach>
+        <if test="toilet_num>0">
+            <foreach collection="list" item="item" index="itemIdx" separator=";">
+                <if test="item.content==1">
+                    INSERT INTO statistic (stall_id) VALUES (#{stallIndex}+#{itemIdx}+1)
+                </if>
+            </foreach>
+        </if>
+    </insert>
+
+
+
 </mapper>

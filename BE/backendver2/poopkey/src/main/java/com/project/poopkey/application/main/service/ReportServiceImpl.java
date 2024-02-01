@@ -5,6 +5,8 @@ import com.project.poopkey.application.main.dto.Report;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ReportServiceImpl implements  ReportService{
     @Autowired
@@ -13,5 +15,10 @@ public class ReportServiceImpl implements  ReportService{
     @Override
     public void addReport(Report report) {
         reportDao.insert(report);
+    }
+
+    @Override
+    public List<Report> findReportList(int masterId) {
+        return reportDao.selectList(masterId);
     }
 }

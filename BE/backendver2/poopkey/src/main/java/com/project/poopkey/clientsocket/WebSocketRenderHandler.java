@@ -45,6 +45,7 @@ public class WebSocketRenderHandler extends TextWebSocketHandler {
         sessions.add(session);
     }
 
+    // 관리자한테 입력 받은 신호도 실시간 랜더링에 반영될 수 있도록 추가한다.
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
@@ -67,7 +68,9 @@ public class WebSocketRenderHandler extends TextWebSocketHandler {
         }
     }
 
-    /**센서에서 입력 신호가 들어왔을 때 DB 트랜잭션이 끝나고 화면에 렌더링 되는 정보를 실시간으로 보내줌*/
+    /**센서에서 입력 신호가 들어왔을 때 DB 트랜잭션이 끝나고 화면에 렌더링 되는 정보를 실시간으로 보내줌
+     * 관리자가 바꾸는 입력도 포함된다.
+     * */
     public void sendMsgToClient() throws IOException {
         System.out.println("이거는 센서쪽 신호가 클라이언트 쪽으로 전달되는 현상");
         for( WebSocketSession ws : sessions){

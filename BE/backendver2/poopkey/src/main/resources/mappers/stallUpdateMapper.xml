@@ -5,6 +5,12 @@
 <mapper namespace="com.project.poopkey.application.main.dao.StallUpdateDao">
     <update id="update" parameterType="StallUpdate">
         UPDATE stall SET status = #{state}
+        <if test="state==3">
+            ,maintaining=1
+        </if>
+        <if test="state==0">
+            ,maintaining=0
+        </if>
         WHERE stall_id = #{stallId}
     </update>
 </mapper>

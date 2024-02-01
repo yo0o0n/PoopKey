@@ -7,5 +7,11 @@
         SELECT content
         FROM bookmark
         WHERE user_id = #{userId}
+        ORDER BY created_date DESC
     </select>
+    <insert id="insertOne" parameterType="Bookmark" useGeneratedKeys="true" keyProperty="bookmarkId">
+        INSERT INTO bookmark (content, user_id)
+        VALUES
+        (#{content}, #{userId})
+    </insert>
 </mapper>

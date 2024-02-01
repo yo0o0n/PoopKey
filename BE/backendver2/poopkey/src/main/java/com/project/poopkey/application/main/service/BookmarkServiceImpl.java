@@ -17,4 +17,9 @@ public class BookmarkServiceImpl implements BookmarkService{
     public List<Bookmark> findList(int userId) {
         return bookmarkDao.selectList(userId);
     }
+
+    @Override
+    public void addBookmark(Bookmark bookmark) {
+        bookmarkDao.insertOne(bookmark);
+    }
 }

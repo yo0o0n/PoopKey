@@ -7,4 +7,17 @@
         INSERT INTO report (report_id, stall_id, content, user_report_reason)
         VALUES (#{reportId}, #{stallId}, #{content}, #{userReportReason})
     </insert>
+    <select id="selectList" parameterType="int" resultType="Report">
+        SELECT *
+        FROM report rp
+        INNER JOIN stall s
+        ON s.stall_id = rp.stall_id
+        INNER JOIN restroom res
+        ON res.restroom_id = s.restroom_id
+        INNER JOIN building b
+        ON b.building_id = res.building_id
+        INNER JOIN master m
+        ON m.master_id = b.building_id
+        WHERE m.master_id = #{masterId}
+    </select>
 </mapper>

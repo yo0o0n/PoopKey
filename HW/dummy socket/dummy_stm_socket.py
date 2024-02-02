@@ -1,5 +1,6 @@
 import socket
 import os
+import threading
 ai_server_ip = '192.168.0.41'
 ai_server_port = 12345
 backend_server_ip = ""
@@ -35,7 +36,6 @@ def check_toilet_is_full():
     else :
         return False
 
-
 def send_congestion():
     global is_full
     global is_crowded
@@ -53,6 +53,7 @@ def send_congestion():
         before_congestion = congestion
 
 
+uart_IRC = threading.Thread(target=uart_interupt)
 
 Backend_socket.connect((backend_server_ip, backend_server_port))
 while True:

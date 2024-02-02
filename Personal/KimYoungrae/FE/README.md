@@ -2026,12 +2026,31 @@ if(!isLoading) {
 
 ## 이제 CSS다. Tail Wind
 
+아 저는 css 버리고 tailwind 씁니다 by 코딩애플 
+
+소개 영상을 들었다.
+
+대분류 클래스명
+- Typography
+- Spacing
+- Colors
+- Flex
+- grid
+- 반응형 조건문 (md:) 예시 : 윈도우 크기가 몇 이상일때만
+- pseudo class 조건문 (hover:) 예시 : 해당 태그 마우스 위에 올리면 글이 나타남
 
 
 
 
 
+근데 className에 하나하나 다 적기는 매우 귀찮음
 
+그래서 index.css에 
 
+@layer components {
+    .className {
+        @apply m-5 p-4 ... ;
+    }
+}
 
 

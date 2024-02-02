@@ -135,4 +135,100 @@ AT를 넣으니 OK가 나왔다.
 
 그리고 c는 어디서 나온거지??
 
-피곤하니까 내일해얏겠다.
+
+
+
+기존 코드의 문제점 부터 파악을 해보았다.
+
+```c
+uint8_t BBOX[50];
+uint8_t BBOX_count = 0;
+uint8_t sendGarbage;
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+	if(huart->Instance == USART1) {
+		HAL_UART_Receive_IT(huart, &BBOX[BBOX_count++], 1);
+
+
+	}
+}
+
+
+
+(중략)
+
+
+uint16_t len = strlen(BBOX);
+	  uint8_t len_str[15] = {0, };
+	  sprintf(len_str, "len=%u\r\n", len);
+	  HAL_UART_Transmit(&huart2, BBOX, len, 100);
+	  HAL_Delay(100);
+	  HAL_UART_Transmit(&huart2, len_str, strlength(len_str), 100);
+	  HAL_Delay(1000);
+
+```
+
+
+여기서 문제점은 내가 NULL을 제외하고 배열에 복사앴었다.
+
+또한 BBOX_count를 초기화 하지 않음
+
+다만 AT가 BBOX에 담기는 원인은 아직 파악하지 못함.
+
+
+<img src="./img/문제점01.PNG">
+
+사진을 보라. 길이가 10인 경우를 보자. 'A' 'T' '\r' '\n' '\r' '\n' 'O' 'K' 이다.   
+
+다른 특이사항으로는 배열을 넘기면 리시브가 받지 않음 (범위 내의 인데스만 참조할려는듯 함)
+
+
+또 다른 특이 사항도 있다.
+
+AT\r\n을 한번 보내면 OK가 안 온다. (len=5 무한 반복)
+
+그런데 
+
+```c
+// while(1) 밖임
+HAL_UART_Transmit(&huart1, send_AT, strlength(send_AT), 100);
+HAL_Delay(100);
+
+HAL_UART_Transmit(&huart1, send_AT, strlength(send_AT), 100);
+HAL_Delay(100);
+```
+하면 AT\r\nAT\r\n\r\nOK\r\n이다. 그런데 len=15로 뜬다. (저거 문자열 길이 14여야함)
+
+
+
+추가.
+
+동일한 코드로 다시 리셋해서 해봤는데 이번엔 
+
+
+<img src="./img/len20.PNG">
+
+왜 이런걸까??
+
+
+
+따라서 나는 다른 해결책을 생각했다.
+
+선형 큐를 받는거다.
+
+front rear 사이를 substr해와서 strstr("OK")를 찾는거다.
+
+시스템 시작
+
+
+
+
+
+
+알게된 점 1.
+HAL_UART_RxCpltCallback(&huart1); 대신
+
+HAL_UART_Receive_IT(&huart1, &buff, 1);을 하면 상관없다.
+
+
+의미 -> 콜백을 대기 하겠다!

@@ -195,12 +195,12 @@ void turnLED(GI led, uint8_t is_ON) { // bool 을 uint8_t로 바꾸었습니다.
 }
 
 
-void motor_start(MI motor) { // 우리는 모터가 두 개라서 두개를 스타트 해야합니다.
+void Init_Motor(TI motor) { // 우리는 모터가 두 개라서 두개를 스타트 해야합니다.
     HAL_TIM_PWM_Start(&(motor.htim), MI.channel);
 }
 
-void motor(MI motor, uint16_t degree) { // 근데 이거 조금 생각해봐야 할거에요. g
-    __HAL_TIM_SET_COMPARE(&(motor.htim), MI.channel, degree);
+void runMotor(TI motor, uint16_t degree) { // 근데 이거 조금 생각해봐야 할거에요. g
+    __HAL_TIM_SET_COMPARE(&(motor.htim), motor.channel, degree);
 
     // degree는 500이 0도 // 1000 이 90도 
     // main문을 하면서 다시 검증해볼 필요 있음 (MG996R이랑 SG90이랑 Duty 같음)

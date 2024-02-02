@@ -21,4 +21,19 @@ public class ReportServiceImpl implements  ReportService{
     public List<Report> findReportList(int masterId) {
         return reportDao.selectList(masterId);
     }
+
+    @Override
+    public void modifyReport(long reportId) {
+        reportDao.update(reportId);
+    }
+
+    @Override
+    public int findMasterId(Report report) {
+        return reportDao.selectMasterId(report);
+    }
+
+    @Override
+    public int convertReportIdToMasterId(long reportId) {
+        return reportDao.convertReportIdToMasterId(reportId);
+    }
 }

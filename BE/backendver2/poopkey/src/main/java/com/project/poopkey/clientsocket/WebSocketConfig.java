@@ -14,8 +14,10 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     private final WebSocketRenderHandler webSocketRenderHandler;
 
+    private final WebSocketReportHandler webSocketReportHandler;
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(webSocketRenderHandler, "/ws").setAllowedOrigins("*");
+        registry.addHandler(webSocketRenderHandler, "/ws").setAllowedOrigins("*")
+                .addHandler(webSocketReportHandler, "/ws/report").setAllowedOrigins("*");
     }
 }

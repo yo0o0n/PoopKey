@@ -42,7 +42,7 @@
 
 }
 
-input::placeholder {
+.container input::placeholder {
     color: #CAA286;
     font-size: smaller;
 }

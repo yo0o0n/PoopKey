@@ -1,25 +1,25 @@
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import {} from "../../util/API";
 import styles from "./StateChange.module.css";
+import { useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
+import { updateStatus } from "../../util/AdminAPI"; // 점검 변경하는 axios
 import StateItem from "./StateItem";
-import Moment from "moment";
 import "moment/locale/ko"; //Locale Setting
-const stateList = [
+const reportList = [
   {
     id: 0,
-    state_img: process.env.PUBLIC_URL + `/assets/emotion1.png`,
-    state_descript: "사용가능",
+    report_img: process.env.PUBLIC_URL + `/assets/emotion1.png`,
+    report_descript: "사용가능",
   },
   {
-    id: 1,
-    state_img: process.env.PUBLIC_URL + `/assets/emotion3.png`,
-    state_descript: "점검",
+    id: 3,
+    report_img: process.env.PUBLIC_URL + `/assets/emotion3.png`,
+    report_descript: "점검중",
   },
 ];
-const StateChange = () => {
+const ToiletReport = () => {
   // 화장실칸 id, 화장실 id, content (Null), 신고사유 (select 태그 이용 위생:0, 파손:1, 기타:2)
   const [state, setState] = useState(0);
+  const { buildingId, stallId, floor } = useParams();
   const navigate = useNavigate();
 
   const handleClickEmotion = (state) => {
@@ -27,25 +27,22 @@ const StateChange = () => {
     setState(state);
   };
 
-  const handleSubmit = () => {
-    const nowTime = Moment().format("YYYY-MM-DD HH:mm:ss");
+  const handleSubmit = async () => {
+    // const nowTime = Moment().format("YYYY-MM-DD HH:mm:ss");
     const data = {
-      //상태 변경하는 컨트롤러
-      reportId: 4,
-      stallId: 2, // 화장실칸ID
-      //createdDate: nowTime,
-      state: state, // 신고사유
+      stallId: stallId, // 화장실칸ID
+      state: state, // 변경 내용 (사용가능:0 , 점검중:3)
     };
-
-    //createReportData(data); //상태변경할 api
+    await updateStatus(data);
+    navigate(`/admin/toilet/${buildingId}`, { state: { floor: floor } });
   };
 
   return (
     <div>
       <section>
-        <h4>상태변경</h4>
-        <div className={styles.state_list_wrapper}>
-          {stateList.map((it) => (
+        <h4>신고사유</h4>
+        <div className={styles.report_list_wrapper}>
+          {reportList.map((it) => (
             <StateItem
               key={it.id}
               {...it}
@@ -57,11 +54,19 @@ const StateChange = () => {
         </div>
       </section>
       <section>
-        <button onClick={() => navigate(-1)}> 취소하기 </button>
-        <button onClick={handleSubmit}> 변경하기 </button>
+        <button
+          onClick={() =>
+            navigate(`/admin/toilet/${buildingId}`, {
+              state: { floor: floor },
+            })
+          }
+        >
+          취소하기
+        </button>
+        <button onClick={handleSubmit}> 제출하기 </button>
       </section>
     </div>
   );
 };
 
-export default StateChange;
+export default ToiletReport;

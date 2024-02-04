@@ -1,6 +1,6 @@
 // ToiletPage.js
 import styles from "./Home.module.css";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { getAllBuilding } from "../../util/API";
 import { useNavigate } from "react-router-dom";
 import LoginHeader from "../../layouts/LoginHeader";
@@ -8,6 +8,7 @@ import LoginHeader from "../../layouts/LoginHeader";
 const Home = () => {
   const [buildingData, setBuildingData] = useState();
   const navigate = useNavigate();
+
   useEffect(() => {
     const getBuildingData = async () => {
       try {

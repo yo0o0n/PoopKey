@@ -1,15 +1,22 @@
 import styles from "./StateItem.module.css";
-const StateItem = ({ id, state_img, state_descript, onClick, isSelected }) => {
+
+const StateItem = ({
+  id,
+  report_img,
+  report_descript,
+  onClick,
+  isSelected,
+}) => {
   return (
     <div
       onClick={() => onClick(id)}
       className={[
         styles.StateItem,
-        isSelected ? styles.StateItem_on_2 : styles.StateItem_off,
+        isSelected ? styles.StateItem_on_1 : styles.StateItem_off,
       ].join(" ")}
     >
-      <img src={state_img} />
-      <span>{state_descript}</span>
+      <img src={report_img} />
+      <span>{report_descript}</span>
     </div>
   );
 };

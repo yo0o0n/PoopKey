@@ -14,20 +14,49 @@
   height: 100%;
 }
 
-.floorList div {
+
+.floorItem {
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  align-content:  stretch;
+
+
   margin: auto;
-  width: 70px;
-  cursor: pointer;
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 50px;
+  width: 70%;
+  height: 10%;
+  margin: 10px;
+  border-radius: 15px;
   font-weight: 900;
+
+  cursor: pointer;
   color: white;
+
   text-align: center;
+  
+  
   border: 1px solid #C47D4A;
   background-color: #C47D4A;
+
 }
 
-.floorList div:hover {
+.floorItem :hover {
   background-color: #a5693e;
+}
+
+.floorCongestion {
+  display: flex;
+  flex-direction: row;
+  height: 25%;
+}
+
+.floorCongestion div{
+  height: 100%;
+  width: 20%;
+  margin: 0% 3%
+}
+
+.floorText {
+  margin-top: 7%;
 }

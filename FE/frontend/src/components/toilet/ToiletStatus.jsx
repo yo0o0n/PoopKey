@@ -9,20 +9,17 @@ const ToiletStatus = ({ selectFloor, restroomData }) => {
   const [restroomMen, setRestroomMen] = useState();
   const [restroomWomen, setRestroomWomen] = useState();
   useEffect(() => {
-    console.log("랜더링됨");
-
     if (restroomData !== undefined) {
       const men = restroomData.filter(
-        (restroom) => restroom.floor === selectFloor && restroom.gender === 0
+        (restroom) => restroom.floor == selectFloor && restroom.gender == 0
       );
 
       const women = restroomData.filter(
-        (restroom) => restroom.floor === selectFloor && restroom.gender === 1
+        (restroom) => restroom.floor == selectFloor && restroom.gender == 1
       );
-      setRestroomMen(men);
-      setRestroomWomen(women);
+      setRestroomMen([men[0]]);
+      setRestroomWomen([women[0]]);
     }
-    console.log(restroomData, "데이터 랜더링 잘됨");
   }, [selectFloor, restroomData]);
 
   return (
@@ -32,10 +29,18 @@ const ToiletStatus = ({ selectFloor, restroomData }) => {
       </div>
       <div className={styles.content}>
         <div className={styles.contentItem}>
-          <ToiletGrid restroom={restroomMen} />
+          {restroomMen && restroomMen[0] != undefined ? (
+            <ToiletGrid restroom={restroomMen} />
+          ) : (
+            <div> 화장실 없음 이미지</div>
+          )}
         </div>
         <div className={styles.contentItem}>
-          <ToiletGrid restroom={restroomWomen} />
+          {restroomWomen && restroomWomen[0] != undefined ? (
+            <ToiletGrid restroom={restroomWomen} />
+          ) : (
+            <div> 화장실 없음 이미지</div>
+          )}
         </div>
       </div>
       <div className={styles.footer}>

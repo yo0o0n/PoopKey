@@ -36,13 +36,14 @@ const ToiletReport = () => {
 
   const handleSubmit = () => {
     console.log(reason, content);
-    const nowTime = Moment().format("YYYY-MM-DD HH:mm:ss");
+    // const nowTime = Moment().format("YYYY-MM-DD HH:mm:ss");
     const data = {
       stallId: stallId, // 화장실칸ID
       content: content, // 신고내용
       userReportReason: reason, // 신고사유 (0: 위생, 1: 파손, 2: 기타)
     };
     createReportData(data);
+    alert("신고 접수가 완료 되었습니다.");
     navigate(`/toilet/${buildingId}`, { state: { floor: floor } });
   };
 

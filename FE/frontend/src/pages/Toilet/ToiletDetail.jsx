@@ -1,6 +1,4 @@
 import styles from "./ToiletDetail.module.css";
-import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
 import ToiletReport from "../../components/toilet/ToiletReport";
 
 const ToiletDetatil = () => {

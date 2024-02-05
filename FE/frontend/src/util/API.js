@@ -1,8 +1,6 @@
 import axios from "axios";
 
-// Connection to BE
 export const BASE_URL = "http://localhost:8080";
-
 
 //모든 건물 리스트
 export const getAllBuilding = async () => {
@@ -73,6 +71,7 @@ export const createReportData = (data) => {
         console.log("신고 제출 실패")
     })
 }
+
 
 // 회원가입
 export const createUser = (formData) => {

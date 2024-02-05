@@ -1,5 +1,15 @@
-.state_list_wrapper {
-    display: grid;
-    grid-template-columns: repeat(3, auto);
-    gap: 2%;
-  }
+.report_list_wrapper {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 2%;
+}
+
+.report_content{
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  border-radius: 10px;
+  background-color: #ececec;
+
+  padding: 10px;
+}

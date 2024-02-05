@@ -9,24 +9,18 @@ const ToiletGrid = ({ restroom }) => {
   const [cols, setCols] = useState(0); // 화장실의 col
   const [floor, setFloor] = useState(0);
   const navigate = useNavigate();
-  //화장실 데이터 행,열 데이터를 받는다. (axios) -> 온마운트 단계에서 받아와야 함
 
-  //화장실 좌표가 담긴 데이터 (axios) -> 온마운트 단계에서 받아와야 함
   //status: 사용가능:0 사용중:1 고장:2
   //content: 빈칸:0 화장실:1 입구:2
-
-  // aync, await를 통해서 데이터 먼저 가져오기!
   useEffect(() => {
-    console.log(restroom, "grid 컴포넌트에 전달");
     if (restroom !== undefined) {
       const getStallData = async () => {
         try {
           const response = await getStall(restroom[0].restroomId);
           setStallData(response);
-          setRows(response.height);
-          setCols(response.width);
-          setFloor(response.floor);
-          console.log(response.list[1].tissueStatus.length);
+          setRows(response.height); // 화장실 행
+          setCols(response.width); // 열
+          setFloor(response.floor); // 층
         } catch (e) {
           console.log(e);
         }
@@ -34,13 +28,12 @@ const ToiletGrid = ({ restroom }) => {
       getStallData();
     }
   }, [restroom]);
-  console.log(restroom, "화장실 정보!!!!!!");
 
+  //빈칸
   const itemStyle = {
-    //화장실내 전체 style
     boxSizing: "border-box",
-    width: `${100 / rows}%`,
-    height: `${100 / cols}%`,
+    width: `${Math.min(90 / rows, 90 / cols)}%`,
+    height: `${Math.min(90 / rows, 90 / cols)}%`,
     border: "3px solid #ccc",
     visibility: "hidden",
   };
@@ -48,8 +41,8 @@ const ToiletGrid = ({ restroom }) => {
   // 입구
   const enterStyle = {
     boxSizing: "border-box",
-    width: `${100 / rows}%`,
-    height: `${100 / cols}%`,
+    width: `${Math.min(90 / rows, 90 / cols)}%`,
+    height: `${Math.min(90 / rows, 90 / cols)}%`,
     border: "3px solid white",
     backgroundColor: "skyblue",
     borderRadius: "20px",
@@ -58,10 +51,10 @@ const ToiletGrid = ({ restroom }) => {
   // 화장실칸 사용가능 style
   const toiletItemStyle0 = {
     boxSizing: "border-box",
-    width: `${100 / rows}%`,
-    height: `${100 / cols}%`,
+    width: `${Math.min(90 / rows, 90 / cols)}%`,
+    height: `${Math.min(90 / rows, 90 / cols)}%`,
     border: "3px solid white",
-    backgroundColor: "green",
+    backgroundColor: "lightgreen",
     borderRadius: "20px",
     cursor: "pointer",
   };
@@ -69,10 +62,10 @@ const ToiletGrid = ({ restroom }) => {
   // 화장실칸 사용중 style
   const toiletItemStyle1 = {
     boxSizing: "border-box",
-    width: `${100 / rows}%`,
-    height: `${100 / cols}%`,
+    width: `${Math.min(90 / rows, 90 / cols)}%`,
+    height: `${Math.min(90 / rows, 90 / cols)}%`,
     border: "3px solid white",
-    backgroundColor: "red",
+    backgroundColor: "#FF6E6E",
     borderRadius: "20px",
     cursor: "pointer",
   };
@@ -80,10 +73,10 @@ const ToiletGrid = ({ restroom }) => {
   // 화장실칸 고장 style
   const toiletItemStyle2 = {
     boxSizing: "border-box",
-    width: `${100 / rows}%`,
-    height: `${100 / cols}%`,
+    width: `${Math.min(90 / rows, 90 / cols)}%`,
+    height: `${Math.min(90 / rows, 90 / cols)}%`,
     border: "3px solid white",
-    backgroundColor: "yellow",
+    backgroundColor: "#FFFA82",
     borderRadius: "25px",
     cursor: "pointer",
   };
@@ -91,8 +84,8 @@ const ToiletGrid = ({ restroom }) => {
   // 화장실칸 점검중 style
   const toiletItemStyle3 = {
     boxSizing: "border-box",
-    width: `${100 / rows}%`,
-    height: `${100 / cols}%`,
+    width: `${Math.min(90 / rows, 90 / cols)}%`,
+    height: `${Math.min(90 / rows, 90 / cols)}%`,
     border: "3px solid white",
     backgroundColor: "purple",
     borderRadius: "25px",
@@ -101,9 +94,9 @@ const ToiletGrid = ({ restroom }) => {
 
   // 화장실칸 id만 넘겨줘서 필요한 데이터는 거기 가서 받던지, 아님 여기서 객체 자체를 넘겨줘도 됨!
   const handleDetailClick = (data) => {
-    console.log(data.stallId);
+    console.log(data.stallId); // 화장칸의 pk번호
     navigate(
-      `/toiletDetail/${restroom[0].buildingId}/${data.stallId}/${floor}`
+      `/toiletDetail/${restroom[0].buildingId}/${floor}/${data.stallId}`
     );
   };
 

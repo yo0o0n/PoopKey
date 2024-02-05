@@ -6,19 +6,20 @@
 .content {
   width: 100%;
   height: 60%;
-  background-color: rebeccapurple;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
 }
 
 .contentItem {
-  background-color: aqua;
   border: solid black 1px;
   box-sizing: border-box;
-  /* margin: 10%; */
-  /* padding: 10%; */
-  width: 100%;
-  height: 100%;
+  border-radius: 25px;
+  width: 45%;
+  height: 90%;
 }
 
 .content h2 {

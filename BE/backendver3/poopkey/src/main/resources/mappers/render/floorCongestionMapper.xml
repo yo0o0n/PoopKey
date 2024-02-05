@@ -23,4 +23,5 @@
         WHERE building_id = #{buildingId}
         ORDER BY floor
     </select>
+
 </mapper>

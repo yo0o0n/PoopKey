@@ -29,7 +29,6 @@
         <result property="col" column="col"/>
         <result property="detailURL" column="detailURL"/>
     </resultMap>
-<!--    public RestroomRender selectOne(int restroomId);-->
     <select id="selectOne" parameterType="int" resultMap="restroomRenderMap">
         SELECT r.restroom_id AS restroomId,
         r.gender AS gender,
@@ -70,5 +69,10 @@
         ON i.stall_id = s.stall_id
         WHERE r.building_id = #{buildingId}
         AND r.floor = #{floor}
+    </select>
+    <select id="findRestroomId" parameterType="long" resultType="int">
+        SELECT DISTINCT restroom_id AS restroomId
+        FROM stall
+        WHERE stall_id = #{stallId}
     </select>
 </mapper>

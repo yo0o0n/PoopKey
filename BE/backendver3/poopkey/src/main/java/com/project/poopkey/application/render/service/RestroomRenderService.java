@@ -7,4 +7,6 @@ import java.util.List;
 public interface RestroomRenderService {
     RestroomRender findRestroomRender(int restroomId);
     List<RestroomRender> findRestroomRenderList(int buildingId, int floor);
+
+    RestroomRender findRestroomRenderByStallId(long stallId);
 }

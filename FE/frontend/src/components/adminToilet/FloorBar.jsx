@@ -42,6 +42,7 @@ const FloorBar = ({
       const data = {
         buildingId: 1,
         restroomId: 1,
+        masterId: 1,
       };
       const jsonData = JSON.stringify(data);
 

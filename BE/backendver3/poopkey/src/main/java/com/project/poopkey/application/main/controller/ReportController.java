@@ -27,8 +27,8 @@ public class ReportController {
     @Operation(summary = "신고내용 작성", description = "사용자가 신고를 작성하면 DB에 내용이 들어가고 " +
             "관리자에게 실시간으로 신고 리스트가 전달된다.")
     public ResponseEntity<Report> reportAdd(@RequestBody Report report) throws IOException {
-        int masterId = reportService.findMasterId(report);
         reportService.addReport(report);
+        int masterId = reportService.findMasterId(report);
         System.out.println(masterId+"이게 찍히는 게 굉장히 중요");
         webSocketReportHandler.sendListToMaster(masterId);
         return new ResponseEntity<Report>(report, HttpStatus.CREATED);

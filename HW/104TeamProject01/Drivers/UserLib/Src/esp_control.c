@@ -222,8 +222,16 @@ void EspResponseCheck() {
 			printf("%c", data);
 #endif	
 			if((char)data == '+'){
-				if(strncmp(&Rx_buffer[Rx_Head], "IPD", 3) == 0){
-					printf("%s\r\n", &Rx_buffer[Rx_Head+3]);
+				printf("find + \r\n");
+				if(strncmp(&Rx_buffer[Rx_Tail], "IPD", 3) == 0){
+					uint8_t received_len = Rx_buffer[Rx_Tail+4]-'0';
+					for(int i = 0; i < received_len; k++){
+						str[i] = Rx_buffer[Rx_Tail+6 + i];
+					}
+					str[received_len] = '\0';
+					printf("received msg : %s\r\n", str);
+					Rx_Head = 0;
+					Rx_Tail = 0;					
 				}
 				else
 					continue;

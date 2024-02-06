@@ -28,8 +28,11 @@ void WriteBuffer(uint8_t buff){
 }
 
 uint8_t ReadBuffer(){
-	if(Rx_Tail == Rx_Head)
+	if(Rx_Tail == Rx_Head){
+		Rx_Head = 0;
+		Rx_Tail = 0;
 		return 0;
+	}		
 	uint8_t data = Rx_buffer[Rx_Tail];
 	Rx_Tail = (Rx_Tail + 1) % UART_RX_BUFFER_SIZE;
 	return data;
@@ -211,10 +214,21 @@ void setInterrupt() {
 }
 
 void EspResponseCheck() {
+	uint8_t str[128] = {0, };
 	while(1) {
 		uint8_t data = ReadBuffer();
-		if(data != 0)
+		if(data != 0){
+#if DEBUG
 			printf("%c", data);
+#endif	
+			if((char)data == '+'){
+				if(strncmp(&Rx_buffer[Rx_Head], "IPD", 3) == 0){
+					printf("%s\r\n", &Rx_buffer[Rx_Head+3]);
+				}
+				else
+					continue;
+			}
+		}
 		else
 			return;
 	}

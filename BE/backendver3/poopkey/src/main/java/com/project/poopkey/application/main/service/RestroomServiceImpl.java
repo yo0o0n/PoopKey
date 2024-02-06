@@ -36,4 +36,10 @@ public class RestroomServiceImpl implements RestroomService{
         statisticDao.insertOne(restroomInfoInsert);
         stallInfoInsertDao.insertOne(restroomInfoInsert); // 논리적으로 가장 나중에 나와야
     }
+
+    @Transactional
+    @Override
+    public void modifyRestroomClean(int restroomId) {
+        restroomDao.updateRestroomClean(restroomId);
+    }
 }

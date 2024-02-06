@@ -12,4 +12,9 @@
         INSERT INTO restroom (building_id, floor, gender, height, width)
         VALUES (#{buildingId}, #{floor}, #{gender}, #{height}, #{width})
     </insert>
+    <update id="updateRestroomClean" parameterType="int">
+        UPDATE restroom
+        SET cleaning=ABS(cleaning-1), last_cleaning_time=CURRENT_TIMESTAMP
+        WHERE restroom_id = #{restroomId}
+    </update>
 </mapper>

@@ -9,4 +9,6 @@ public interface RestroomService {
     List<Restroom> findRestroomList(int buildingId);
 
     void addRestroom(RestroomInfoInsert restroomInfoInsert);
+
+    void modifyRestroomClean(int restroomId);
 }

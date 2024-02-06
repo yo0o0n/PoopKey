@@ -11,4 +11,4 @@
 ../Drivers/UserLib/Src/esp_control.c:198:6:HAL_UART_RxCpltCallback	16	static
 ../Drivers/UserLib/Src/esp_control.c:209:6:setInterrupt	8	static
 ../Drivers/UserLib/Src/esp_control.c:213:6:EspResponseCheck	16	static
-../Drivers/UserLib/Src/esp_control.c:219:6:EspSetting	8	static
+../Drivers/UserLib/Src/esp_control.c:223:6:EspSetting	8	static

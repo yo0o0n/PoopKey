@@ -211,9 +211,13 @@ void setInterrupt() {
 }
 
 void EspResponseCheck() {
-	uint8_t data = ReadBuffer();
-	if(data != 0)
-		printf("%c", data);
+	while(1) {
+		uint8_t data = ReadBuffer();
+		if(data != 0)
+			printf("%c", data);
+		else
+			return;
+	}
 }
 
 void EspSetting() {

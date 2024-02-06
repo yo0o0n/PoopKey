@@ -28,6 +28,7 @@
 #include"module_control.h"
 #include<stdio.h>
 #include<string.h>
+#include<stdlib.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -161,6 +162,7 @@ int main(void)
 	HAL_Delay(100);
 
 	WifiAccess();
+
 	HAL_Delay(5000);
 
 
@@ -173,6 +175,10 @@ int main(void)
 	SendData(strlen((char *)"ABCDEFG\r\n"), 0, 0, (uint8_t *)"ABCDEFG\r\n");
 
 	uint8_t checkArr[1024];
+
+	HAL_Delay(5000);
+
+	EspResponseCheck();
   while (1)
   {
     /* USER CODE END WHILE */
@@ -210,31 +216,51 @@ int main(void)
 	  memset(checkArr, 0, sizeof(checkArr));
 	  uint8_t data = ReadBuffer();
 	  uint16_t CheckArr_count = 0;
-
+	  uint8_t msgSize = 0;
 	  if(data == '+') {
+		  printf("+ get in \r\n");
 		  for(uint8_t i = 0; i < 4; i++) {
 			  data = ReadBuffer();
 			  checkArr[CheckArr_count++] = data;
 		  }
+		  printf("%s\r\n", checkArr);
+
+
 
 		  if(strstr(checkArr, "IPD,") != 0) { // 찾음
-			  ;
-		  }
+			  printf("found IPD\r\n");
+
+			  memset(checkArr, 0, sizeof(checkArr));
+			  CheckArr_count = 0;
+
+			  do {
+				  data = ReadBuffer();
+				  checkArr[CheckArr_count++] = data;
+			  }while(data >= '0' && data <= '9');
+		  } // 마지막으로 숫자가 아닌걸 하나 받음
+
+		  printf("%s\r\n", checkArr);
+		  msgSize = atoi(checkArr);
+
+		  memset(checkArr, 0, sizeof(checkArr));
+		  CheckArr_count = 0;
 
 
-
-		  do{
+		  for(uint8_t i = 0; i < msgSize; i++) {
 			  data = ReadBuffer();
 			  checkArr[CheckArr_count++] = data;
-		  }while(data != 0);
-
-		  if(strstr(checkArr, "+IPD") != 0) {
-			  printf("%s\r\n", checkArr);
 		  }
+
+		  printf("%s\r\n", checkArr);
+
 	  }
 
+//	  HAL_Delay(5000);
 
-	  printf("\r\n");
+//	  HAL_Delay(5000);
+//	  SendData(strlen((char *)"ABCDEFG\r\n"), 0, 0, (uint8_t *)"ABCDEFG\r\n");
+
+//	  printf("\r\n");
 
 //	  uint8_t data = ReadBuffer();
 //	  	if(data != 0)

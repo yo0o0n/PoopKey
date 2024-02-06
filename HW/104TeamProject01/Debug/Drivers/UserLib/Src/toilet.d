@@ -27,7 +27,9 @@ Drivers/UserLib/Src/toilet.o: ../Drivers/UserLib/Src/toilet.c \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h \
  ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h \
  C:/Users/SSAFY/STM32CubeIDE/workspace_1.14.0/104TeamProject01/Drivers/UserLib/Inc/module_control.h \
- ../Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h
+ C:/Users/SSAFY/STM32CubeIDE/workspace_1.14.0/104TeamProject01/Drivers/UserLib/Inc/global_define.h \
+ ../Core/Inc/gpio.h ../Core/Inc/main.h ../Core/Inc/i2c.h \
+ ../Core/Inc/tim.h
 C:/Users/SSAFY/STM32CubeIDE/workspace_1.14.0/104TeamProject01/Drivers/UserLib/Inc/toilet.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h:
 ../Core/Inc/stm32f1xx_hal_conf.h:
@@ -56,4 +58,8 @@ C:/Users/SSAFY/STM32CubeIDE/workspace_1.14.0/104TeamProject01/Drivers/UserLib/In
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim_ex.h:
 ../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h:
 C:/Users/SSAFY/STM32CubeIDE/workspace_1.14.0/104TeamProject01/Drivers/UserLib/Inc/module_control.h:
-../Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xb.h:
+C:/Users/SSAFY/STM32CubeIDE/workspace_1.14.0/104TeamProject01/Drivers/UserLib/Inc/global_define.h:
+../Core/Inc/gpio.h:
+../Core/Inc/main.h:
+../Core/Inc/i2c.h:
+../Core/Inc/tim.h:

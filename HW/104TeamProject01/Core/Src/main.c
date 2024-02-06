@@ -18,14 +18,12 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "i2c.h"
-#include "tim.h"
 #include "usart.h"
-#include "gpio.h"
+
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-//#include"toilet.h"
+#include"toilet.h"
 //#include"esp_control.h"
 #include"module_control.h"
 #include<stdio.h>
@@ -89,11 +87,17 @@ int __io_getchar(void)
 
 
 
+// kyr Init 2 for full occupied test
+volatile uint8_t OCCUPIED_STALL_CNT = 2;
+// kyr add before occupied stall  and kyr Init 2 for full occupied test
+uint8_t BEFORE_OCCUPIED_STALL_CNT;
 
-uint8_t OCCUPIED_STALL_CNT;
+// --------------------------------
 
+// -----------------------------------
 
-
+extern uint16_t Rx_Head;
+extern uint16_t Rx_Tail;
 
 
 /* USER CODE END 0 */
@@ -104,69 +108,185 @@ uint8_t OCCUPIED_STALL_CNT;
   */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
+	/* USER CODE BEGIN 1 */
 	setvbuf(stdin, NULL, _IONBF, 0);
 	setvbuf(stdout, NULL, _IONBF, 0);
 
-  /* USER CODE END 1 */
 
-  /* MCU Configuration--------------------------------------------------------*/
+	/* USER CODE END 1 */
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+	/* MCU Configuration--------------------------------------------------------*/
 
-  /* USER CODE BEGIN Init */
+	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+	HAL_Init();
 
-  /* USER CODE END Init */
+	/* USER CODE BEGIN Init */
 
-  /* Configure the system clock */
-  SystemClock_Config();
+	/* USER CODE END Init */
 
-  /* USER CODE BEGIN SysInit */
+	/* Configure the system clock */
+	SystemClock_Config();
 
-  /* USER CODE END SysInit */
+	/* USER CODE BEGIN SysInit */
 
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_USART2_UART_Init();
-  MX_TIM1_Init();
-  MX_TIM2_Init();
-  MX_USART1_UART_Init();
-  MX_I2C1_Init();
-  /* USER CODE BEGIN 2 */
-//  typedef struct GPIOInfo {
-//      GPIO_TypeDef* Port;
-//      uint16_t PIN;
-//      uint16_t PIN_out;
-//  }GI;
-//
-//
-//  typedef struct TIMInfo {
-//      TIM_HandleTypeDef htim;
-//      uint32_t channel; // 이거 원래 #define문이라 이슈 가능성 있어요.
-//  }TI;
-//
-//  typedef struct I2CInfo {
-//      I2C_HandleTypeDef hi2c1;
-//  }II;
+	/* USER CODE END SysInit */
+
+	/* Initialize all configured peripherals */
+	MX_GPIO_Init();
+	MX_USART2_UART_Init();
+	MX_TIM1_Init();
+	MX_TIM2_Init();
+	MX_USART1_UART_Init();
+	MX_I2C1_Init();
+	/* USER CODE BEGIN 2 */
+
+	TS stall;
+	initStalls(&stall);
+
+	/* USER CODE END 2 */
+
+	/* Infinite loop */
+	/* USER CODE BEGIN WHILE */
+	HAL_TIM_Base_Init(&htim1);         // ?��?��?��?��?�� ?��?��
+	__HAL_TIM_SET_COUNTER(&htim1, 0);  // ?��?��?��?��?�� ?��?��
+	HAL_TIM_Base_Start_IT(&htim1);     // ?��?��?��?��?�� ?��?��
 
 
-  GI magnetic = {
-		  GPIOB,GPIO_PIN_4
-  };
+	printf("start STM32F103Rb\r\n");
 
-  /* USER CODE END 2 */
+  // Wait for Interrupt
+	setInterrupt();
 
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
+	SendAT();
+	HAL_Delay(100);
+
+	WifiAccess();
+	HAL_Delay(5000);
+
+
+	RaspiTCPSocketAccess();
+
+	HAL_Delay(100);
+
+	// SendData(uint8_t size, uint8_t is_MUX, uint8_t target, uint8_t * data)
+
+	SendData(strlen((char *)"ABCDEFG\r\n"), 0, 0, (uint8_t *)"ABCDEFG\r\n");
+
+	uint8_t checkArr[1024];
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  uint8_t ret = sensing(magnetic);
-	  printf("%u\r\n", ret);
 
+
+//	  printf("Second : %5lu\t", (HAL_GetTick() / 1000));
+//	  checkMagnetic(&stall);
+//	  checkTissueAmount(&stall);
+//	  checkWaterTissue(&stall);
+//	  untactIR(&stall);
+//	  flushToilet(&stall);
+//
+//	  // ----- kyr 02 06 START --------
+//
+//	  checkBroken(&stall);
+//	  printf("how many use stalls: %u\r\n", OCCUPIED_STALL_CNT);
+//	  if(OCCUPIED_STALL_CNT == MAX_STALL && BEFORE_OCCUPIED_STALL_CNT < MAX_STALL)
+//		  //SEND(Raspi);
+//		  printf("STALL be MAX \r\n");
+//	  else if(BEFORE_OCCUPIED_STALL_CNT == MAX_STALL)
+//		  //SEND(Raspi);
+//		  printf("STALL still MAX \r\n");
+//	  else if(OCCUPIED_STALL_CNT < MAX_STALL) // add kyr
+//		  printf("STALL Empty \r\n");
+//	  BEFORE_OCCUPIED_STALL_CNT = OCCUPIED_STALL_CNT;
+
+
+
+	  // TODO 라즈베리파이에게 받아오기
+	  // 1. 쌓이는게 읽는거 보다 훨씬 빠르다.
+	  // 2. 쌓이는게 더 느리다. 이 경우 IPD에서 IP까지만 오는 경우가 생길거다.
+
+	  memset(checkArr, 0, sizeof(checkArr));
+	  uint8_t data = ReadBuffer();
+	  uint16_t CheckArr_count = 0;
+
+	  if(data == '+') {
+		  for(uint8_t i = 0; i < 4; i++) {
+			  data = ReadBuffer();
+			  checkArr[CheckArr_count++] = data;
+		  }
+
+		  if(strstr(checkArr, "IPD,") != 0) { // 찾음
+			  ;
+		  }
+
+
+
+		  do{
+			  data = ReadBuffer();
+			  checkArr[CheckArr_count++] = data;
+		  }while(data != 0);
+
+		  if(strstr(checkArr, "+IPD") != 0) {
+			  printf("%s\r\n", checkArr);
+		  }
+	  }
+
+
+	  printf("\r\n");
+
+//	  uint8_t data = ReadBuffer();
+//	  	if(data != 0)
+//	  		printf("%c", data);
+//
+	  // ----- kyr 02 06 END -------------
+
+//	  uint8_t mag = sensing(magnetic);
+//	  float water_dist = getDistance(water_sonar);
+//	  HAL_Delay(100);
+//	  float tissue_dist = getDistance(tissue_sonar);
+//	  float temperature = getIRTemperature(ir); // hand is 40C
+//	  uint8_t is_horizon = sensing(tilt);
+//	  float dung_dist = getDistance(cover_sonar);
+//
+//	  turnLED(RED, 1);
+//	  turnLED(YELLOW, 1);
+//	  turnLED(GREEN, 1);
+//
+//
+//	  runMotor(servo_water_tissue, 500);
+//	  HAL_Delay(1000);
+//
+//	  runMotor(servo_water_tissue, 1000);
+//	  HAL_Delay(1000);
+//
+//
+//	  runMotor(servo_cover, 200);
+//	  HAL_Delay(1000);
+//
+//
+//	  runMotor(servo_cover, 800);
+//	  HAL_Delay(1000);
+//
+//
+//	  runMotor(sonar_cove_servo, 200);
+//	  HAL_Delay(1000);
+//
+//
+//	  runMotor(sonar_cove_servo, 800);
+//	  HAL_Delay(1000);
+//
+//
+//	  turnLED(RED, 0);
+//	  turnLED(YELLOW, 0);
+//	  turnLED(GREEN, 0);
+
+//	  printf("magnetic: %-5u, water_tissue_dist: %10.3f\r\n", mag, water_dist);
+//	  printf("magnetic: %-5u, water_tissue_dist: %10.3f, tissue_dist: %10.3f\r\n", mag, water_dist, tissue_dist);
+//	  printf("magnetic: %-5u, water_tissue_dist: %10.3f, tissue_dist: %10.3f, temperature: %10.3f\r\n", mag, water_dist, tissue_dist, temperature);
+//	  printf("magnetic: %-5u, water_tissue_dist: %10.3f, tissue_dist: %10.3f, temperature: %10.3f tilt: %3u\r\n", mag, water_dist, tissue_dist, temperature, is_horizon);
+//	  printf("magnetic: %-5u, water_tissue_dist: %10.3f, tissue_dist: %10.3f, temperature: %10.3f tilt: %3u, dung: %10.3f\r\n", mag, water_dist, tissue_dist, temperature, is_horizon, dung_dist);
 	  HAL_Delay(100);
   }
   /* USER CODE END 3 */

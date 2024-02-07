@@ -54,7 +54,7 @@ void checkMagnetic(TS* stall)
 
 
 #if DEBUG
-    printf("magnetic : %u ", current);
+    printf("magnetic: %u, ", current);
 #endif
 
 
@@ -77,7 +77,7 @@ void checkTissueAmount(TS* stall) {
         turnLED(stall->led_tissue, false);
     }
 #if DEBUG
-    printf("tissue dist: %.3f, percentage: %.3f ", current_dist, tissue_percentage);
+    printf("tissue dist: %.3f, percentage: %.3f, ", current_dist, tissue_percentage);
 #endif
 }
 
@@ -90,7 +90,7 @@ void checkWaterTissue(TS* stall)
         runMotor(stall->servo_water_tissue, MOTOR_WATER_TISSUE_BACK_ANGLE);
     }
 #if DEBUG
-    printf("water tissue dist: %.3f ", distance);
+    printf("water tissue dist: %.3f, ", distance);
 #endif
 }
 
@@ -108,7 +108,7 @@ void untactIR(TS* stall) {
         }
     }
 #if DEBUG
-	printf("IR : %.3f\t", ir_temperature);
+	printf("IR : %.3f, ", ir_temperature);
 #endif
 }
 
@@ -128,7 +128,7 @@ void flushToilet(TS* stall) {
         }
     }
 #if DEBUG
-    printf("stall.is_cover_down: %-3u, last_ir_time %lu, last_flush_time %lu, ", stall->is_cover_down, stall->last_ir_time, stall->last_flush_time);
+    printf("is_cover_down: %u, last_ir_time %lu, last_flush_time %lu, ", stall->is_cover_down, stall->last_ir_time, stall->last_flush_time);
 #endif
 }
 

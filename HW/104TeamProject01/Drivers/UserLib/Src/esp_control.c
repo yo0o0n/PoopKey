@@ -213,8 +213,7 @@ void setInterrupt() {
 	HAL_UART_Receive_IT(&huart1, &buff, 1);
 }
 
-void EspResponseCheck() {
-	uint8_t str[128] = {0, };
+uint8_t EspResponseCheck() {
 	while(1) {
 		uint8_t data = ReadBuffer();
 		if(data != 0){
@@ -222,23 +221,26 @@ void EspResponseCheck() {
 			printf("%c", data);
 #endif	
 			if((char)data == '+'){
-				printf("find + \r\n");
 				if(strncmp(&Rx_buffer[Rx_Tail], "IPD", 3) == 0){
-					uint8_t received_len = Rx_buffer[Rx_Tail+4]-'0';
-					for(int i = 0; i < received_len; k++){
-						str[i] = Rx_buffer[Rx_Tail+6 + i];
-					}
-					str[received_len] = '\0';
-					printf("received msg : %s\r\n", str);
+					uint8_t received_data = Rx_buffer[Rx_Tail+6] - '0';
 					Rx_Head = 0;
-					Rx_Tail = 0;					
+					Rx_Tail = 0;
+					return received_data;
+//					uint8_t str[128] = {0, };
+//					uint8_t received_len = Rx_buffer[Rx_Tail+4]-'0';
+//					for(int i = 0; i < received_len; i++){
+//						str[i] = Rx_buffer[Rx_Tail+6 + i];
+//					}
+//					str[received_len] = '\0';
+//					printf("received msg : %s\r\n", str);
+//					memset(str,0,sizeof(str));
 				}
 				else
 					continue;
 			}
 		}
 		else
-			return;
+			return 0;
 	}
 }
 

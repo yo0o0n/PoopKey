@@ -9,14 +9,27 @@
 // kyr add stdio for printf warning
 #include <stdio.h>
 
+const uint8_t TOILET_ID = 1;
+
+const uint8_t SATURATION = 2;
+const uint8_t CONFUSION = 1;
+const uint8_t NORMAL = 0;
 
 extern volatile uint8_t OCCUPIED_STALL_CNT;
+extern volatile uint8_t res_from_raspi;
 
 // sign
-const uint8_t *MSG_OCCUPIED = "ESP:9\r\n";
-const uint8_t *MSG_FREE = "ESP:8\r\n";
-const uint8_t *MSG_TISSUE_EMPTY = "ESP:7\r\n";
-const uint8_t *MSG_BROKEN = "ESP:6\r\n";
+uint8_t MsgBox[MsgSize];
+
+//const uint8_t MSG_OCCUPIED[MsgSize];
+//
+//const uint8_t MSG_FREE[MsgSize];
+//
+//const uint8_t MSG_TISSUE_EMPTY[MsgSize];
+//
+//const uint8_t MSG_BROKEN[MsgSize];
+
+
 
 
 
@@ -35,7 +48,9 @@ void checkMagnetic(TS* stall)
         else {
             OCCUPIED_STALL_CNT++;
             stall->is_occupied = true;
-            SendDataToRasp(strlen( (char *)MSG_OCCUPIED ), MSG_OCCUPIED);
+            memset(MsgBox, 0, sizeof(MsgBox));
+            sprintf(MsgBox, "toiletOccupied,%u,\r\n", stall->toilet_key);
+            SendDataToRasp(strlen((char *)MsgBox), MsgBox);
         }
     }
     else {
@@ -45,7 +60,9 @@ void checkMagnetic(TS* stall)
                 	OCCUPIED_STALL_CNT--;
                 	stall->is_occupied = false;
                     stall->last_open_time = 0;
-                    SendDataToRasp(strlen( (char *)MSG_FREE ), MSG_FREE);
+                    memset(MsgBox, 0, sizeof(MsgBox));
+                    sprintf(MsgBox, "toiletVacant,%u,\r\n", stall->toilet_key);
+                    SendDataToRasp(strlen((char *)MsgBox), MsgBox);
                 }
             }
             else {
@@ -71,12 +88,19 @@ void checkTissueAmount(TS* stall) {
     float tissue_percentage = (MIN_TISSUE_DISTANCE - current_dist) / MAX_TISSUE_RADIUS * 100;
     if(tissue_percentage <= 0.0) tissue_percentage = 0.0f;
 
+    // float -> uint8_t
+    uint8_t percentage = tissue_percentage;
+    memset(MsgBox, 0, sizeof(MsgBox));
+    sprintf(MsgBox, "tissueStatus,%u,%u,\r\n", percentage,stall->toilet_key);
+    SendDataToRasp(strlen((char *)MsgBox), MsgBox);
+
     if (HAL_GetTick() - stall->last_tissue_time > PERIOD_CHECK_TISSUE) { // 1분 == 60만 Tick
         stall->last_tissue_time = HAL_GetTick();
     }
     if (tissue_percentage <= THRESHOLD_MIN_TISSUE_PERCENTAGE) {
-    	SendDataToRasp(strlen( (char *)MSG_TISSUE_EMPTY ), MSG_TISSUE_EMPTY);
-        turnLED(stall->led_tissue, true);
+    		stall->before_tissue_empty = 1;
+
+    	turnLED(stall->led_tissue, true);
     }
     else {
         turnLED(stall->led_tissue, false);
@@ -141,14 +165,19 @@ void checkBroken(TS *stall) {
     if (stall->is_cover_down && stall->last_flush_time != 0) {
         if (WAIT_TOILET_FLUSH_DOWN <= HAL_GetTick() - stall->last_flush_time && stall->is_checked_broken == false) { //10s == 10000ms
 //            printf("open cover")
-        	stall->is_checked_broken = true; // false로 초기화 하는 부분 어딨지?
+        	stall->is_checked_broken = true;
             runMotor(stall->servo_sonar_cover, MOTOR_CHECK_BROKEN_COVER_PUSH_ANGLE);
             HAL_Delay(MOTOR_DELAY);
             float toilet_water_dist = getDistance(stall->sonar_toilet_broken);
             runMotor(stall->servo_sonar_cover, MOTOR_CHECK_BROKEN_COVER_BACK_ANGLE);
             if (toilet_water_dist < NORMAL_TOILET_WATER_DISTANCE) {
                 turnLED(stall->led_broken, true);
-                SendDataToRasp(strlen( (char *)MSG_BROKEN ), MSG_BROKEN);
+
+                memset(MsgBox, 0, sizeof(MsgBox));
+                sprintf(MsgBox, "toiletBreak,%u,\r\n", stall->toilet_key);
+				SendDataToRasp(strlen((char *)MsgBox), MsgBox);
+
+
             }
             else {
                 turnLED(stall->led_broken, false);
@@ -156,12 +185,38 @@ void checkBroken(TS *stall) {
         }
     }
 #if DEBUG
-    printf("Is broken LED ON: %u\r\n",HAL_GPIO_ReadPin(stall->led_broken.Port, stall->led_broken.PIN_out));
+    printf("Is broken LED ON: %u, ",HAL_GPIO_ReadPin(stall->led_broken.Port, stall->led_broken.PIN_out));
 #endif
 }
 
+void checkCongest(TS * stall) {
+	memset(MsgBox, 0, sizeof(MsgBox));
+	uint8_t debugging;
+	if(res_from_raspi) { // 2
+		debugging = SATURATION;
+		sprintf(MsgBox,"congestion,%u,%u,", SATURATION, TOILET_ID); // 0 is toilet ID not toilet's cell ID
+	}
+	else if(OCCUPIED_STALL_CNT == MAX_STALL) { // 1
+		debugging = CONFUSION;
+		sprintf(MsgBox,"congestion,%u,%u,", CONFUSION, TOILET_ID);
+	}
+	else if(OCCUPIED_STALL_CNT < MAX_STALL) { // 0
+		debugging = NORMAL;
+		sprintf(MsgBox,"congestion,%u,%u,", NORMAL, TOILET_ID);
+	}
 
+	SendDataToRasp(strlen((char *)MsgBox), MsgBox);
+#if DEBUG
+    printf("Congestion: %u\r\n", debugging);
+#endif
+
+}
 void initStalls(TS * stall) {
+	//
+	stall->toilet_key = 1;
+	stall->before_tissue_empty = 0;
+
+
 	stall->is_occupied = false;
 	stall->last_open_time = 0;
 	stall->tissue_amount = 100;

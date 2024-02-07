@@ -92,6 +92,9 @@ int __io_getchar(void)
 volatile uint8_t OCCUPIED_STALL_CNT = 2;
 // kyr add before occupied stall  and kyr Init 2 for full occupied test
 uint8_t BEFORE_OCCUPIED_STALL_CNT;
+volatile uint8_t res_from_raspi;
+
+
 
 // --------------------------------
 
@@ -190,17 +193,23 @@ int main(void)
 	  untactIR(&stall);
 	  flushToilet(&stall);
 	  checkBroken(&stall);
+	  checkCongest(&stall);
+
+	  // receive congestion include outside
+	  // 0 is no stand
+	  // 1 is yes stand
+//	  res_from_raspi =  EspResponseCheck();
+	  res_from_raspi = 1;
 
 
-	  uint8_t res_from_raspi =  EspResponseCheck();
-	  if(res_from_raspi == 1){
-		  // HONJOB
-//		  SendData(strlen((char *)"HONJOB\r\n"), 0, 0, "HONJOB\r\n");
-	  }
-	  else if(res_from_raspi == 2){
-		  // POHWA
-//		  SendData(strlen((char *)"POHWA\r\n"), 0, 0, "POHWA\r\n");
-	  }
+//	  if(res_from_raspi == 1){
+//		  // HONJOB
+////		  SendData(strlen((char *)"HONJOB\r\n"), 0, 0, "HONJOB\r\n");
+//	  }
+//	  else if(res_from_raspi == 2){
+//		  // POHWA
+////		  SendData(strlen((char *)"POHWA\r\n"), 0, 0, "POHWA\r\n");
+//	  }
   	  HAL_Delay(100);
 
 //  	  printf("\r\n");

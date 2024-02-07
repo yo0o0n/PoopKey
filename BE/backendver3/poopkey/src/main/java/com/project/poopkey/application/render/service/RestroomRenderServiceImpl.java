@@ -23,7 +23,6 @@ public class RestroomRenderServiceImpl implements RestroomRenderService{
         return restroomRenderDao.selectList(buildingId, floor);
     }
 
-    /** 추가 구현한 API 1*/
     @Override
     public RestroomRender findRestroomRenderByStallId(long stallId) {
         int restroomId = restroomRenderDao.findRestroomId(stallId);

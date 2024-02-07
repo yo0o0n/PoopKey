@@ -18,7 +18,7 @@ import java.util.List;
 public class SignResponse {
     private String password;
     private String email;
-    private List<String> roles = new ArrayList<>();
+    private String role;
     private String token;
 
     public SignResponse(Member member) {

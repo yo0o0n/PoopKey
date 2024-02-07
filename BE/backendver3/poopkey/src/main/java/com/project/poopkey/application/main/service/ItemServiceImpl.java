@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ItemServiceImpl implements ItemService {
 
-    @Autowired // 수정하기
+    @Autowired
     private ItemSensorUpdateDao itemDao;
 
     @Override

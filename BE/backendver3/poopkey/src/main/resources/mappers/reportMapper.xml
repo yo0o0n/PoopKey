@@ -37,7 +37,7 @@
         ON rep.stall_id = s.stall_id
         WHERE rep.stall_id = #{stallId}
     </select>
-    <!-- reportId는 고유값 DISTINCT 필요 없어 -->
+    <!-- reportId는 고유값 DISTINCT 필요 없음 -->
     <select id="convertReportIdToMasterId" parameterType="long" resultType="int">
         SELECT DISTINCT m.master_id AS masterId
         FROM master m

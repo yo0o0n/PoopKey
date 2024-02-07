@@ -14,6 +14,7 @@ const FloorBar = ({
   const [isUpdate, setIsUpdate] = useState();
   const webSocket = useRef(null);
   let floorFilter = 1;
+
   useEffect(() => {
     if (restroomData !== undefined) {
       const buildingId = restroomData[0].buildingId;
@@ -42,7 +43,6 @@ const FloorBar = ({
       const data = {
         buildingId: 1,
         restroomId: 1,
-        masterId: 1,
       };
       const jsonData = JSON.stringify(data);
 
@@ -64,7 +64,9 @@ const FloorBar = ({
     };
 
     return () => {
-      webSocket.current?.close();
+      if (webSocket.current.readyState === WebSocket.OPEN) {
+        webSocket.current?.close();
+      }
     };
   }, [selectFloor]);
 

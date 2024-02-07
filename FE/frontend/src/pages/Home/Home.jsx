@@ -22,9 +22,9 @@ const Home = () => {
     getBuildingData();
   }, []);
 
-  const handleBuildingClick = (buildingId) => {
+  const handleBuildingClick = (buildingId, buildingName) => {
     console.log(buildingId);
-    navigate(`/toilet/${buildingId}`);
+    navigate(`/toilet/${buildingId}?name=${buildingName}`);
   };
 
   return (
@@ -39,7 +39,10 @@ const Home = () => {
                 className={styles.building}
                 key={building.buildingId}
                 onClick={() => {
-                  handleBuildingClick(building.buildingId);
+                  handleBuildingClick(
+                    building.buildingId,
+                    building.buildingName
+                  );
                 }}
               >
                 {building.buildingName}

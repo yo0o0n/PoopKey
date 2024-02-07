@@ -3,7 +3,6 @@ import { useState } from "react";
 import { createReportData } from "../../util/API";
 import styles from "./ToiletReport.module.css";
 import ReportItem from "./ReportItem";
-import Moment from "moment";
 import "moment/locale/ko"; //Locale Setting
 const reportList = [
   {

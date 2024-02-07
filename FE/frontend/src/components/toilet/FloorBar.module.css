@@ -31,19 +31,14 @@
   font-weight: 900;
 
   cursor: pointer;
-  color: white;
+  color: black;
 
   text-align: center;
   
-  
-  border: 1px solid #C47D4A;
-  background-color: #C47D4A;
 
+  background-color: rgb(210, 210, 210);
 }
 
-.floorItem :hover {
-  background-color: #a5693e;
-}
 
 .floorCongestion {
   display: flex;

@@ -12,6 +12,9 @@ import LoginPage from "./pages/User/LoginPage";
 import ToiletAdminPage from "./pages/AdminToilet/ToiletAdminPage";
 import ToiletAdminDetatil from "./pages/AdminToilet/ToiletAdminDetail";
 import ToiletRegist from "./pages/AdminToilet/ToiletRegist";
+import ToiletStatistics from "./pages/AdminToilet/ToiletStatistics";
+import AdminHome from "./pages/Home/AdminHome";
+import ToiletMailBox from "./pages/AdminToilet/ToiletMailBox";
 
 
 const App = () => {
@@ -26,9 +29,12 @@ const App = () => {
           <Route path="/toilet/:buildingId" element={<ToiletPage />}></Route>
           <Route path="/toiletDetail/:buildingId/:floor/:stallId" element={<ToiletDetail/>}></Route>
 
+          <Route path="/admin/:buildingId" element={<AdminHome/>}></Route>
           <Route path="/admin/toilet/:buildingId" element={<ToiletAdminPage />}></Route>
           <Route path="/admin/toiletDetail/:buildingId/:floor/:stallId" element={<ToiletAdminDetatil/>}></Route>
           <Route path="/admin/toiletRegist/:buildingId" element={<ToiletRegist/>}></Route>
+          <Route path="/admin/toiletMailBox" element={<ToiletMailBox/>}></Route>
+          <Route path="/admin/toiletStatistics/:buildingId" element={<ToiletStatistics/>}></Route>
         </Routes>
       </BrowserRouter>
     </div>

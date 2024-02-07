@@ -158,21 +158,24 @@ int main(void)
   // Wait for Interrupt
 	setInterrupt();
 
-//	SendAT();
-//	HAL_Delay(100);
-//
-//	WifiAccess();
-//	HAL_Delay(5000);
-//
-//
-//	RaspiTCPSocketAccess();
-//	HAL_Delay(100);
+	SendAT();
+	HAL_Delay(100);
 
-	//SendData(strlen((char *)"ABCDEFG\r\n"), 0, 0, (uint8_t *)"ABCDEFG\r\n");
-
-	uint8_t checkArr[1024];
-
+	WifiAccess();
 	HAL_Delay(5000);
+
+
+	RaspiTCPSocketAccess();
+	HAL_Delay(100);
+
+	HAL_Delay(15000);
+
+	while(1){
+		uint8_t data = ReadBuffer();
+		if(data == 0) break;
+		printf("%c", data);
+		HAL_Delay(100);
+	}
 
 //	EspResponseCheck();
   while (1)
@@ -180,12 +183,15 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  printf("Time: %lu, ", HAL_GetTick() / 1000);
 	  checkMagnetic(&stall);
 	  checkTissueAmount(&stall);
 	  checkWaterTissue(&stall);
 	  untactIR(&stall);
 	  flushToilet(&stall);
 	  checkBroken(&stall);
+
+
 	  uint8_t res_from_raspi =  EspResponseCheck();
 	  if(res_from_raspi == 1){
 		  // HONJOB

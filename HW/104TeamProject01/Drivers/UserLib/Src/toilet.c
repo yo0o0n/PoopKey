@@ -11,7 +11,15 @@
 
 
 extern volatile uint8_t OCCUPIED_STALL_CNT;
-const uint8_t *ESP_MSG_OCCUPIED = "";
+
+// sign
+const uint8_t *MSG_OCCUPIED = "ESP:9\r\n";
+const uint8_t *MSG_FREE = "ESP:8\r\n";
+const uint8_t *MSG_TISSUE_EMPTY = "ESP:7\r\n";
+const uint8_t *MSG_BROKEN = "ESP:6\r\n";
+
+
+
 extern I2C_HandleTypeDef hi2c1;
 
 void checkMagnetic(TS* stall)
@@ -27,8 +35,7 @@ void checkMagnetic(TS* stall)
         else {
             OCCUPIED_STALL_CNT++;
             stall->is_occupied = true;
-//            sendESP(stall.is_occupied, ESP_MSG_OCCUPIED);
-//            SendData(strlen("stall occupied\r\n"), 1, 1, "stall occupied\r\n");
+            SendDataToRasp(strlen( (char *)MSG_OCCUPIED ), MSG_OCCUPIED);
         }
     }
     else {
@@ -38,8 +45,7 @@ void checkMagnetic(TS* stall)
                 	OCCUPIED_STALL_CNT--;
                 	stall->is_occupied = false;
                     stall->last_open_time = 0;
-                    //sendESP(stall.is_occupied, ESP_MSG_OCCUPIED);
-//                    SendData(strlen("stall free\r\n"), 1, 1, "stall free\r\n");
+                    SendDataToRasp(strlen( (char *)MSG_FREE ), MSG_FREE);
                 }
             }
             else {
@@ -66,11 +72,10 @@ void checkTissueAmount(TS* stall) {
     if(tissue_percentage <= 0.0) tissue_percentage = 0.0f;
 
     if (HAL_GetTick() - stall->last_tissue_time > PERIOD_CHECK_TISSUE) { // 1분 == 60만 Tick
-//        sendESP(tissue_percentage);
-//    	SendData(strlen("Tissue Empty\r\n"), 1, 1, "Tissue Empty\r\n");
         stall->last_tissue_time = HAL_GetTick();
     }
     if (tissue_percentage <= THRESHOLD_MIN_TISSUE_PERCENTAGE) {
+    	SendDataToRasp(strlen( (char *)MSG_TISSUE_EMPTY ), MSG_TISSUE_EMPTY);
         turnLED(stall->led_tissue, true);
     }
     else {
@@ -143,8 +148,7 @@ void checkBroken(TS *stall) {
             runMotor(stall->servo_sonar_cover, MOTOR_CHECK_BROKEN_COVER_BACK_ANGLE);
             if (toilet_water_dist < NORMAL_TOILET_WATER_DISTANCE) {
                 turnLED(stall->led_broken, true);
-//                sendESP(stall., ESP_MSG_OCCUPIED);
-//                SendData(strlen("broken\r\n"), 1, 1, "broken\r\n");
+                SendDataToRasp(strlen( (char *)MSG_BROKEN ), MSG_BROKEN);
             }
             else {
                 turnLED(stall->led_broken, false);

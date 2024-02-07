@@ -198,6 +198,20 @@ uint8_t RaspiTCPSocketAccess() {
 }
 
 
+uint8_t SendDataToRasp(uint8_t size, uint8_t * data) {
+	uint8_t str[128] = {0, };
+
+	sprintf((char *)str, "AT+CIPSEND=%u\r\n", size);
+	uint8_t res = AT_COMMAND(str, 10, 1000);
+	uint8_t res1 = AT_COMMAND(data, 10, 1000);
+
+	if(res || res1)
+		return false;
+	return true;
+}
+
+
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 	if(huart->Instance == USART1) {
 		// !!!- DO not printf Here -!!!
@@ -217,9 +231,9 @@ uint8_t EspResponseCheck() {
 	while(1) {
 		uint8_t data = ReadBuffer();
 		if(data != 0){
-#if DEBUG
-			printf("%c", data);
-#endif	
+//#if DEBUG
+//			printf("%c", data);
+//#endif
 			if((char)data == '+'){
 				if(strncmp(&Rx_buffer[Rx_Tail], "IPD", 3) == 0){
 					uint8_t received_data = Rx_buffer[Rx_Tail+6] - '0';
@@ -247,22 +261,11 @@ uint8_t EspResponseCheck() {
 void EspSetting() {
 	setInterrupt();
 
+	SendAT();
+	HAL_Delay(100);
+
 	WifiAccess();
-	EspResponseCheck();
 	HAL_Delay(5000);
-
-	SetMux(true);
-	EspResponseCheck();
-	HAL_Delay(100);
-
-	ConnectTcp(true, 0);
-	EspResponseCheck();
-	HAL_Delay(100);
-
-
-	ConnectTcp(true, 1);
-	EspResponseCheck();
-	HAL_Delay(100);
 
 
 }

@@ -1,7 +1,7 @@
-../Drivers/UserLib/Src/toilet.c:17:6:checkMagnetic	24	static
-../Drivers/UserLib/Src/toilet.c:63:6:checkTissueAmount	40	static
-../Drivers/UserLib/Src/toilet.c:84:6:checkWaterTissue	104	static
-../Drivers/UserLib/Src/toilet.c:99:6:untactIR	112	static
-../Drivers/UserLib/Src/toilet.c:115:6:flushToilet	16	static
-../Drivers/UserLib/Src/toilet.c:135:6:checkBroken	104	static
-../Drivers/UserLib/Src/toilet.c:160:6:initStalls	472	static
+../Drivers/UserLib/Src/toilet.c:25:6:checkMagnetic	24	static
+../Drivers/UserLib/Src/toilet.c:69:6:checkTissueAmount	40	static
+../Drivers/UserLib/Src/toilet.c:89:6:checkWaterTissue	104	static
+../Drivers/UserLib/Src/toilet.c:104:6:untactIR	112	static
+../Drivers/UserLib/Src/toilet.c:120:6:flushToilet	16	static
+../Drivers/UserLib/Src/toilet.c:140:6:checkBroken	104	static
+../Drivers/UserLib/Src/toilet.c:164:6:initStalls	472	static

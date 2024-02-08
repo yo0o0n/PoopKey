@@ -17,9 +17,14 @@
 #include "global_define.h"
 
 // ---------------------------------
-
+#define MsgSize 50
 
 typedef struct ToiletStall {
+	// add value; Toilet ID(PK)
+	uint8_t toilet_key;
+	// add value; Already Non tissue
+	uint8_t before_tissue_empty;
+
     uint8_t is_occupied; // 원래 bool
     uint32_t last_open_time; // 원래 int
     float tissue_amount;

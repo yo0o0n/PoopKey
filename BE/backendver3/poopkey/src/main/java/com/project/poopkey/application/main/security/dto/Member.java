@@ -18,6 +18,6 @@ public class Member {
     private String password;
     private String email;
     private Timestamp createdDate;
-    private List<String> roles; // "USER"
+    private String role; // "USER"
 
 }

@@ -34,27 +34,27 @@ public class NettySocketServerHandler extends ChannelInboundHandlerAdapter {
         System.out.println(parser[1]);
         System.out.println(parser[2]);
         long stallId = 0;
-        // DB closed 됐을 때 신호 먹는 것만 신경쓰기.
+        // DB closed 됐을 때 신호 감지하는 것만 신경쓰기.
         switch (parser[0]){
-            case "tissueStatus": // 완료
+            case "tissueStatus":
                 int tissue = Integer.parseInt(parser[1]);
                 stallId = Long.parseLong(parser[2]);
                 sensorUpdateService.modifyTissue(stallId, tissue);
                 break;
-            case "toiletOccupied": // 완료
+            case "toiletOccupied":
                 // 그렇지만 DB업데이트 시간차가 조금 나는 건 확인할 필요가 있다.
                 stallId = Long.parseLong(parser[1]);
                 sensorUpdateService.modifyOccupied(stallId);
                 break;
-            case "toiletVacant": // 완료
+            case "toiletVacant":
                 stallId = Long.parseLong(parser[1]);
                 sensorUpdateService.modifyVacant(stallId);
                 break;
-            case "toiletBreak": // 완료
+            case "toiletBreak":
                 stallId = Long.parseLong(parser[1]);
                 sensorUpdateService.modifyBreak(stallId);
                 break;
-            case "congestion": // 완료
+            case "congestion":
                 int congestion = Integer.parseInt(parser[1]);
                 int restroomId = Integer.parseInt(parser[2]);
                 sensorUpdateService.modifyCongestion(restroomId, congestion);
@@ -73,9 +73,8 @@ public class NettySocketServerHandler extends ChannelInboundHandlerAdapter {
 
 //센서 tcp 통신 문자열 포맷 정의해두기
 // "tissueStatus,100,4,"
-//        "toiletOccupied,1," -- 화장실 PK를 센서에서 가지고 있음. 사전에 부여받는 형태.
-//"toiletVacant,2," -- PK
-//"toiletBreak,4," -- PK
-//"congestion,1,3," -- 0, 1, 2로 혼잡도 표시, PK
-
+// "toiletOccupied,1," -- 화장실 PK를 센서에서 가지고 있음. 사전에 부여받는 형태.
+// "toiletVacant,2," -- PK
+// "toiletBreak,4," -- PK
+// "congestion,1,3," -- 0, 1, 2로 혼잡도 표시, PK
 // 대표적인 테스트코드 tissueStatus,1100,1,

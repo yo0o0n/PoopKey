@@ -34,7 +34,7 @@ public class RestroomServiceImpl implements RestroomService{
         restroomDao.insertOne(restroomInfoInsert);
         itemDao.insertOne(restroomInfoInsert);
         statisticDao.insertOne(restroomInfoInsert);
-        stallInfoInsertDao.insertOne(restroomInfoInsert); // 논리적으로 가장 나중에 나와야
+        stallInfoInsertDao.insertOne(restroomInfoInsert); // 논리적으로 가장 나중에 나와야 함
     }
 
     @Transactional

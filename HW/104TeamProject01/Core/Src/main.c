@@ -92,6 +92,9 @@ int __io_getchar(void)
 volatile uint8_t OCCUPIED_STALL_CNT = 2;
 // kyr add before occupied stall  and kyr Init 2 for full occupied test
 uint8_t BEFORE_OCCUPIED_STALL_CNT;
+volatile uint8_t res_from_raspi;
+
+
 
 // --------------------------------
 
@@ -162,158 +165,54 @@ int main(void)
 	HAL_Delay(100);
 
 	WifiAccess();
-
 	HAL_Delay(5000);
 
 
 	RaspiTCPSocketAccess();
-
 	HAL_Delay(100);
 
-	// SendData(uint8_t size, uint8_t is_MUX, uint8_t target, uint8_t * data)
+	HAL_Delay(15000);
 
-	SendData(strlen((char *)"ABCDEFG\r\n"), 0, 0, (uint8_t *)"ABCDEFG\r\n");
+	while(1){
+		uint8_t data = ReadBuffer();
+		if(data == 0) break;
+		printf("%c", data);
+		HAL_Delay(100);
+	}
 
-	uint8_t checkArr[1024];
-
-	HAL_Delay(5000);
-
-	EspResponseCheck();
+//	EspResponseCheck();
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  printf("Time: %lu, ", HAL_GetTick() / 1000);
+	  checkMagnetic(&stall);
+	  checkTissueAmount(&stall);
+	  checkWaterTissue(&stall);
+	  untactIR(&stall);
+	  flushToilet(&stall);
+	  checkBroken(&stall);
+	  checkCongest(&stall);
+
+	  // receive congestion include outside
+	  // 0 is no stand
+	  // 1 is yes stand
+//	  res_from_raspi =  EspResponseCheck();
+	  res_from_raspi = 1;
 
 
-//	  printf("Second : %5lu\t", (HAL_GetTick() / 1000));
-//	  checkMagnetic(&stall);
-//	  checkTissueAmount(&stall);
-//	  checkWaterTissue(&stall);
-//	  untactIR(&stall);
-//	  flushToilet(&stall);
-//
-//	  // ----- kyr 02 06 START --------
-//
-//	  checkBroken(&stall);
-//	  printf("how many use stalls: %u\r\n", OCCUPIED_STALL_CNT);
-//	  if(OCCUPIED_STALL_CNT == MAX_STALL && BEFORE_OCCUPIED_STALL_CNT < MAX_STALL)
-//		  //SEND(Raspi);
-//		  printf("STALL be MAX \r\n");
-//	  else if(BEFORE_OCCUPIED_STALL_CNT == MAX_STALL)
-//		  //SEND(Raspi);
-//		  printf("STALL still MAX \r\n");
-//	  else if(OCCUPIED_STALL_CNT < MAX_STALL) // add kyr
-//		  printf("STALL Empty \r\n");
-//	  BEFORE_OCCUPIED_STALL_CNT = OCCUPIED_STALL_CNT;
+//	  if(res_from_raspi == 1){
+//		  // HONJOB
+////		  SendData(strlen((char *)"HONJOB\r\n"), 0, 0, "HONJOB\r\n");
+//	  }
+//	  else if(res_from_raspi == 2){
+//		  // POHWA
+////		  SendData(strlen((char *)"POHWA\r\n"), 0, 0, "POHWA\r\n");
+//	  }
+  	  HAL_Delay(100);
 
-
-
-	  // TODO 라즈베리파이에게 받아오기
-	  // 1. 쌓이는게 읽는거 보다 훨씬 빠르다.
-	  // 2. 쌓이는게 더 느리다. 이 경우 IPD에서 IP까지만 오는 경우가 생길거다.
-
-	  memset(checkArr, 0, sizeof(checkArr));
-	  uint8_t data = ReadBuffer();
-	  uint16_t CheckArr_count = 0;
-	  uint8_t msgSize = 0;
-	  if(data == '+') {
-		  printf("+ get in \r\n");
-		  for(uint8_t i = 0; i < 4; i++) {
-			  data = ReadBuffer();
-			  checkArr[CheckArr_count++] = data;
-		  }
-		  printf("%s\r\n", checkArr);
-
-
-
-		  if(strstr(checkArr, "IPD,") != 0) { // 찾음
-			  printf("found IPD\r\n");
-
-			  memset(checkArr, 0, sizeof(checkArr));
-			  CheckArr_count = 0;
-
-			  do {
-				  data = ReadBuffer();
-				  checkArr[CheckArr_count++] = data;
-			  }while(data >= '0' && data <= '9');
-		  } // 마지막으로 숫자가 아닌걸 하나 받음
-
-		  printf("%s\r\n", checkArr);
-		  msgSize = atoi(checkArr);
-
-		  memset(checkArr, 0, sizeof(checkArr));
-		  CheckArr_count = 0;
-
-
-		  for(uint8_t i = 0; i < msgSize; i++) {
-			  data = ReadBuffer();
-			  checkArr[CheckArr_count++] = data;
-		  }
-
-		  printf("%s\r\n", checkArr);
-
-	  }
-
-//	  HAL_Delay(5000);
-
-//	  HAL_Delay(5000);
-//	  SendData(strlen((char *)"ABCDEFG\r\n"), 0, 0, (uint8_t *)"ABCDEFG\r\n");
-
-//	  printf("\r\n");
-
-//	  uint8_t data = ReadBuffer();
-//	  	if(data != 0)
-//	  		printf("%c", data);
-//
-	  // ----- kyr 02 06 END -------------
-
-//	  uint8_t mag = sensing(magnetic);
-//	  float water_dist = getDistance(water_sonar);
-//	  HAL_Delay(100);
-//	  float tissue_dist = getDistance(tissue_sonar);
-//	  float temperature = getIRTemperature(ir); // hand is 40C
-//	  uint8_t is_horizon = sensing(tilt);
-//	  float dung_dist = getDistance(cover_sonar);
-//
-//	  turnLED(RED, 1);
-//	  turnLED(YELLOW, 1);
-//	  turnLED(GREEN, 1);
-//
-//
-//	  runMotor(servo_water_tissue, 500);
-//	  HAL_Delay(1000);
-//
-//	  runMotor(servo_water_tissue, 1000);
-//	  HAL_Delay(1000);
-//
-//
-//	  runMotor(servo_cover, 200);
-//	  HAL_Delay(1000);
-//
-//
-//	  runMotor(servo_cover, 800);
-//	  HAL_Delay(1000);
-//
-//
-//	  runMotor(sonar_cove_servo, 200);
-//	  HAL_Delay(1000);
-//
-//
-//	  runMotor(sonar_cove_servo, 800);
-//	  HAL_Delay(1000);
-//
-//
-//	  turnLED(RED, 0);
-//	  turnLED(YELLOW, 0);
-//	  turnLED(GREEN, 0);
-
-//	  printf("magnetic: %-5u, water_tissue_dist: %10.3f\r\n", mag, water_dist);
-//	  printf("magnetic: %-5u, water_tissue_dist: %10.3f, tissue_dist: %10.3f\r\n", mag, water_dist, tissue_dist);
-//	  printf("magnetic: %-5u, water_tissue_dist: %10.3f, tissue_dist: %10.3f, temperature: %10.3f\r\n", mag, water_dist, tissue_dist, temperature);
-//	  printf("magnetic: %-5u, water_tissue_dist: %10.3f, tissue_dist: %10.3f, temperature: %10.3f tilt: %3u\r\n", mag, water_dist, tissue_dist, temperature, is_horizon);
-//	  printf("magnetic: %-5u, water_tissue_dist: %10.3f, tissue_dist: %10.3f, temperature: %10.3f tilt: %3u, dung: %10.3f\r\n", mag, water_dist, tissue_dist, temperature, is_horizon, dung_dist);
-	  HAL_Delay(100);
+//  	  printf("\r\n");
   }
   /* USER CODE END 3 */
 }

@@ -1,0 +1,27 @@
+.table {
+    display: flex;
+    flex-direction: column;
+
+    border: 2px solid black;
+    border-radius: 25px;
+    width: 75%;
+  }
+
+  .rowBox {
+    border-bottom: 2px solid #ccc;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+  }
+
+  .cell {
+    flex: 1;
+    text-align: center;
+  }
+
+  .cellContent {
+    flex: 3;
+    text-align: center;
+  }

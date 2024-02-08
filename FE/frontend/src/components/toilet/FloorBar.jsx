@@ -42,7 +42,6 @@ const FloorBar = ({
       const data = {
         buildingId: 1,
         restroomId: 1,
-        masterId: 1,
       };
       const jsonData = JSON.stringify(data);
 
@@ -64,7 +63,9 @@ const FloorBar = ({
     };
 
     return () => {
-      webSocket.current?.close();
+      if (webSocket.current.readyState === WebSocket.OPEN) {
+        webSocket.current?.close();
+      }
     };
   }, [selectFloor]);
 

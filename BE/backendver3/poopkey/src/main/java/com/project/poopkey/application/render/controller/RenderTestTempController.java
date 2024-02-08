@@ -37,7 +37,7 @@ public class RenderTestTempController {
         List<RestroomRender> list = restroomRenderService.findRestroomRenderList(buildingId, floor);
         return new ResponseEntity<List<RestroomRender>>(list, HttpStatus.OK);
     }
-    /** 추가 구현한 API 1 */
+
     @GetMapping("/api/tmptest4")
     private ResponseEntity<RestroomRender> test4(@RequestParam("stallId")long stallId){
         RestroomRender restroomRender = restroomRenderService.findRestroomRenderByStallId(stallId);

@@ -20,6 +20,7 @@ const ToiletPage = () => {
       try {
         const response = await getRestRoom(buildingId);
         setRestroomData(response);
+        console.log("gdgd");
       } catch (e) {
         console.log(e);
       }

@@ -1,6 +1,6 @@
 import socket
-public_server_ip = "70.12.108.71"
-public_server_port = 10200
+public_server_ip = "43.202.37.123"
+public_server_port = 8200
 public_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 public_socket.connect((public_server_ip, public_server_port))
 

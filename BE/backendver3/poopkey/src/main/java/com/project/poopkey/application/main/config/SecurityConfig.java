@@ -60,7 +60,9 @@ public class SecurityConfig {
                     request.requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/api/**").permitAll();
                     request.requestMatchers("/admin/**").hasRole("ADMIN");
                     request.requestMatchers("/user/**").hasRole("USER");
-                    request.anyRequest().denyAll();
+                    request.requestMatchers("/ws/**").permitAll();
+//                    request.anyRequest().denyAll();
+                    request.anyRequest().permitAll();
                 })
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling((handler)->{
@@ -80,6 +82,7 @@ public class SecurityConfig {
                             response.setCharacterEncoding("utf-8");
                             response.setContentType("text/html; charset=UTF-8");
                             response.getWriter().write("인증 받지 않은 없는 사용자");
+                            System.out.println("이부분에서 인증예외 오류 발생함!");
                         }
                     });
                 });
@@ -91,6 +94,8 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder(){
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
+
+
 }
 
 

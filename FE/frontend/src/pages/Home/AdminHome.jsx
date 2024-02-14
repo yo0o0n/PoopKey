@@ -11,6 +11,10 @@ const AdminHome = () => {
 
   // WebSocket
   useEffect(() => {
+    if (localStorage.getItem("admin") == null) {
+      navigate("/admin/login");
+    }
+
     webSocket.current = new WebSocket(`${Web_Socket_URL}/report`);
     console.log(webSocket.current);
 

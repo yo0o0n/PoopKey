@@ -3,19 +3,32 @@ import React, { useEffect, useState, useRef } from "react";
 import { Web_Socket_URL } from "../../util/API";
 import { updateMailCheck, getMailLocation } from "../../util/AdminAPI";
 import { useNavigate } from "react-router-dom";
+import { Pagination } from "@mui/material";
 
 const ToiletMailBox = () => {
   const [mailList, setMailList] = useState();
-  const [detailList, setDetailList] = useState([]);
+  const [detail, setDetail] = useState();
   const [mailLocation, setMailLocation] = useState();
-  const navigate = useNavigate();
+  const [mailFloor, setMailFloor] = useState(1);
   const webSocket = useRef(null);
-
+  const navigate = useNavigate();
   //pagenation 변수
-  // const totalPages = Math.ceil(totalItems / itemCountPerPage); // 총 페이지 개수
-  // const [start, setStart] = useState(1); // 시작 페이지
-  // const noPrev = start === 1; // 이전 페이지가 없는 경우
-  // const noNext = start + pageCount - 1 >= totalPages; // 다음 페이지가 없는 경우
+  const [page, setPage] = useState(1);
+  const [pageData, setPageData] = useState();
+  const [lastPage, setLastPage] = useState();
+
+  //pagenation
+  useEffect(() => {
+    if (mailList == undefined) return;
+    console.log(lastPage);
+    if (page == lastPage) {
+      setPageData(mailList && mailList.slice(5 * (page - 1)));
+    } else {
+      setPageData(
+        mailList && mailList.slice(5 * (page - 1), 5 * (page - 1) + 5)
+      );
+    }
+  }, [mailList, page]);
 
   // WebSocket
   useEffect(() => {
@@ -44,6 +57,13 @@ const ToiletMailBox = () => {
         JSON.parse(event.data).sort(function (o1, o2) {
           return o2.reportId - o1.reportId;
         })
+      );
+
+      console.log(JSON.parse(event.data).length, "dzdzdz");
+      setLastPage(
+        event.data.length % 8 == 0
+          ? parseInt(JSON.parse(event.data).length / 8)
+          : parseInt(JSON.parse(event.data).length / 8) + 1
       );
     };
 
@@ -84,19 +104,7 @@ const ToiletMailBox = () => {
 
   // message 세부정보 (신고한 화장실 칸 위치정보)
   const handleOnDetailClick = (reportId) => {
-    if (detailList.length == 0) {
-      setDetailList([reportId]);
-    } else {
-      if (detailList.includes(reportId)) {
-        setDetailList(
-          detailList.filter((detail) => {
-            if (detail != reportId) return detail;
-          })
-        );
-      } else {
-        setDetailList([...detailList, reportId]);
-      }
-    }
+    setDetail(reportId);
   };
 
   // stallId가 주어졌을 때 화장실 위치를 특정한다. (층, 성별, 칸 위치)
@@ -104,10 +112,11 @@ const ToiletMailBox = () => {
     try {
       const response = await getMailLocation(stallId);
       const floor = `${response.floor}층 `;
-      const gender = response.gender == 0 ? "남자화장실 " : "여자화장실";
+      const gender = response.gender == 0 ? "남자화장실 " : "여자화장실 ";
       const location = `${findLocation(response.list, stallId)}번 칸 `;
       console.log(floor, gender, location, "화장실 위치 특정");
 
+      setMailFloor(response.floor);
       setMailLocation({
         floor: floor,
         gender: gender,
@@ -134,6 +143,12 @@ const ToiletMailBox = () => {
     navigate(`/admin/1`);
   };
 
+  // 페이지네이션 핸들러
+  const handlePageChange = (event) => {
+    const currPage = Number(event.target.outerText);
+    setPage(currPage);
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.logoContainer}>
@@ -146,14 +161,14 @@ const ToiletMailBox = () => {
       </div>
       <div className={styles.mailContainer}>
         <div className={styles.table}>
-          <div className={styles.row}>
+          <div className={styles.headRow}>
             <div className={styles.cell}>No</div>
             <div className={styles.cell}>신고사유</div>
             <div className={styles.cellContent}>신고내용</div>
           </div>
 
-          {mailList &&
-            mailList.map((mail, index) => {
+          {pageData &&
+            pageData.map((mail, index) => {
               return (
                 <div key={mail.reportId} className={styles.rowBox}>
                   <div
@@ -164,22 +179,49 @@ const ToiletMailBox = () => {
                       handleGetLocationClick(mail.stallId);
                     }}
                   >
-                    <div className={styles.cell}>{index + 1}</div>
-                    <div className={styles.cell}>{mail.userReportReason}</div>
+                    <div className={styles.cell}>
+                      {index + 1 + (page - 1) * 5}
+                    </div>
+                    <div className={styles.cell}>
+                      {mail.userReportReason === 0 && "위생"}
+                      {mail.userReportReason === 1 && "파손"}
+                      {mail.userReportReason === 2 && "기타"}
+                    </div>
                     <div className={styles.cellContent}>{mail.content}</div>
                   </div>
-                  {detailList && detailList.includes(mail.reportId) && (
-                    <div className={styles.detail}>
-                      위치정보:
-                      {mailLocation && mailLocation.floor}
-                      {mailLocation && mailLocation.gender}
-                      {mailLocation && mailLocation.location}
+                  {detail && detail == mail.reportId && (
+                    <div
+                      className={styles.state_content}
+                      onClick={() =>
+                        navigate(`/admin/toilet/1`, {
+                          state: {
+                            floor: mailFloor,
+                          },
+                        })
+                      }
+                    >
+                      <img
+                        className={styles.contentImg}
+                        src={process.env.PUBLIC_URL + `/assets/location.png`}
+                      />
+                      <span className={styles.contentText}>
+                        {mailLocation && mailLocation.floor}
+                        {mailLocation && mailLocation.gender}
+                        {mailLocation && mailLocation.location}
+                      </span>
                     </div>
                   )}
                 </div>
               );
             })}
         </div>
+        <Pagination
+          className={styles.pagination}
+          page={page}
+          count={lastPage}
+          defaultPage={1}
+          onChange={handlePageChange}
+        />
       </div>
     </div>
   );

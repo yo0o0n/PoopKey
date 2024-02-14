@@ -80,7 +80,6 @@ const ToiletReport = () => {
           <div>
             <textarea
               className={styles.report_content}
-              placeholder="신고내용을 입력해 주세요."
               value={content}
               onChange={(e) => setContent(e.target.value)}
             />

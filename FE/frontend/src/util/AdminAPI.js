@@ -1,6 +1,8 @@
 import axios from "axios";
 
-export const BASE_URL = "http://localhost:9999";
+// export const BASE_URL = "http://localhost:9999";
+
+export const BASE_URL = "http://172.18.0.1:9999";
 
 // 화장실 화장실 등록
 export const createRestroom = (data) => {

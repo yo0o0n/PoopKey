@@ -43,31 +43,35 @@ const AdminLoginPage = () => {
     }
   };
   return (
-    <>
+    <div className={styles.container}>
+      <img
+        className={styles.logo}
+        src={process.env.PUBLIC_URL + `/assets/Logo.png`}
+      />
       <form onSubmit={handleLoginSubmit}>
-        <label>
-          Email:
+        <div>
           <input
             type="text"
             name="email"
+            placeholder="Email"
             value={loginData.email}
             onChange={handleInputChange}
           />
-        </label>
-        <br />
-        <label>
-          Password:
+        </div>
+        <div>
           <input
             type="password"
+            placeholder="Password"
             name="password"
             value={loginData.password}
             onChange={handleInputChange}
           />
-        </label>
-        <br />
-        <button type="submit">Login</button>
+        </div>
+        <div className={styles.button}>
+          <button type="submit">Login</button>
+        </div>
       </form>
-    </>
+    </div>
   );
 };
 export default AdminLoginPage;

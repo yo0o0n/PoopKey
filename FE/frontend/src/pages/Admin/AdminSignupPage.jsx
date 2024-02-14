@@ -55,41 +55,42 @@ const AdminSignupPage = () => {
 
   return (
     <div className={styles.container}>
-      <div>
-        <h2>Pookey</h2>
-        <form onSubmit={handleSignupSubmit}>
-          <div>
-            <input
-              type="text"
-              name="email"
-              placeholder="Email"
-              value={signupData.email}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className={styles.msg}>
-            {!isEmailValid && `이메일 주소가 올바르지 않습니다.`}
-          </div>
+      <img
+        className={styles.logo}
+        src={process.env.PUBLIC_URL + `/assets/Logo.png`}
+      />
+      <form onSubmit={handleSignupSubmit}>
+        <div>
+          <input
+            type="text"
+            name="email"
+            placeholder="Email"
+            value={signupData.email}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className={styles.msg}>
+          {!isEmailValid && `이메일 주소가 올바르지 않습니다.`}
+        </div>
 
-          <div>
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={signupData.password}
-              onChange={handleInputChange}
-            />
-          </div>
-          <div className={styles.msg}>
-            {!isPwValid &&
-              `비밀번호는 영문,숫자,특수문자를 포함하여 8자 이상입니다.`}
-          </div>
+        <div>
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={signupData.password}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className={styles.msg}>
+          {!isPwValid &&
+            `비밀번호는 영문,숫자,특수문자를 포함하여 8자 이상입니다.`}
+        </div>
 
-          <div className={styles.button}>
-            <button type="submit">Sign Up</button>
-          </div>
-        </form>
-      </div>
+        <div className={styles.button}>
+          <button type="submit">Sign Up</button>
+        </div>
+      </form>
     </div>
   );
 };

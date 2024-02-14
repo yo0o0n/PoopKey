@@ -1,6 +1,10 @@
 import axios from "axios";
 
-export const BASE_URL = "http://localhost:9999";
+// export const BASE_URL = "http://localhost:9999";
+
+// export const Web_Socket_URL = "ws://localhost:9999/ws";
+
+export const BASE_URL = "http://172.18.0.1:9999";
 
 export const Web_Socket_URL = "ws://localhost:9999/ws";
 

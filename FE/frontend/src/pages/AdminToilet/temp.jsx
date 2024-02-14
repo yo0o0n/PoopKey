@@ -139,32 +139,37 @@ const ToiletStatistics = () => {
           </div>
         </div>
 
-        <div className={styles.table}>
-          <div className={styles.headRow}>
-            <div className={styles.cell}>No</div>
-            <div className={styles.cell}>사용횟수</div>
-            <div className={styles.cell}>최근청소</div>
-            <div className={styles.cell}>휴지교체</div>
-            <div className={styles.cell}>고장횟수</div>
+        {setStatisticData && (
+          <div className={styles.table}>
+            <table>
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>사용횟수</th>
+                  <th>최근청소</th>
+                  <th>휴지교체</th>
+                  <th>고장횟수</th>
+                </tr>
+              </thead>
+              <tbody>
+                {statisticData &&
+                  statisticData.list.map((data, index) => {
+                    const date = data.lastCleanDate.split("T")[0];
+
+                    return (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{data.usedNumber}</td>
+                        <td>{date}</td>
+                        <td>{data.tissueChangeNumber}</td>
+                        <td>{data.breakNumber}</td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
           </div>
-
-          {statisticData &&
-            statisticData.list.map((data, index) => {
-              const date = data.lastCleanDate.split("T")[0];
-
-              return (
-                <div key={index} className={styles.rowBox}>
-                  <div className={styles.row}>
-                    <div className={styles.cell}>{index + 1}</div>
-                    <div className={styles.cell}>{data.usedNumber}</div>
-                    <div className={styles.cell}>{date}</div>
-                    <div className={styles.cell}>{data.tissueChangeNumber}</div>
-                    <div className={styles.cell}>{data.breakNumber}</div>
-                  </div>
-                </div>
-              );
-            })}
-        </div>
+        )}
       </div>
     </div>
   );

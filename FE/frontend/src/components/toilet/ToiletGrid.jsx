@@ -34,67 +34,72 @@ const ToiletGrid = ({ restroom }) => {
     boxSizing: "border-box",
     width: `${Math.min(90 / rows, 90 / cols)}%`,
     height: `${Math.min(90 / rows, 90 / cols)}%`,
-    border: "3px solid #ccc",
     visibility: "hidden",
   };
+  const tissue = { src: process.env.PUBLIC_URL + `/assets/tissue.png` };
 
-  // 입구
+  // 입구 + img
   const enterStyle = {
     boxSizing: "border-box",
     width: `${Math.min(90 / rows, 90 / cols)}%`,
     height: `${Math.min(90 / rows, 90 / cols)}%`,
-    border: "3px solid white",
+    //border: "3px solid white",
     backgroundColor: "skyblue",
     borderRadius: "20px",
   };
+  const enterImg = { src: process.env.PUBLIC_URL + `/assets/enter.png` };
 
-  // 화장실칸 사용가능 style
+  // 화장실칸 사용가능 style + img
   const toiletItemStyle0 = {
     boxSizing: "border-box",
     width: `${Math.min(90 / rows, 90 / cols)}%`,
     height: `${Math.min(90 / rows, 90 / cols)}%`,
-    border: "3px solid white",
+    //border: "3px solid white",
     backgroundColor: "lightgreen",
     borderRadius: "20px",
     cursor: "pointer",
   };
+  const img0 = { src: process.env.PUBLIC_URL + `/assets/toilet.png` };
 
-  // 화장실칸 사용중 style
+  // 화장실칸 사용중 style + img
   const toiletItemStyle1 = {
     boxSizing: "border-box",
     width: `${Math.min(90 / rows, 90 / cols)}%`,
     height: `${Math.min(90 / rows, 90 / cols)}%`,
-    border: "3px solid white",
+    //border: "3px solid white",
     backgroundColor: "#FF6E6E",
     borderRadius: "20px",
     cursor: "pointer",
   };
+  const img1 = { src: process.env.PUBLIC_URL + `/assets/man.png` };
 
-  // 화장실칸 고장 style
+  // 화장실칸 고장 style + img
   const toiletItemStyle2 = {
     boxSizing: "border-box",
     width: `${Math.min(90 / rows, 90 / cols)}%`,
     height: `${Math.min(90 / rows, 90 / cols)}%`,
-    border: "3px solid white",
+    //border: "3px solid white",
     backgroundColor: "#FFFA82",
     borderRadius: "25px",
     cursor: "pointer",
   };
+  const img2 = { src: process.env.PUBLIC_URL + `/assets/warning.png` };
 
-  // 화장실칸 점검중 style
+  // 화장실칸 점검중 style + img
   const toiletItemStyle3 = {
     boxSizing: "border-box",
     width: `${Math.min(90 / rows, 90 / cols)}%`,
     height: `${Math.min(90 / rows, 90 / cols)}%`,
-    border: "3px solid white",
-    backgroundColor: "purple",
+    //border: "3px solid white",
+    backgroundColor: "#C0C0C0",
     borderRadius: "25px",
     cursor: "pointer",
   };
+  const img3 = { src: process.env.PUBLIC_URL + `/assets/repair.png` };
 
   // 화장실칸 id만 넘겨줘서 필요한 데이터는 거기 가서 받던지, 아님 여기서 객체 자체를 넘겨줘도 됨!
   const handleDetailClick = (data) => {
-    console.log(data.stallId); // 화장칸의 pk번호
+    // 사용자 신고창
     navigate(
       `/toiletDetail/${restroom[0].buildingId}/${floor}/${data.stallId}`
     );
@@ -114,74 +119,79 @@ const ToiletGrid = ({ restroom }) => {
                 style={itemStyle}
                 row={item.row}
                 col={item.col}
-              >
-                빈칸
-                {item.tissueStatus.length > 0 && "휴지가 없어"}
-              </div>
+              ></div>
             );
           } else if (item.content == 2) {
             //입구
             return (
               <div
                 key={item.stallId}
+                className={styles.iconContainer}
                 style={enterStyle}
                 row={item.row}
                 col={item.col}
               >
-                입구
-                {item.tissueStatus.length > 0 && "휴지가 없어"}
+                <img className={styles.icon} src={enterImg.src} />
               </div>
             );
           } else if (item.status === 0) {
+            //사용가능
             return (
               <div
                 key={item.stallId}
+                className={styles.iconContainer}
                 style={toiletItemStyle0}
                 row={item.row}
                 col={item.col}
                 onClick={() => handleDetailClick(item)}
               >
-                사용가능
-                {item.tissueStatus.length > 0 && "휴지가 없어"}
+                {item.tissueStatus.length > 0 ? (
+                  <img className={styles.icon} src={tissue.src} />
+                ) : (
+                  <img className={styles.icon} src={img0.src} />
+                )}
               </div>
             );
           } else if (item.status === 1) {
+            //사용중
             return (
               <div
                 key={item.stallId}
+                className={styles.iconContainer}
                 style={toiletItemStyle1}
                 row={item.row}
                 col={item.col}
                 onClick={() => handleDetailClick(item)}
               >
-                사용중
-                {item.tissueStatus.length > 0 && "휴지가 없어"}
+                <img className={styles.icon} src={img1.src} />
               </div>
             );
           } else if (item.status === 2) {
+            //고장
             return (
               <div
                 key={item.stallId}
+                className={styles.iconContainer}
                 style={toiletItemStyle2}
                 row={item.row}
                 col={item.col}
                 onClick={() => handleDetailClick(item)}
               >
-                고장
-                {item.tissueStatus.length > 0 && "휴지가 없어"}
+                <img className={styles.icon} src={img2.src} />
               </div>
             );
           } else if (item.status === 3) {
+            //점검중
             return (
               <div
                 key={item.stallId}
+                className={styles.iconContainer}
                 style={toiletItemStyle3}
                 row={item.row}
                 col={item.col}
                 onClick={() => handleDetailClick(item)}
               >
-                점검중
-                {item.tissueStatus.length > 0 && "휴지가 없어"}
+                <img className={styles.icon} src={img3.src} />
               </div>
             );
           }

@@ -65,7 +65,7 @@ public class JwtTokenProvider {
 
     public boolean validateToken (String token){
         try {
-            if(!token.substring(0,"BEARER".length()).equalsIgnoreCase("BEARER ")){
+            if(!token.substring(0,"BEARER".length()).equalsIgnoreCase("BEARER")){
                 return false;
             }else{
                 token = token.split(" ")[1].trim();

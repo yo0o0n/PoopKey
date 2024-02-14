@@ -1,6 +1,8 @@
 import axios from "axios";
 
-export const BASE_URL = "http://localhost:8080";
+export const BASE_URL = "http://localhost:9999";
+
+export const Web_Socket_URL = "ws://localhost:9999/ws";
 
 //모든 건물 리스트
 export const getAllBuilding = async () => {
@@ -64,31 +66,34 @@ export const getCongestion = async (buildingId) => {
 
 // 신고폼 제출 (stallId, content, seuserReportReasonlectㄴ)
 export const createReportData = (data) => {
-    axios.post(`${BASE_URL}/api/user/reports/regist`, data)
+    axios.post(`${BASE_URL}/api/user/reports/regist`, data, {headers: { 'Authorization': `BEARER ${localStorage.getItem("UserToken")}`}})
     .then((res) => {
         console.log("신고 제출 성공")
     }).catch((e) => {
-        console.log("신고 제출 실패")
+        console.log(e,"신고 제출 실패")
     })
 }
+
 
 
 // 회원가입
-export const createUser = (formData) => {
-    axios.post(BASE_URL, formData)
-    .then((res) => {
-        console.log(res.data)
-    }).catch((e) => {
-        console.log("회원가입 실패")
-    })
+export const createUser = async (data) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/register`,data);
+    console.log(response, "회원등록 완료!");
+  } catch (error) {
+    console.log("요청 실패", error);
+  }
 }
 
-// 로그인 
-export const logInApi = (formData) => {
-    axios.post(BASE_URL, formData)
-    .then((res) => {
-        console.log(res.data)
-    }).catch((e) => {
-        console.log("로그인 실패")
-    })
+// 로그인
+export const userLogIn = async (data) => {
+  try {
+    //console.log(buildingId,"axios에 빌딩 id 잘 넘어오는중")
+    const response = await axios.post(`${BASE_URL}/login`,data);
+    console.log(response.data, "토큰");
+    return response.data;
+  } catch (error) {
+    console.log("요청 실패", error);
+  }
 }

@@ -1,42 +1,35 @@
 /* EmotionItem */
 .StateItem {
-    cursor: pointer;
-    border-radius: 5px;
-  
-    padding-top: 20px;
-    padding-bottom: 20px;
-  
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    align-items: center;
-  }
-  
-  .StateItem img {
-    width: 50%;
-    margin-bottom: 10px;
-  }
-  
-  .StateItemItem span {
-    font-size: 18px;
-  }
-  
-  .StateItem_off {
-    background-color: #ececec;
-  }
-  
-  .StateItem_on_0 {
-    background-color: #64c964;
-    color: white;
-  }
+  cursor: pointer;
+  border-radius: 25px;
 
-  .StateItem_on_1 {
-    background-color: #fd8446;
-    color: white;
-  }
-  
-  .StateItem_on_2 {
-    background-color: #fd565f;
-    color: white; 
-  }
+  padding-top: 10px;
+  padding-bottom: 10px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-items: center;
+
+  color: #89410d;
+}
+
+.StateItem img {
+  width: 50%;
+  object-fit: fill;
+  margin-bottom: 10px;
+}
+
+.StateItem_off {
+  background-color: #e1e1e1;
+}
+
+.StateItem_on {
+  background-color: #eec584;
+  color: white;
+}
+
+.text {
+  font-weight: bolder;
+}

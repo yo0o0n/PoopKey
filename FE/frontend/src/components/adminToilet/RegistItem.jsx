@@ -1,3 +1,5 @@
+import styles from "./RegistItem.module.css";
+
 const RegistItem = (props) => {
   const rows = props.height;
   const cols = props.width;
@@ -7,7 +9,7 @@ const RegistItem = (props) => {
     boxSizing: "border-box",
     width: `${Math.min(90 / rows, 90 / cols)}%`,
     height: `${Math.min(90 / rows, 90 / cols)}%`,
-    border: "3px solid white",
+
     borderRadius: "20px",
     cursor: "pointer",
     fontWeight: "bolder",
@@ -19,37 +21,52 @@ const RegistItem = (props) => {
 
   // content 값에 따라 스타일 변경
   let specificStyle;
-  let text;
+  let imgSrc;
+
   switch (props.content) {
+    // 빈칸
     case 0:
       specificStyle = {
         ...baseStyle,
-        border: "3px solid #ccc",
-        backgroundColor: "white",
+        backgroundColor: "#C0C0C0 ",
       };
-      text = "빈칸";
+      imgSrc = {
+        src: process.env.PUBLIC_URL + `/assets/x.png`,
+      };
       break;
+
+    // 화장실
     case 1:
       specificStyle = {
         ...baseStyle,
         backgroundColor: "lightgreen",
       };
-      text = "화장실";
+      imgSrc = {
+        src: process.env.PUBLIC_URL + `/assets/toilet.png`,
+      };
       break;
+
+    //입구
     case 2:
       specificStyle = {
         ...baseStyle,
         backgroundColor: "skyblue",
       };
-      text = "입구";
+      imgSrc = {
+        src: process.env.PUBLIC_URL + `/assets/enter.png`,
+      };
       break;
     default:
       specificStyle = baseStyle;
   }
 
   return (
-    <div {...props} style={specificStyle}>
-      {text}
+    <div
+      {...props}
+      className={`RegistItem ${styles.iconContainer}`}
+      style={specificStyle}
+    >
+      <img className={styles.icon} src={imgSrc.src} />
     </div>
   );
 };

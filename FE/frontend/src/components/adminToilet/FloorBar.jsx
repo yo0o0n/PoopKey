@@ -1,7 +1,7 @@
 // FloorBar.js
 import styles from "./FloorBar.module.css";
 import React, { useEffect, useState, useRef } from "react";
-import { getCongestion } from "../../util/API";
+import { getCongestion, Web_Socket_URL } from "../../util/API";
 import CongestionItem from "./CongestionItem";
 
 const FloorBar = ({
@@ -35,7 +35,7 @@ const FloorBar = ({
 
   // WebSocket
   useEffect(() => {
-    webSocket.current = new WebSocket("ws://localhost:8080/ws");
+    webSocket.current = new WebSocket(Web_Socket_URL);
     console.log(webSocket.current);
 
     webSocket.current.onopen = () => {
@@ -43,7 +43,9 @@ const FloorBar = ({
       const data = {
         buildingId: 1,
         restroomId: 1,
+        masterId: 1, //로컬 스토리지에서 가져온다. or useParams 사용할것
       };
+
       const jsonData = JSON.stringify(data);
 
       sendMessage(jsonData);
@@ -101,32 +103,40 @@ const FloorBar = ({
               let congestionMen = -1;
               let congestionWomen = -1;
 
-              if (list && list.length == 1) {
-                list[0].gender == 0
-                  ? (congestionMen = list[0].congestion)
-                  : (congestionWomen = list[0].congestion);
-              } else if (list && list.length == 2) {
-                congestionMen = list[0].congestion;
-                congestionWomen = list[1].congestion;
+              if (list && list.length > 0) {
+                if (list.length == 1) {
+                  list[0].gender == 0
+                    ? (congestionMen = list[0].congestion)
+                    : (congestionWomen = list[0].congestion);
+                } else if (list.length == 2) {
+                  congestionMen = list[0].congestion;
+                  congestionWomen = list[1].congestion;
+                }
+              } else {
+                return;
               }
 
               return (
                 <div
                   key={restroom.restroomId}
-                  className={styles.floorItem}
+                  className={
+                    selectFloor == restroom.floor
+                      ? styles.floorItem_on
+                      : styles.floorItem_off
+                  }
                   onClick={() => handleFloorClick(restroom.floor)}
                 >
                   <div className={styles.floorCongestion}>
                     {congestionMen != -1 ? (
                       <CongestionItem status={congestionMen}></CongestionItem>
                     ) : (
-                      <div>X</div>
+                      <CongestionItem status={-1}></CongestionItem>
                     )}
 
                     {congestionWomen != -1 ? (
                       <CongestionItem status={congestionWomen}></CongestionItem>
                     ) : (
-                      <div>X</div>
+                      <CongestionItem status={-1}></CongestionItem>
                     )}
                   </div>
                   <p className={styles.floorText}>{restroom.floor}F</p>

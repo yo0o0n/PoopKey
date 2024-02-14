@@ -28,29 +28,34 @@ const Home = () => {
   };
 
   return (
-    <>
+    <div className={styles.container}>
       <LoginHeader />
-      <h1>건물 선택이 띄워질 HomePage 입니다.</h1>
       <div>
+        <img
+          className={styles.logo}
+          src={process.env.PUBLIC_URL + `/assets/Logo.png`}
+        />
         <div>
-          {buildingData &&
-            buildingData.map((building) => (
-              <div
-                className={styles.building}
-                key={building.buildingId}
-                onClick={() => {
-                  handleBuildingClick(
-                    building.buildingId,
-                    building.buildingName
-                  );
-                }}
-              >
-                {building.buildingName}
-              </div>
-            ))}
+          <div>
+            {buildingData &&
+              buildingData.map((building) => (
+                <div
+                  className={styles.building}
+                  key={building.buildingId}
+                  onClick={() => {
+                    handleBuildingClick(
+                      building.buildingId,
+                      building.buildingName
+                    );
+                  }}
+                >
+                  {building.buildingName}
+                </div>
+              ))}
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

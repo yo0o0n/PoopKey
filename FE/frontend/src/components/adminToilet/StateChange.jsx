@@ -1,26 +1,67 @@
 import styles from "./StateChange.module.css";
 import { useNavigate, useParams } from "react-router-dom";
-import { useState } from "react";
-import { updateStatus } from "../../util/AdminAPI"; // 점검 변경하는 axios
+import { useEffect, useState } from "react";
+import { updateStatus, getMailLocation } from "../../util/AdminAPI"; // 점검 변경하는 axios
 import StateItem from "./StateItem";
-import "moment/locale/ko"; //Locale Setting
-const reportList = [
+
+const stateList = [
   {
     id: 0,
-    report_img: process.env.PUBLIC_URL + `/assets/emotion1.png`,
-    report_descript: "사용가능",
+    state_img: process.env.PUBLIC_URL + `/assets/toiletcolor.png`,
+    state_descript: "사용가능",
+  },
+  {
+    id: 2,
+    state_img: process.env.PUBLIC_URL + `/assets/warning.png`,
+    state_descript: "고장",
   },
   {
     id: 3,
-    report_img: process.env.PUBLIC_URL + `/assets/emotion3.png`,
-    report_descript: "점검중",
+    state_img: process.env.PUBLIC_URL + `/assets/repaircolor.png`,
+    state_descript: "점검중",
   },
 ];
-const ToiletReport = () => {
-  // 화장실칸 id, 화장실 id, content (Null), 신고사유 (select 태그 이용 위생:0, 파손:1, 기타:2)
+
+const StateChange = () => {
   const [state, setState] = useState(0);
+  const [stallLocation, setStallLocation] = useState();
   const { buildingId, stallId, floor } = useParams();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log(stallId, "화장실 아이디가 잘들어온다.");
+    console.log(typeof stallId, "화장실 아이디가 잘들어온다.");
+
+    const stallLocation = async (stallId) => {
+      try {
+        const response = await getMailLocation(stallId);
+        const floor = `${response.floor}층 `;
+        const gender = response.gender == 0 ? "남자화장실 " : "여자화장실 ";
+        const location = `${findLocation(response.list, stallId)}번 칸 `;
+        console.log(floor, gender, location, "화장실 위치 특정");
+
+        setStallLocation({
+          floor: floor,
+          gender: gender,
+          location: location,
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    stallLocation(stallId);
+  }, []);
+
+  // 화장실 칸 번호를 리턴하는 함수
+  const findLocation = (list, stallId) => {
+    let blank = 0;
+    for (let i = 0; i < list.length; i++) {
+      if (list[i].content == 0) blank++;
+      if (list[i].stallId == stallId) {
+        return i + 1 - blank;
+      }
+    }
+  };
 
   const handleClickEmotion = (state) => {
     console.log(state);
@@ -28,45 +69,73 @@ const ToiletReport = () => {
   };
 
   const handleSubmit = async () => {
-    // const nowTime = Moment().format("YYYY-MM-DD HH:mm:ss");
     const data = {
-      stallId: stallId, // 화장실칸ID
-      state: state, // 변경 내용 (사용가능:0 , 점검중:3)
+      stallId: parseInt(stallId), // 화장실칸ID
+      state: state, // 변경 내용 (사용가능:0 , 고장:2, 점검중:3)
     };
     await updateStatus(data);
+
     navigate(`/admin/toilet/${buildingId}`, { state: { floor: floor } });
   };
 
   return (
-    <div>
-      <section>
-        <h4>신고사유</h4>
-        <div className={styles.report_list_wrapper}>
-          {reportList.map((it) => (
-            <StateItem
-              key={it.id}
-              {...it}
-              onClick={handleClickEmotion}
-              //isSelected -> 선택된 아이템만 true -> style을 위한 변수
-              isSelected={it.id === state}
-            />
-          ))}
-        </div>
-      </section>
-      <section>
-        <button
-          onClick={() =>
-            navigate(`/admin/toilet/${buildingId}`, {
-              state: { floor: floor },
-            })
-          }
-        >
-          취소하기
-        </button>
-        <button onClick={handleSubmit}> 제출하기 </button>
-      </section>
+    <div className={styles.container}>
+      <div className={styles.logoContainer}>
+        <img
+          className={styles.logo}
+          src={process.env.PUBLIC_URL + `/assets/Logo.png`}
+        />
+        <div className={styles.text}>Admin State Change</div>
+      </div>
+      <div className={styles.stateContainer}>
+        <section>
+          <div className={styles.stateType}>상태변경</div>
+          <div className={styles.state_list_wrapper}>
+            {stateList.map((it) => (
+              <StateItem
+                key={it.id}
+                {...it}
+                onClick={handleClickEmotion}
+                //isSelected -> 선택된 아이템만 true -> style을 위한 변수
+                isSelected={it.id === state}
+              />
+            ))}
+          </div>
+        </section>
+        <section>
+          <div>
+            <div className={styles.state_content}>
+              <img
+                className={styles.contentImg}
+                src={process.env.PUBLIC_URL + `/assets/location.png`}
+              />
+              <span
+                className={styles.contentText}
+                onClick={() =>
+                  navigate(`/admin/toilet/${buildingId}`, {
+                    state: { floor: floor },
+                  })
+                }
+              >
+                {stallLocation &&
+                  stallLocation.floor +
+                    stallLocation.gender +
+                    stallLocation.location}
+              </span>
+            </div>
+          </div>
+        </section>
+        <section className={styles.buttonContainer}>
+          <div className={styles.button} onClick={handleSubmit}>
+            제출하기{" "}
+          </div>
+          <div className={styles.button} onClick={() => navigate(`/admin/1`)}>
+            취소하기
+          </div>
+        </section>
+      </div>
     </div>
   );
 };
 
-export default ToiletReport;
+export default StateChange;

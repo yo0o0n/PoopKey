@@ -1,13 +1,14 @@
 import axios from "axios";
 
-export const BASE_URL = "http://localhost:8080";
+export const BASE_URL = "http://localhost:9999";
 
-// 화장실 건물등록
+// 화장실 화장실 등록
 export const createRestroom = (data) => {
-    axios.post(`${BASE_URL}/api/master/restroom/insert`, data)
+    axios.post(`${BASE_URL}/api/master/restroom/insert`, data, {headers: { 'Authorization': `BEARER ${localStorage.getItem("UserToken")}`}})
     .then((res) => {
         console.log(res);
     }).catch((error) => {
+        console.log(data,"내가 보낸 데이터")
         console.log(error);
     })
 }
@@ -18,6 +19,7 @@ export const updateStatus = (data) => {
     .then((res) => {
         console.log(res);
     }).catch((error) => {
+        console.log(data,"내가 보낸 데이터")
         console.log(error);
     })
 }

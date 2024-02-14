@@ -3,21 +3,22 @@ import { useState } from "react";
 import { createReportData } from "../../util/API";
 import styles from "./ToiletReport.module.css";
 import ReportItem from "./ReportItem";
-import "moment/locale/ko"; //Locale Setting
+import Swal from "sweetalert2";
+
 const reportList = [
   {
     id: 0,
-    report_img: process.env.PUBLIC_URL + `/assets/emotion1.png`,
+    report_img: process.env.PUBLIC_URL + `/assets/dirty.png`,
     report_descript: "위생",
   },
   {
     id: 1,
-    report_img: process.env.PUBLIC_URL + `/assets/emotion3.png`,
+    report_img: process.env.PUBLIC_URL + `/assets/broken.png`,
     report_descript: "파손",
   },
   {
     id: 2,
-    report_img: process.env.PUBLIC_URL + `/assets/emotion5.png`,
+    report_img: process.env.PUBLIC_URL + `/assets/more.png`,
     report_descript: "기타",
   },
 ];
@@ -34,55 +35,72 @@ const ToiletReport = () => {
   };
 
   const handleSubmit = () => {
-    console.log(reason, content);
-    // const nowTime = Moment().format("YYYY-MM-DD HH:mm:ss");
     const data = {
       stallId: stallId, // 화장실칸ID
       content: content, // 신고내용
       userReportReason: reason, // 신고사유 (0: 위생, 1: 파손, 2: 기타)
     };
     createReportData(data);
-    alert("신고 접수가 완료 되었습니다.");
+    Swal.fire({
+      icon: "success",
+      title: "신고 완료!",
+      text: `신고 접수가 완료되었습니다.`,
+      showCancelButton: false,
+      confirmButtonText: "확인",
+    });
     navigate(`/toilet/${buildingId}`, { state: { floor: floor } });
   };
 
   return (
-    <div>
-      <section>
-        <h4>신고사유</h4>
-        <div className={styles.report_list_wrapper}>
-          {reportList.map((it) => (
-            <ReportItem
-              key={it.id}
-              {...it}
-              onClick={handleClickEmotion}
-              //isSelected -> 선택된 아이템만 true -> style을 위한 변수
-              isSelected={it.id === reason}
+    <div className={styles.container}>
+      <div className={styles.logoContainer}>
+        <img
+          className={styles.logo}
+          src={process.env.PUBLIC_URL + `/assets/Logo.png`}
+        />
+        <div className={styles.text}>User Report Page</div>
+      </div>
+      <div className={styles.reportContainer}>
+        <section>
+          <div className={styles.reportType}>신고사유</div>
+          <div className={styles.report_list_wrapper}>
+            {reportList.map((it) => (
+              <ReportItem
+                key={it.id}
+                {...it}
+                onClick={handleClickEmotion}
+                //isSelected -> 선택된 아이템만 true -> style을 위한 변수
+                isSelected={it.id === reason}
+              />
+            ))}
+          </div>
+        </section>
+        <section>
+          <div className={styles.reportType}>신고내용</div>
+          <div>
+            <textarea
+              className={styles.report_content}
+              placeholder="신고내용을 입력해 주세요."
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
             />
-          ))}
-        </div>
-      </section>
-      <section>
-        <h4>신고내용</h4>
-        <div>
-          <textarea
-            className={styles.report_content}
-            placeholder="신고내용을 입력해 주세요."
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
-        </div>
-      </section>
-      <section>
-        <button
-          onClick={() =>
-            navigate(`/toilet/${buildingId}`, { state: { floor: floor } })
-          }
-        >
-          취소하기
-        </button>
-        <button onClick={handleSubmit}> 제출하기 </button>
-      </section>
+          </div>
+        </section>
+        <section className={styles.buttonContainer}>
+          <div className={styles.button} onClick={handleSubmit}>
+            제출하기
+          </div>
+
+          <div
+            className={styles.button}
+            onClick={() =>
+              navigate(`/toilet/${buildingId}`, { state: { floor: floor } })
+            }
+          >
+            취소하기
+          </div>
+        </section>
+      </div>
     </div>
   );
 };

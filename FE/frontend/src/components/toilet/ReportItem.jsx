@@ -11,11 +11,11 @@ const ReportItem = ({
       onClick={() => onClick(id)}
       className={[
         styles.ReportItem,
-        isSelected ? styles.ReportItem_on_2 : styles.ReportItem_off,
+        isSelected ? styles.ReportItem_on : styles.ReportItem_off,
       ].join(" ")}
     >
       <img src={report_img} />
-      <span>{report_descript}</span>
+      <span className={styles.text}>{report_descript}</span>
     </div>
   );
 };

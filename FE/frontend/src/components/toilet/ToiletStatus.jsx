@@ -1,13 +1,14 @@
 // ToiletStatus.js
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./ToiletStatus.module.css";
 import ToiletGrid from "./ToiletGrid";
-import { useSearchParams } from "react-router-dom";
+import ToiletInfo from "../../layouts/ToiletInfo";
 
 const ToiletStatus = ({ selectFloor, restroomData }) => {
   const [restroomMen, setRestroomMen] = useState();
   const [restroomWomen, setRestroomWomen] = useState();
-  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (restroomData !== undefined) {
@@ -23,10 +24,19 @@ const ToiletStatus = ({ selectFloor, restroomData }) => {
     }
   }, [selectFloor, restroomData]);
 
+  // 홈으로
+  const handleHomeClick = () => {
+    navigate(`/`);
+  };
+
   return (
     <div className={styles.statusContainer}>
       <div className={styles.header}>
-        <div className={styles.title}>Pookey</div>
+        <img
+          className={styles.title}
+          src={process.env.PUBLIC_URL + `/assets/Logo.png`}
+          onClick={handleHomeClick}
+        />
         <div className={styles.floor}>{selectFloor}F</div>
       </div>
       <div className={styles.content}>
@@ -36,7 +46,8 @@ const ToiletStatus = ({ selectFloor, restroomData }) => {
             {restroomMen && restroomMen[0] != undefined ? (
               <ToiletGrid restroom={restroomMen} />
             ) : (
-              <div> 화장실 없음 이미지</div>
+              //화장실 없음 이미지
+              <div> </div>
             )}
           </div>
         </div>
@@ -46,31 +57,13 @@ const ToiletStatus = ({ selectFloor, restroomData }) => {
             {restroomWomen && restroomWomen[0] != undefined ? (
               <ToiletGrid restroom={restroomWomen} />
             ) : (
-              <div> 화장실 없음 이미지</div>
+              //화장실 없음 이미지
+              <div> </div>
             )}
           </div>
         </div>
       </div>
-
-      <div className={styles.footer}>
-        <div className={styles.status}>
-          화장실칸 상태 정보
-          <div>
-            <div>사용가능</div>
-            <div>고장</div>
-            <div>사용중</div>
-            <div>점검중</div>
-          </div>
-        </div>
-        <div className={styles.congestion}>
-          화장실층 상태 정보
-          <div>
-            <div></div>
-            <div>혼잡</div>
-            <div>포화</div>
-          </div>
-        </div>
-      </div>
+      <ToiletInfo />
     </div>
   );
 };

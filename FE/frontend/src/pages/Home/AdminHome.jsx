@@ -1,6 +1,7 @@
-import style from "./AdminHome.module.css";
+import styles from "./AdminHome.module.css";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Web_Socket_URL } from "../../util/API";
 
 const AdminHome = () => {
   const { buildingId } = useParams();
@@ -10,12 +11,14 @@ const AdminHome = () => {
 
   // WebSocket
   useEffect(() => {
-    webSocket.current = new WebSocket("ws://localhost:8080/ws/report");
+    webSocket.current = new WebSocket(`${Web_Socket_URL}/report`);
     console.log(webSocket.current);
 
     webSocket.current.onopen = () => {
       console.log("웹소켓 연결 성공!!");
       const data = {
+        buildingId: 1,
+        restroomId: 1,
         masterId: 1, //로컬 스토리지에서 가져온다. or useParams 사용할것
       };
       const jsonData = JSON.stringify(data);
@@ -66,11 +69,30 @@ const AdminHome = () => {
     navigate(`/admin/toiletStatistics/${buildingId}`);
   };
   return (
-    <div>
-      <div onClick={handleStatusClick}>화장실 현황</div>
-      <div onClick={handleRegistClick}>화장실 등록</div>
-      <div onClick={handleMailBoxClick}>화장실 알림 {msgCount}</div>
-      <div onClick={handleStatisticClick}>화장실 통계</div>
+    <div className={styles.container}>
+      <div className={styles.logoContainer}>
+        <img
+          className={styles.logo}
+          src={process.env.PUBLIC_URL + `/assets/Logo.png`}
+        />
+        <div className={styles.text}>Admin Home</div>
+      </div>
+      <div className={styles.selectContainer}>
+        <div className={styles.selectText}>Menu</div>
+        <div className={styles.selectOption} onClick={handleStatusClick}>
+          화장실 현황
+        </div>
+        <div className={styles.selectOption} onClick={handleRegistClick}>
+          화장실 등록
+        </div>
+        <div className={styles.selectOptionMail} onClick={handleMailBoxClick}>
+          화장실 알림
+          <span className={styles.badge}>{msgCount}</span>
+        </div>
+        <div className={styles.selectOption} onClick={handleStatisticClick}>
+          화장실 통계
+        </div>
+      </div>
     </div>
   );
 };

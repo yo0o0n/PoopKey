@@ -3,9 +3,9 @@ import StateChange from "../../components/adminToilet/StateChange";
 
 const ToiletAdminDetatil = () => {
   return (
-    <div>
+    <>
       <StateChange />
-    </div>
+    </>
   );
 };
 export default ToiletAdminDetatil;

@@ -17,11 +17,8 @@
 }
 
 
-.container h2 {
-    text-align: center;
-    font-size: 2rem;
-    margin-bottom: 10px;
-    color: #B04A00;
+.logo {
+    height: 125px;
 }
 
 .container form {

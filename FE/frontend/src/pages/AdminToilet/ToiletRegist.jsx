@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import RegistItem from "../../components/adminToilet/RegistItem";
 import { createRestroom } from "../../util/AdminAPI";
+import Swal from "sweetalert2";
+
 const ToiletRegist = () => {
   const navigate = useNavigate();
   const { buildingId } = useParams();
@@ -11,8 +13,8 @@ const ToiletRegist = () => {
   const [floor, setFloor] = useState(1);
   const [stallData, setStallData] = useState([]);
   const [gridSize, setgridSize] = useState({
-    row: "",
-    col: "",
+    row: 3,
+    col: 3,
   });
 
   const numberOptions = Array.from({ length: 20 }, (_, index) => index + 1);
@@ -81,9 +83,8 @@ const ToiletRegist = () => {
   const handleRestRoomSubmit = async () => {
     try {
       const registItems = document.querySelectorAll(".RegistItem");
+
       const list = Array.from(registItems).map((RegistItem) => {
-        // console.log(RegistItem.getAttribute("content"));
-        //if (RegistItem.getAttribute("content") == 1) stallCount++;
         return {
           content: RegistItem.getAttribute("content"),
           row: RegistItem.getAttribute("row"),
@@ -99,81 +100,105 @@ const ToiletRegist = () => {
         width: gridSize.col,
         list: list,
       };
-
-      console.log(data);
-      await createRestroom(data);
+      console.log(list, "리스트에 값이 안들어오노");
+      createRestroom(data);
+      Swal.fire({
+        icon: "success",
+        title: "등록 완료!",
+        text: `화장실 등록이 완료되었습니다.`,
+        showCancelButton: false,
+        confirmButtonText: "확인",
+      });
       navigate(`/admin/toilet/${buildingId}`, { state: { floor: 1 } });
     } catch (e) {
       console.log(e);
     }
   };
 
+  // 홈으로
+  const handleHomeClick = () => {
+    navigate(`/admin/1`);
+  };
+
   return (
     <div className={styles.container}>
-      <div className={styles.selectOption}>
-        <div className={styles.sizeOption}>
-          <input
-            className={styles.sizeOptionInput}
-            type="text"
-            placeholder=" Row"
-            name="row"
-            value={gridSize.row}
-            onChange={handleInputChange}
-          ></input>
-        </div>
-        <div className={styles.sizeOption}>
-          <input
-            className={styles.sizeOptionInput}
-            type="text"
-            placeholder=" Col"
-            name="col"
-            value={gridSize.col}
-            onChange={handleInputChange}
-          ></input>
-        </div>
-        <div className={styles.sizeOption}>
-          <select
-            className={styles.sizeOptionSelect}
-            onChange={handleGenderChange}
-          >
-            <option value={0}>남자</option>
-            <option value={1}>여자</option>
-          </select>
-        </div>
-        <div className={styles.sizeOption}>
-          <select
-            className={styles.sizeOptionSelect}
-            onChange={handleFloorChange}
-          >
-            {numberOptions.map((number) => (
-              <option key={number} value={number}>
-                {number}F
-              </option>
-            ))}
-          </select>
-        </div>
+      <div className={styles.logoContainer}>
+        <img
+          className={styles.logo}
+          src={process.env.PUBLIC_URL + `/assets/Logo.png`}
+          onClick={handleHomeClick}
+        />
+        <div className={styles.text}>Admin Regist Page</div>
       </div>
-      <div className={styles.registGrid}>
-        {stallData.map((data) => (
-          <RegistItem
-            className="RegistItem"
-            key={`${data.row}-${data.col}`}
-            row={data.row}
-            col={data.col}
-            content={data.content}
-            height={gridSize.row}
-            width={gridSize.col}
-            onClick={() => {
-              handleStatusClick(data.row, data.col);
-            }}
-          />
-        ))}
-      </div>
-      <div
-        className={stallCount == 0 ? styles.submitBlock : styles.submitRestRoom}
-        onClick={handleRestRoomSubmit}
-      >
-        제출
+      <div className={styles.registContainer}>
+        <div className={styles.selectOption}>
+          <div className={styles.sizeOption}>
+            <input
+              className={styles.sizeOptionInput}
+              type="text"
+              placeholder=" Row"
+              name="row"
+              value={gridSize.row}
+              onChange={handleInputChange}
+            ></input>
+          </div>
+          <div className={styles.sizeOption}>
+            <input
+              className={styles.sizeOptionInput}
+              type="text"
+              placeholder=" Col"
+              name="col"
+              value={gridSize.col}
+              onChange={handleInputChange}
+            ></input>
+          </div>
+          <div className={styles.sizeOption}>
+            <select
+              className={styles.sizeOptionSelect}
+              onChange={handleGenderChange}
+            >
+              <option value={0}>남자</option>
+              <option value={1}>여자</option>
+            </select>
+          </div>
+          <div className={styles.sizeOption}>
+            <select
+              className={styles.sizeOptionSelect}
+              onChange={handleFloorChange}
+            >
+              {numberOptions.map((number) => (
+                <option key={number} value={number}>
+                  {number}F
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className={styles.registGrid}>
+          {stallData.map((data, index) => (
+            <RegistItem
+              className="RegistItem"
+              key={`${index}`}
+              row={data.row}
+              col={data.col}
+              content={data.content}
+              height={gridSize.row}
+              width={gridSize.col}
+              onClick={() => {
+                handleStatusClick(data.row, data.col);
+              }}
+            />
+          ))}
+        </div>
+        <div
+          className={
+            stallCount == 0 ? styles.submitBlock : styles.submitRestRoom
+          }
+          onClick={handleRestRoomSubmit}
+        >
+          등록하기
+        </div>
       </div>
     </div>
   );

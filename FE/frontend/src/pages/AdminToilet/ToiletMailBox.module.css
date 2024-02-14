@@ -1,27 +1,85 @@
+/* mailBox 전체 container */
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+
+  width: 100%;
+  height: 100%;
+}
+
+/* mailBox 왼쪽 페이지 container */
+.logoContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  box-sizing: border-box;
+  padding: 0% 0% 4%;
+  
+  width: 50%;
+  height: 100%;
+}
+
+/* Home 로고 */
+.logo {
+  object-fit: contain;
+  cursor: pointer;
+  width: 100%;
+  height: 35%;
+}
+
+/* mailBox 페이지 안내 텍스트 */
+.text {
+  width: 100%;
+  text-align: center;
+  font-size: 25px;
+  font-weight: bolder;
+  color: #B35310;
+}
+
+
+/* mailBox 오른쪽 페이지 container*/
+.mailContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  box-sizing: border-box;
+  padding: 0% 5% 5%;
+  width: 50%;
+  height: 100%;
+}
+
+
+/* 알림 테이블 */
 .table {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-    border: 2px solid black;
-    border-radius: 25px;
-    width: 75%;
-  }
+  border: 2px solid black;
+  border-radius: 25px;
+  width: 75%;
+}
 
-  .rowBox {
-    border-bottom: 2px solid #ccc;
-  }
-  .row {
-    display: flex;
-    justify-content: space-between;
-    padding: 5px;
-  }
+.rowBox {
+  border-bottom: 2px solid #ccc;
+}
 
-  .cell {
-    flex: 1;
-    text-align: center;
-  }
+.row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+}
 
-  .cellContent {
-    flex: 3;
-    text-align: center;
-  }
+.cell {
+  flex: 1;
+  text-align: center;
+}
+
+.cellContent {
+  flex: 3;
+  text-align: center;
+}

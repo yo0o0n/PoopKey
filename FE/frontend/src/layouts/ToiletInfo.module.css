@@ -1,0 +1,53 @@
+.footer {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-around;
+
+    width: 100%;
+    height: 25%;
+}
+
+/* footer info */
+
+.status {
+    display: flex;
+    flex-wrap: wrap;
+    
+    box-sizing: border-box;
+    padding: 10px;
+    width: 40%;
+    gap: 3%;
+}
+
+.statusItem {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+
+    flex: 1 0 calc(50% - 20%);
+    border-radius: 20px;
+    margin: 2%;
+    gap: 15px;
+}
+
+/* 화장실칸 정보 */
+.statusImg1 {
+    background-color: aqua;
+    border-radius: 5px;
+    width: 30px;
+    height: 30px;
+}
+
+/* 혼잡도 정보 */
+.statusImg2 {
+    background-color: red;
+    border-radius: 100%;
+    width: 30px;
+    height: 30px
+}
+
+.statusText {
+    font-size: 17px;
+    font-weight: bolder;
+}

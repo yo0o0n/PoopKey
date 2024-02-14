@@ -25,6 +25,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -46,6 +47,9 @@ public class SecurityConfig {
                                 List.of("*")
                         );
                         config.setAllowedMethods(
+                                List.of("*")
+                        );
+                        config.setAllowedHeaders(
                                 List.of("*")
                         );
                         return config;

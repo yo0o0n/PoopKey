@@ -1,7 +1,7 @@
 // FloorBar.js
 import styles from "./FloorBar.module.css";
 import React, { useEffect, useState, useRef } from "react";
-import { getCongestion } from "../../util/API";
+import { getCongestion, Web_Socket_URL } from "../../util/API";
 import CongestionItem from "./CongestionItem";
 
 const FloorBar = ({
@@ -14,6 +14,7 @@ const FloorBar = ({
   const [isUpdate, setIsUpdate] = useState();
   const webSocket = useRef(null);
   let floorFilter = 1;
+
   useEffect(() => {
     if (restroomData !== undefined) {
       const buildingId = restroomData[0].buildingId;
@@ -34,7 +35,7 @@ const FloorBar = ({
 
   // WebSocket
   useEffect(() => {
-    webSocket.current = new WebSocket("ws://localhost:8080/ws");
+    webSocket.current = new WebSocket(Web_Socket_URL);
     console.log(webSocket.current);
 
     webSocket.current.onopen = () => {
@@ -42,6 +43,7 @@ const FloorBar = ({
       const data = {
         buildingId: 1,
         restroomId: 1,
+        masterId: 1, //로컬 스토리지에서 가져온다. or useParams 사용할것
       };
       const jsonData = JSON.stringify(data);
 
@@ -116,20 +118,24 @@ const FloorBar = ({
               return (
                 <div
                   key={restroom.restroomId}
-                  className={styles.floorItem}
+                  className={
+                    selectFloor == restroom.floor
+                      ? styles.floorItem_on
+                      : styles.floorItem_off
+                  }
                   onClick={() => handleFloorClick(restroom.floor)}
                 >
                   <div className={styles.floorCongestion}>
                     {congestionMen != -1 ? (
                       <CongestionItem status={congestionMen}></CongestionItem>
                     ) : (
-                      <div>X</div>
+                      <CongestionItem status={-1}></CongestionItem>
                     )}
 
                     {congestionWomen != -1 ? (
                       <CongestionItem status={congestionWomen}></CongestionItem>
                     ) : (
-                      <div>X</div>
+                      <CongestionItem status={-1}></CongestionItem>
                     )}
                   </div>
                   <p className={styles.floorText}>{restroom.floor}F</p>

@@ -1,9 +1,10 @@
 import styles from "./LoginHeader.module.css";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 const LoginHeader = () => {
   const [isLogin, setIsLogin] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (localStorage.length > 0) {
@@ -16,22 +17,29 @@ const LoginHeader = () => {
     }
   }, []);
 
-  const handleLogoutClick = (e) => {
-    e.preventDefault();
+  const handleLogInClick = () => {
+    navigate(`/login`);
+  };
+
+  const handleJoinClick = () => {
+    navigate(`/regist`);
+  };
+
+  const handleLogoutClick = () => {
     localStorage.clear();
     setIsLogin(false);
   };
 
   return (
-    <div>
+    <div className={styles.container}>
       {!isLogin ? (
-        <span>
-          <Link to="/login">로그인</Link>
-          <Link to="/regist">회원가입</Link>
-        </span>
+        <div className={styles.login}>
+          <div onClick={handleLogInClick}>로그인</div>
+          <div onClick={handleJoinClick}>회원가입</div>
+        </div>
       ) : (
-        <div style={{ cursor: "pointer" }}>
-          <a onClick={handleLogoutClick}>로그아웃</a>
+        <div className={styles.logout}>
+          <div onClick={handleLogoutClick}>로그아웃</div>
         </div>
       )}
     </div>

@@ -3,9 +3,9 @@ import ToiletReport from "../../components/toilet/ToiletReport";
 
 const ToiletDetatil = () => {
   return (
-    <div>
+    <>
       <ToiletReport />
-    </div>
+    </>
   );
 };
 export default ToiletDetatil;

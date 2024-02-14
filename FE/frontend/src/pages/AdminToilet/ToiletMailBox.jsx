@@ -1,22 +1,35 @@
 import styles from "./ToiletMailBox.module.css";
 import React, { useEffect, useState, useRef } from "react";
+import { Web_Socket_URL } from "../../util/API";
 import { updateMailCheck, getMailLocation } from "../../util/AdminAPI";
+import { useNavigate } from "react-router-dom";
+
 const ToiletMailBox = () => {
   const [mailList, setMailList] = useState();
   const [detailList, setDetailList] = useState([]);
   const [mailLocation, setMailLocation] = useState();
+  const navigate = useNavigate();
   const webSocket = useRef(null);
+
+  //pagenation 변수
+  // const totalPages = Math.ceil(totalItems / itemCountPerPage); // 총 페이지 개수
+  // const [start, setStart] = useState(1); // 시작 페이지
+  // const noPrev = start === 1; // 이전 페이지가 없는 경우
+  // const noNext = start + pageCount - 1 >= totalPages; // 다음 페이지가 없는 경우
 
   // WebSocket
   useEffect(() => {
-    webSocket.current = new WebSocket("ws://localhost:8080/ws/report");
+    webSocket.current = new WebSocket(`${Web_Socket_URL}/report`);
     console.log(webSocket.current);
 
     webSocket.current.onopen = () => {
       console.log("웹소켓 연결 성공!!");
       const data = {
+        buildingId: 1,
+        restroomId: 1,
         masterId: 1, //로컬 스토리지에서 가져온다. or useParams 사용할것
       };
+
       const jsonData = JSON.stringify(data);
       sendMessage(jsonData);
     };
@@ -52,6 +65,10 @@ const ToiletMailBox = () => {
     }
   };
 
+  //pagenation에 필요한 데이터를 초기화하는 훅
+  useEffect(() => {});
+
+  //message 데이터 가져오기
   const handleCheckedClick = async (reportId) => {
     try {
       await updateMailCheck(reportId);
@@ -65,6 +82,7 @@ const ToiletMailBox = () => {
     }
   };
 
+  // message 세부정보 (신고한 화장실 칸 위치정보)
   const handleOnDetailClick = (reportId) => {
     if (detailList.length == 0) {
       setDetailList([reportId]);
@@ -100,17 +118,33 @@ const ToiletMailBox = () => {
     }
   };
 
+  // 화장실 칸 번호를 리턴하는 함수
   const findLocation = (list, stallId) => {
+    let blank = 0;
     for (let i = 0; i < list.length; i++) {
+      if (list[i].content == 0) blank++;
       if (list[i].stallId == stallId) {
-        return i + 1;
+        return i + 1 - blank;
       }
     }
   };
 
+  // 홈으로
+  const handleHomeClick = () => {
+    navigate(`/admin/1`);
+  };
+
   return (
-    <div>
-      <div>
+    <div className={styles.container}>
+      <div className={styles.logoContainer}>
+        <img
+          className={styles.logo}
+          src={process.env.PUBLIC_URL + `/assets/Logo.png`}
+          onClick={handleHomeClick}
+        />
+        <div className={styles.text}>Admin Mail</div>
+      </div>
+      <div className={styles.mailContainer}>
         <div className={styles.table}>
           <div className={styles.row}>
             <div className={styles.cell}>No</div>

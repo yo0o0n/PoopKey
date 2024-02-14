@@ -27,7 +27,7 @@ const ToiletPage = () => {
     getToiletData();
   }, [buildingId, isUpdate]);
 
-  // ToiletReport에서 제출/취소를 했을 때 navigate를 통해 넘어온 층으로 다시 돌아간다.
+  // stateChange에서 제출/취소를 했을 때 navigate를 통해 넘어온 층으로 다시 돌아간다.
   // 2층 화장실에서 신고 했을 때, 1층으로 돌아갔던 현상을 방지
   useEffect(() => {
     if (location.state != null) {

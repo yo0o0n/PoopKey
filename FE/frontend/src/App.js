@@ -1,6 +1,5 @@
 // App.js
 import "./App.css";
-import React, { useRef,useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import Home from "./pages/Home/Home";
@@ -15,7 +14,8 @@ import ToiletRegist from "./pages/AdminToilet/ToiletRegist";
 import ToiletStatistics from "./pages/AdminToilet/ToiletStatistics";
 import AdminHome from "./pages/Home/AdminHome";
 import ToiletMailBox from "./pages/AdminToilet/ToiletMailBox";
-
+import AdminLoginpage from "./pages/Admin/AdminLoginPage";
+import AdminSignupPage from "./pages/Admin/AdminSignupPage";
 
 const App = () => {
   
@@ -25,10 +25,12 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path="/login" element={<LoginPage />}></Route>
-          <Route path="/regist" element={<SignupPage/>}></Route>
+          <Route path="/regist" element={<AdminSignupPage/>}></Route>
           <Route path="/toilet/:buildingId" element={<ToiletPage />}></Route>
           <Route path="/toiletDetail/:buildingId/:floor/:stallId" element={<ToiletDetail/>}></Route>
 
+          <Route path="/admin/login" element={<AdminLoginpage />}></Route>
+          <Route path="/admin/regist" element={<SignupPage/>}></Route>
           <Route path="/admin/:buildingId" element={<AdminHome/>}></Route>
           <Route path="/admin/toilet/:buildingId" element={<ToiletAdminPage />}></Route>
           <Route path="/admin/toiletDetail/:buildingId/:floor/:stallId" element={<ToiletAdminDetatil/>}></Route>

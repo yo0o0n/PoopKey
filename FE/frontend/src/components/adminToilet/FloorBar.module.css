@@ -1,7 +1,6 @@
 /* FllorBar.css */
 .floorBar {
   width: 15%;
-  background-color: white;
   padding: 10px;
   order: 2;
   max-height: 100%;
@@ -15,43 +14,60 @@
 }
 
 
-.floorItem {
-  box-sizing: border-box;
-
+.floorItem_on {
   display: flex;
   flex-direction: column;
-  align-content:  stretch;
+  align-content: stretch;
 
 
-  margin: auto;
   width: 70%;
   height: 10%;
-  margin: 10px;
-  border-radius: 15px;
-  font-weight: 900;
+  margin: 10px 0px 10px 20px;
+  border-radius: 10px;
+  font-weight: bolder;
 
   cursor: pointer;
   color: white;
 
   text-align: center;
-  
-  
-  border: 1px solid #C47D4A;
-  background-color: #C47D4A;
 
+
+  background-color: #B35310 ;
 }
 
-.floorItem :hover {
-  background-color: #a5693e;
+.floorItem_off {
+  display: flex;
+  flex-direction: column;
+  align-content: stretch;
+
+
+  width: 70%;
+  height: 10%;
+  margin: 10px 0px 10px 20px;
+  border-radius: 10px;
+  font-weight: bolder;
+
+  cursor: pointer;
+  color: white;
+
+  text-align: center;
+
+
+  background-color: #dcb79c ;
 }
+
 
 .floorCongestion {
   display: flex;
   flex-direction: row;
+
+  box-sizing: border-box;
+  padding-left: 3px;
+  padding-top: 3px;
   height: 25%;
 }
 
-.floorCongestion div{
+.floorCongestion div {
   height: 100%;
   width: 20%;
   margin: 0% 3%

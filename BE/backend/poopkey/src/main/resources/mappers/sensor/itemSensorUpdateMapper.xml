@@ -6,6 +6,5 @@
     <update id="update">
         UPDATE item SET tissue = #{tissue}
         WHERE stall_id = #{stallId}
-<!--        UPDATE item SET tissue = 99999-->
     </update>
 </mapper>

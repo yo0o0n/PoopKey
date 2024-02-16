@@ -1,4 +1,5 @@
 import socket
+import time
 public_server_ip = "43.202.37.123"
 public_server_port = 8200
 public_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -8,9 +9,11 @@ public_socket.connect((public_server_ip, public_server_port))
 # congestion = 2
 # backend_socket.sendall(("congestion,%d,%d,"%(congestion, RESTROOM_ID)).encode())
 print("connected")
-public_socket.sendall("hihi".encode())
+time.sleep(1)
+public_socket.sendall("toiletOccupied,2,-1,".encode())
+time.sleep(5)
+public_socket.sendall("toiletVacant,2,-1,".encode())
 print("wait")
-rec = public_socket.recv(1024).decode().strip()
-print(rec)
+
 
 public_socket.close()

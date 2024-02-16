@@ -41,7 +41,7 @@
         s.content AS content,
         s.row AS `row`,
         s.col AS col,
-        '(프론트쪽에서 URL 포맷을 결정필요)' AS detailURL
+        'Frontend URL' AS detailURL
         FROM restroom r
         INNER JOIN stall s
         ON r.restroom_id = s.restroom_id
@@ -61,7 +61,7 @@
         s.content AS content,
         s.row AS `row`,
         s.col AS col,
-        '(프론트쪽에서 URL 포맷을 결정필요)' AS detailURL
+        'Frontend URL' AS detailURL
         FROM restroom r
         INNER JOIN stall s
         ON r.restroom_id = s.restroom_id

@@ -11,13 +11,12 @@ const AdminHome = () => {
 
   // WebSocket
   useEffect(() => {
-    if (localStorage.getItem("admin") == null) {
-      navigate("/admin/login");
-    }
+    // 로그인 하지 않은경우 url 접근을 막는다.
+    // if (localStorage.getItem("admin") == null) {
+    //   navigate("/admin/login");
+    // }
 
     webSocket.current = new WebSocket(`${Web_Socket_URL}/report`);
-    console.log(webSocket.current);
-
     webSocket.current.onopen = () => {
       console.log("웹소켓 연결 성공!!");
       const data = {
@@ -34,7 +33,7 @@ const AdminHome = () => {
     };
 
     webSocket.current.onmessage = (event) => {
-      console.log("웹소켓 메시지 수신:", event.data);
+      console.log("웹소켓 메시지 수신:", event);
       const mailData = JSON.parse(event.data);
       setMsgCount(mailData.filter((data) => data.checked == 0).length);
     };
@@ -91,7 +90,9 @@ const AdminHome = () => {
         </div>
         <div className={styles.selectOptionMail} onClick={handleMailBoxClick}>
           화장실 알림
-          <span className={styles.badge}>{msgCount}</span>
+          <span className={msgCount != 0 && styles.badge}>
+            {msgCount != 0 ? <>{msgCount}</> : <></>}
+          </span>
         </div>
         <div className={styles.selectOption} onClick={handleStatisticClick}>
           화장실 통계

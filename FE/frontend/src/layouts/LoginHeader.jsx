@@ -8,11 +8,8 @@ const LoginHeader = () => {
 
   useEffect(() => {
     if (localStorage.length > 0) {
-      console.log(localStorage.getItem("id"), 1111);
       setIsLogin(true);
     } else {
-      console.log("이게 넘어오면 안되는데..");
-
       setIsLogin(false);
     }
   }, []);
@@ -32,7 +29,7 @@ const LoginHeader = () => {
 
   return (
     <div className={styles.container}>
-      {!isLogin ? (
+      {/* {!isLogin ? (
         <div className={styles.login}>
           <div onClick={handleLogInClick}>로그인</div>
           <div onClick={handleJoinClick}>회원가입</div>
@@ -41,7 +38,7 @@ const LoginHeader = () => {
         <div className={styles.logout}>
           <div onClick={handleLogoutClick}>로그아웃</div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

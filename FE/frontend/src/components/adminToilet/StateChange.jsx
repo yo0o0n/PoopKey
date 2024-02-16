@@ -29,16 +29,12 @@ const StateChange = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(stallId, "화장실 아이디가 잘들어온다.");
-    console.log(typeof stallId, "화장실 아이디가 잘들어온다.");
-
     const stallLocation = async (stallId) => {
       try {
         const response = await getMailLocation(stallId);
         const floor = `${response.floor}층 `;
         const gender = response.gender == 0 ? "남자화장실 " : "여자화장실 ";
         const location = `${findLocation(response.list, stallId)}번 칸 `;
-        console.log(floor, gender, location, "화장실 위치 특정");
 
         setStallLocation({
           floor: floor,
@@ -64,7 +60,6 @@ const StateChange = () => {
   };
 
   const handleClickEmotion = (state) => {
-    console.log(state);
     setState(state);
   };
 

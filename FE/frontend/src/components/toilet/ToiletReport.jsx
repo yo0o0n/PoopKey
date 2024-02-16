@@ -30,7 +30,6 @@ const ToiletReport = () => {
   const navigate = useNavigate();
 
   const handleClickEmotion = (reason) => {
-    console.log(reason);
     setReason(reason);
   };
 

@@ -100,7 +100,7 @@ const ToiletRegist = () => {
         width: gridSize.col,
         list: list,
       };
-      console.log(list, "리스트에 값이 안들어오노");
+
       createRestroom(data);
       Swal.fire({
         icon: "success",

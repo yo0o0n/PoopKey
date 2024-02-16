@@ -2,7 +2,7 @@ import axios from "axios";
 
 // export const BASE_URL = "http://localhost:9999";
 
-export const BASE_URL = "http://172.18.0.1:9999";
+export const BASE_URL = "https://i10a104.p.ssafy.io";
 
 // 화장실 화장실 등록
 export const createRestroom = (data) => {
@@ -10,7 +10,6 @@ export const createRestroom = (data) => {
     .then((res) => {
         console.log(res);
     }).catch((error) => {
-        console.log(data,"내가 보낸 데이터")
         console.log(error);
     })
 }
@@ -21,7 +20,6 @@ export const updateStatus = (data) => {
     .then((res) => {
         console.log(res);
     }).catch((error) => {
-        console.log(data,"내가 보낸 데이터")
         console.log(error);
     })
 }
@@ -47,7 +45,6 @@ export const getStatistics = async (buildingName, floor, gender) => {
   // 관리자 신고메일 리스트
 export const getMailList = async (masterId) => {
     try {
-      //console.log(buildingId,"axios에 빌딩 id 잘 넘어오는중")
       const response = await axios.get(`${BASE_URL}/api/master/reports/select`,{
         params: {
             masterId: masterId
@@ -81,9 +78,9 @@ export const getMailList = async (masterId) => {
           stallId: stallId
         }
       });
-      console.log(response.data, "수신메일 위치");
+      console.log(response);
       return response.data;
     } catch (error) {
-      console.error("요청 실패", error);
+      console.error(error);
     }
   }

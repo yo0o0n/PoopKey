@@ -23,21 +23,16 @@ const AdminSignupPage = () => {
     if (name === "email") {
       if (emailCheck(value) || value === "") {
         setIsEmailValid(true);
-        console.log("email 유효성 성공");
       } else {
         setIsEmailValid(false);
-        console.log("email 유효성 실패");
       }
     }
 
     if (name === "password") {
       if (passwordCheck(value) || value === "") {
         setIsPwValid(true);
-        console.log("pw 유효성 성공");
       } else {
         setIsPwValid(false);
-        console.log("pw 유효성 실패");
-        console.log(name);
       }
     }
   };

@@ -36,10 +36,9 @@ const FloorBar = ({
   // WebSocket
   useEffect(() => {
     webSocket.current = new WebSocket(Web_Socket_URL);
-    console.log(webSocket.current);
 
     webSocket.current.onopen = () => {
-      console.log("웹소켓 연결 성공!!");
+      //console.log("웹소켓 연결 성공!!");
       const data = {
         buildingId: 1,
         restroomId: 1,
@@ -52,17 +51,17 @@ const FloorBar = ({
     };
 
     webSocket.current.onerror = (error) => {
-      console.log("웹소켓 연결 에러:", error);
+      //console.log("웹소켓 연결 에러:", error);
     };
 
     webSocket.current.onmessage = (event) => {
-      console.log("웹소켓 메시지 수신:", event.data);
+      //console.log("웹소켓 메시지 수신:");
       updataWebSocket(Math.random());
       setIsUpdate(Math.random());
     };
 
     webSocket.current.onclose = (event) => {
-      console.log("웹소켓 연결 종료:", event);
+      //console.log("웹소켓 연결 종료:", event);
     };
 
     return () => {
@@ -99,7 +98,9 @@ const FloorBar = ({
               }
 
               const list =
-                currentFloorCongestion && currentFloorCongestion[0].list;
+                currentFloorCongestion &&
+                currentFloorCongestion[0] &&
+                currentFloorCongestion[0].list;
               let congestionMen = -1;
               let congestionWomen = -1;
 

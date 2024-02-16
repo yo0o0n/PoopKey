@@ -23,7 +23,6 @@ const Home = () => {
   }, []);
 
   const handleBuildingClick = (buildingId, buildingName) => {
-    console.log(buildingId);
     navigate(`/toilet/${buildingId}?name=${buildingName}`);
   };
 
@@ -49,7 +48,7 @@ const Home = () => {
                     );
                   }}
                 >
-                  {building.buildingName}
+                  {building.buildingName} 역삼 멀티캠퍼스
                 </div>
               ))}
           </div>

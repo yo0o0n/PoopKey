@@ -20,7 +20,6 @@ const ToiletMailBox = () => {
   //pagenation
   useEffect(() => {
     if (mailList == undefined) return;
-    console.log(lastPage);
     if (page == lastPage) {
       setPageData(mailList && mailList.slice(5 * (page - 1)));
     } else {
@@ -33,14 +32,13 @@ const ToiletMailBox = () => {
   // WebSocket
   useEffect(() => {
     webSocket.current = new WebSocket(`${Web_Socket_URL}/report`);
-    console.log(webSocket.current);
 
     webSocket.current.onopen = () => {
       console.log("웹소켓 연결 성공!!");
       const data = {
         buildingId: 1,
         restroomId: 1,
-        masterId: 1, //로컬 스토리지에서 가져온다. or useParams 사용할것
+        masterId: 1,
       };
 
       const jsonData = JSON.stringify(data);
@@ -52,14 +50,14 @@ const ToiletMailBox = () => {
     };
 
     webSocket.current.onmessage = (event) => {
-      console.log("웹소켓 메시지 수신:", event.data);
+      console.log("웹소켓 메시지 수신:", event);
       setMailList(
         JSON.parse(event.data).sort(function (o1, o2) {
           return o2.reportId - o1.reportId;
         })
       );
 
-      console.log(JSON.parse(event.data).length, "dzdzdz");
+      console.log(JSON.parse(event.data).length);
       setLastPage(
         event.data.length % 8 == 0
           ? parseInt(JSON.parse(event.data).length / 8)

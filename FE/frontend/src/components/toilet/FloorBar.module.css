@@ -32,7 +32,7 @@
   text-align: center;
 
 
-  background-color: #B35310 ;
+  background-color: #B35310;
 }
 
 .floorItem_off {
@@ -53,7 +53,7 @@
   text-align: center;
 
 
-  background-color: #dcb79c ;
+  background-color: #dcb79c;
 }
 
 
@@ -75,4 +75,20 @@
 
 .floorText {
   margin-top: 7%;
+}
+
+/* 스크롤바 디자인 */
+.floorList::-webkit-scrollbar {
+  width: 10px;
+}
+
+.floorList::-webkit-scrollbar-thumb {
+  background-color: #B35310;
+  border-radius: 10px;
+}
+
+.floorList::-webkit-scrollbar-track {
+  background-color: #dcb79c;
+  border-radius: 10px;
+  box-shadow: inset 0px 0px 5px white;
 }

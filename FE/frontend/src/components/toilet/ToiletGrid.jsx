@@ -163,7 +163,11 @@ const ToiletGrid = ({ restroom }) => {
                 col={item.col}
                 onClick={() => handleDetailClick(item)}
               >
-                <img className={styles.icon} src={img1.src} />
+                {item.tissueStatus.length > 0 ? (
+                  <img className={styles.icon} src={tissue.src} />
+                ) : (
+                  <img className={styles.icon} src={img1.src} />
+                )}
               </div>
             );
           } else if (item.status === 2) {

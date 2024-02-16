@@ -4,9 +4,9 @@ import axios from "axios";
 
 // export const Web_Socket_URL = "ws://localhost:9999/ws";
 
-export const BASE_URL = "http://172.18.0.1:9999";
+export const BASE_URL = "https://i10a104.p.ssafy.io";
 
-export const Web_Socket_URL = "ws://localhost:9999/ws";
+export const Web_Socket_URL = "wss://i10a104.p.ssafy.io/ws";
 
 //모든 건물 리스트
 export const getAllBuilding = async () => {
@@ -15,7 +15,7 @@ export const getAllBuilding = async () => {
       console.log(response.data);
       return response.data;
     } catch (error) {
-      console.error("요청 실패", error);
+      console.error(error);
     }
   };
 
@@ -27,7 +27,7 @@ export const getRestRoom = async (buildingId) => {
             buildingId: buildingId
         }
       });
-      console.log(response.data, "해당 빌딩의 화장실 정보");
+      console.log(response);
       return response.data;
     } catch (error) {
       console.error("요청 실패", error);
@@ -38,16 +38,15 @@ export const getRestRoom = async (buildingId) => {
 // [화장실칸1, 화장실칸2, 화장실칸3 ...]
 export const getStall = async (restroomId) => {
     try {
-        console.log(restroomId);
       const response = await axios.get(`${BASE_URL}/api/api/tmptest1`,{
         params: {
             restroomId: restroomId
         }
       });
-      console.log(response.data, "해당 화장실의 화장실칸 데이터");
+      console.log(response);
       return response.data;
     } catch (error) {
-      console.error("요청 실패", error);
+      console.error(error);
     }
   };
 
@@ -61,10 +60,10 @@ export const getCongestion = async (buildingId) => {
           buildingId: buildingId
       }
     });
-    console.log(response.data, "해당 빌딩의 혼잡도");
+    console.log(response);
     return response.data;
   } catch (error) {
-    console.error("요청 실패", error);
+    console.error(error);
   }
 }
 
@@ -84,9 +83,9 @@ export const createReportData = (data) => {
 export const createUser = async (data) => {
   try {
     const response = await axios.post(`${BASE_URL}/register`,data);
-    console.log(response, "회원등록 완료!");
+    console.log(response);
   } catch (error) {
-    console.log("요청 실패", error);
+    console.log(error);
   }
 }
 
@@ -95,9 +94,9 @@ export const userLogIn = async (data) => {
   try {
     //console.log(buildingId,"axios에 빌딩 id 잘 넘어오는중")
     const response = await axios.post(`${BASE_URL}/login`,data);
-    console.log(response.data, "토큰");
+    console.log(response.data, "Token");
     return response.data;
   } catch (error) {
-    console.log("요청 실패", error);
+    console.log(error);
   }
 }

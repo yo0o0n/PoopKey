@@ -38,7 +38,8 @@ const ToiletPage = () => {
   // FloorBar에 넘겨준 핸들러 함수로, FloorBar에서 층을 선택하면 ToiletPage에서 상태가 변경 됨
   // ToiletPage에서 변경 시켜야만 ToiletStatus도 랜더링 된다.
   const handleFloorClick = (floor) => {
-    setSelectFloor(floor);
+    if (floor == selectFloor) setIsUpdate(Math.random());
+    else setSelectFloor(floor);
   };
 
   const updataWebSocket = (data) => {

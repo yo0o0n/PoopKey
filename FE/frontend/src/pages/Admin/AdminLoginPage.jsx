@@ -27,10 +27,6 @@ const AdminLoginPage = () => {
         password: loginData.password,
       };
       const response = await userLogIn(data);
-      console.log("Login successful", response);
-
-      // 로컬 스토리지에 저장
-      // 현재는 보냈던 데이터를 다시 쓰고 있지만 서버에서 email, 이름, 서버 보내주면 좋음
 
       localStorage.removeItem("AdminToken");
       localStorage.removeItem("admin");
@@ -39,7 +35,7 @@ const AdminLoginPage = () => {
 
       navigate("/admin/1");
     } catch (error) {
-      console.log("Login failed", error);
+      console.log(error);
     }
   };
   return (

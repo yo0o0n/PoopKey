@@ -37,7 +37,6 @@ const SignupPage = () => {
       } else {
         setIsPwValid(false);
         console.log("pw 유효성 실패");
-        console.log(name);
       }
     }
   };

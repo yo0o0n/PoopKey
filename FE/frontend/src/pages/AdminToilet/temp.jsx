@@ -38,7 +38,6 @@ const ToiletStatistics = () => {
         buildingData.filter((data) => data.buildingId == buildingId)[0]
           .buildingName
     );
-    console.log(buildingName);
   }, [buildingData]);
 
   // 화장실 데이터를 통해 현재 존재하는 층수를 얻는다. (중복제거, 오름차순)
@@ -50,7 +49,6 @@ const ToiletStatistics = () => {
     });
 
     if (uniqueFloorArr != undefined) {
-      console.log(uniqueFloorArr);
       setFloorArr([...uniqueFloorArr]);
     }
   }, [restroomData]);
@@ -80,7 +78,6 @@ const ToiletStatistics = () => {
   const handleFloorChange = (e) => {
     const { value } = e.target;
     setFloor(value);
-    console.log(value, "층");
   };
 
   const handleGenderChange = (e) => {

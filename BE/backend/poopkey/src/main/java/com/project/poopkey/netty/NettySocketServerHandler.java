@@ -73,8 +73,8 @@ public class NettySocketServerHandler extends ChannelInboundHandlerAdapter {
 
 //센서 tcp 통신 문자열 포맷 정의해두기
 // "tissueStatus,100,4,"
-// "toiletOccupied,1," -- 화장실 PK를 센서에서 가지고 있음. 사전에 부여받는 형태.
-// "toiletVacant,2," -- PK
-// "toiletBreak,4," -- PK
+// "toiletOccupied,1,-1," -- 화장실 PK를 센서에서 가지고 있음. 사전에 부여받는 형태.
+// "toiletVacant,2,-1," -- PK
+// "toiletBreak,4,-1," -- PK
 // "congestion,1,3," -- 0, 1, 2로 혼잡도 표시, PK
 // 대표적인 테스트코드 tissueStatus,1100,1,

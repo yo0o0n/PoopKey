@@ -8,7 +8,6 @@ import lombok.ToString;
 @Setter
 @ToString
 public class StallRender {
-    // 처음부터 뜯어고쳐야 됨.
 //    dao 인덱싱 파라미터
     private long stallId;
     private int status;

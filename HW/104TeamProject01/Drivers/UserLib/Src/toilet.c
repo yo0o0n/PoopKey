@@ -16,7 +16,7 @@ const uint8_t CONFUSION = 1;
 const uint8_t NORMAL = 0;
 
 extern volatile uint8_t OCCUPIED_STALL_CNT;
-extern volatile uint8_t res_from_raspi;
+extern volatile uint8_t is_saturation;
 
 // sign
 uint8_t MsgBox[MsgSize];
@@ -85,8 +85,9 @@ void checkMagnetic(TS* stall)
 
 void checkTissueAmount(TS* stall) {
     float current_dist = getDistance(stall->sonar_tissue);
-    float tissue_percentage = (MIN_TISSUE_DISTANCE - current_dist) / MAX_TISSUE_RADIUS * 100;
-    if(tissue_percentage <= 0.0) tissue_percentage = 0.0f;
+//    float tissue_percentage = (MIN_TISSUE_DISTANCE - current_dist) / MAX_TISSUE_RADIUS * 100;
+    float tissue_percentage = ((MIN_TISSUE_DISTANCE - current_dist) / (MIN_TISSUE_DISTANCE - MAX_TISSUE_RADIUS)) * 100;
+//    if(tissue_percentage <= 0.0) tissue_percentage = 0.0f;
 
     // float -> uint8_t
     uint8_t percentage = tissue_percentage;
@@ -106,16 +107,16 @@ void checkTissueAmount(TS* stall) {
         turnLED(stall->led_tissue, false);
     }
 #if DEBUG
-    printf("tissue dist: %.3f, percentage: %.3f, ", current_dist, tissue_percentage);
+    printf("tissue dist: %.3f, percentage: %.3f %%, ", current_dist, tissue_percentage);
 #endif
 }
 
 void checkWaterTissue(TS* stall)
 {
-    float distance = getDistance(stall->sonar_water_tissue);
-    if (distance < THRESHOLD_WATER_TISSUE_HAND_DISTANCE) {
+	float distance = getDistance(stall->sonar_water_tissue);
+    if (5 < distance && distance < THRESHOLD_WATER_TISSUE_HAND_DISTANCE) {
         runMotor(stall->servo_water_tissue, MOTOR_WATER_TISSUE_PUSH_ANGLE);
-        HAL_Delay(1000);
+        HAL_Delay(1500);
         runMotor(stall->servo_water_tissue, MOTOR_WATER_TISSUE_BACK_ANGLE);
     }
 #if DEBUG
@@ -130,11 +131,11 @@ void untactIR(TS* stall) {
     if(ir_temperature >= THRESHOLD_IR_TEMPERATURE && (stall->last_ir_time == 0 || HAL_GetTick() - stall->last_ir_time >= TERM_PUSH_TOILET_COVER)) {
         stall->last_ir_time = HAL_GetTick();
         stall->is_flushed = false;
-        if(stall->is_cover_down == false) {
-            runMotor(stall->servo_toilet_cover, MOTOR_TOILET_COVER_PUSH_ANGLE);
-            HAL_Delay(MOTOR_DELAY);
-            runMotor(stall->servo_toilet_cover, MOTOR_TOILET_COVER_BACK_ANGLE);
-        }
+//        if(stall->is_cover_down == true) {
+//            runMotor(stall->servo_toilet_cover, MOTOR_TOILET_COVER_PUSH_ANGLE);
+//            HAL_Delay(MOTOR_DELAY);
+//            runMotor(stall->servo_toilet_cover, MOTOR_TOILET_COVER_BACK_ANGLE);
+//        }
     }
 #if DEBUG
 	printf("IR : %.3f, ", ir_temperature);
@@ -143,7 +144,7 @@ void untactIR(TS* stall) {
 
 void flushToilet(TS* stall) {
     stall->is_cover_down = sensing(stall->tilt_toilet_cover);
-    if (stall->is_cover_down == true && stall->last_ir_time != 0) {
+    if (stall->is_cover_down == false && stall->last_ir_time != 0) {
     	// < => >
         if (HAL_GetTick() - stall->last_ir_time < THRESHOLD_IR_CHECKED_TIME && stall->is_flushed == false) { // 10s == 10000ms
             /* Flush Toilet
@@ -162,13 +163,21 @@ void flushToilet(TS* stall) {
 }
 
 void checkBroken(TS *stall) {
+//	runMotor(stall->servo_sonar_cover, MOTOR_CHECK_BROKEN_COVER_PUSH_ANGLE);
+//	HAL_Delay(MOTOR_DELAY);
+//	HAL_Delay(2000);
+//	float toilet_water_dist = getDistance(stall->sonar_toilet_broken);
+//	runMotor(stall->servo_sonar_cover, MOTOR_CHECK_BROKEN_COVER_BACK_ANGLE);
+//	HAL_Delay(MOTOR_DELAY);
+	float toilet_water_dist = -2;
     if (stall->is_cover_down && stall->last_flush_time != 0) {
         if (WAIT_TOILET_FLUSH_DOWN <= HAL_GetTick() - stall->last_flush_time && stall->is_checked_broken == false) { //10s == 10000ms
 //            printf("open cover")
         	stall->is_checked_broken = true;
+        	// Edit
             runMotor(stall->servo_sonar_cover, MOTOR_CHECK_BROKEN_COVER_PUSH_ANGLE);
             HAL_Delay(MOTOR_DELAY);
-            float toilet_water_dist = getDistance(stall->sonar_toilet_broken);
+            toilet_water_dist = getDistance(stall->sonar_toilet_broken);
             runMotor(stall->servo_sonar_cover, MOTOR_CHECK_BROKEN_COVER_BACK_ANGLE);
             if (toilet_water_dist < NORMAL_TOILET_WATER_DISTANCE) {
                 turnLED(stall->led_broken, true);
@@ -185,29 +194,31 @@ void checkBroken(TS *stall) {
         }
     }
 #if DEBUG
-    printf("Is broken LED ON: %u, ",HAL_GPIO_ReadPin(stall->led_broken.Port, stall->led_broken.PIN_out));
+//    printf("Is broken LED ON: %u, ",HAL_GPIO_ReadPin(stall->led_broken.Port, stall->led_broken.PIN_out));
+    printf("Is broken LED ON: %u, Water distance: %.3f, ",HAL_GPIO_ReadPin(stall->led_broken.Port, stall->led_broken.PIN_out), toilet_water_dist);
 #endif
 }
 
 void checkCongest(TS * stall) {
 	memset(MsgBox, 0, sizeof(MsgBox));
 	uint8_t debugging;
-	if(res_from_raspi) { // 2
+	if(is_saturation == 0) return;
+	else if(is_saturation == 2) { // 2
 		debugging = SATURATION;
 		sprintf(MsgBox,"congestion,%u,%u,", SATURATION, TOILET_ID); // 0 is toilet ID not toilet's cell ID
 	}
-	else if(OCCUPIED_STALL_CNT == MAX_STALL) { // 1
+	else if(is_saturation == 1 && OCCUPIED_STALL_CNT == MAX_STALL) { // 1
 		debugging = CONFUSION;
 		sprintf(MsgBox,"congestion,%u,%u,", CONFUSION, TOILET_ID);
 	}
-	else if(OCCUPIED_STALL_CNT < MAX_STALL) { // 0
+	else if(is_saturation == 1 && OCCUPIED_STALL_CNT < MAX_STALL) { // 0
 		debugging = NORMAL;
 		sprintf(MsgBox,"congestion,%u,%u,", NORMAL, TOILET_ID);
 	}
 
 	SendDataToRasp(strlen((char *)MsgBox), MsgBox);
 #if DEBUG
-    printf("Congestion: %u\r\n", debugging);
+		printf("Congestion: %u, is_saturation: %u", debugging, is_saturation);
 #endif
 
 }

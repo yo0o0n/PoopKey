@@ -92,7 +92,7 @@ int __io_getchar(void)
 volatile uint8_t OCCUPIED_STALL_CNT = 2;
 // kyr add before occupied stall  and kyr Init 2 for full occupied test
 uint8_t BEFORE_OCCUPIED_STALL_CNT;
-volatile uint8_t res_from_raspi;
+volatile uint8_t is_saturation = 1;
 
 
 
@@ -159,26 +159,26 @@ int main(void)
 	printf("start STM32F103Rb\r\n");
 
   // Wait for Interrupt
-	setInterrupt();
+//	setInterrupt();
 
-	SendAT();
-	HAL_Delay(100);
+//	SendAT();
+//	HAL_Delay(100);
 
-	WifiAccess();
-	HAL_Delay(5000);
+//	WifiAccess();
+//	HAL_Delay(5000);
 
 
-	RaspiTCPSocketAccess();
-	HAL_Delay(100);
+//	RaspiTCPSocketAccess();
+//	HAL_Delay(100);
 
-	HAL_Delay(15000);
+//	HAL_Delay(15000);
 
-	while(1){
-		uint8_t data = ReadBuffer();
-		if(data == 0) break;
-		printf("%c", data);
-		HAL_Delay(100);
-	}
+//	while(1){
+//		uint8_t data = ReadBuffer();
+//		if(data == 0) break;
+//		printf("%c", data);
+//		HAL_Delay(100);
+//	}
 
 //	EspResponseCheck();
   while (1)
@@ -186,20 +186,26 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  printf("Time: %lu, ", HAL_GetTick() / 1000);
+//	  printf("Time: %lu, ", HAL_GetTick() / 1000);
 	  checkMagnetic(&stall);
 	  checkTissueAmount(&stall);
-	  checkWaterTissue(&stall);
-	  untactIR(&stall);
-	  flushToilet(&stall);
-	  checkBroken(&stall);
-	  checkCongest(&stall);
+//	  checkWaterTissue(&stall);
+//	  untactIR(&stall);
+	  //flushToilet(&stall);
+	  //checkBroken(&stall);
+//	  checkCongest(&stall); // 1 or 2
 
 	  // receive congestion include outside
-	  // 0 is no stand
-	  // 1 is yes stand
-//	  res_from_raspi =  EspResponseCheck();
-	  res_from_raspi = 1;
+	  // 1 is no stand
+	  // 2 is yes stand
+
+	  // if read when raspi didnt send message
+	  // we got 0
+//	  uint8_t temp = EspResponseCheck();
+//	  if(temp)
+//		  is_saturation = temp;
+//	  printf("main: %u\r\n", is_saturation);
+//	  res_from_raspi = 1;
 
 
 //	  if(res_from_raspi == 1){
@@ -210,9 +216,9 @@ int main(void)
 //		  // POHWA
 ////		  SendData(strlen((char *)"POHWA\r\n"), 0, 0, "POHWA\r\n");
 //	  }
-  	  HAL_Delay(100);
+  	  HAL_Delay(1000);
 
-//  	  printf("\r\n");
+  	  printf("\r\n");
   }
   /* USER CODE END 3 */
 }

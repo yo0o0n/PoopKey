@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(c->{
                     CorsConfigurationSource source = request->{
-                        // CORS 허용
+                        
                         CorsConfiguration config = new CorsConfiguration();
                         config.setAllowedOrigins(
                                 List.of("*")
@@ -59,8 +59,8 @@ public class SecurityConfig {
                 .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((request)->{
                     request.requestMatchers("/register", "/login").permitAll();
-                    // [주의] 실제 배포 전까지는 /api/** permitAll 해제 필요
-                    // swagger 테스트를 위해 임시로 개방한 상황
+                    
+                    
                     request.requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**", "/api/**").permitAll();
                     request.requestMatchers("/admin/**").hasRole("ADMIN");
                     request.requestMatchers("/user/**").hasRole("USER");

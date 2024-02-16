@@ -15,7 +15,6 @@ import java.util.List;
 @CrossOrigin("*")
 @RequestMapping("/api")
 public class BookmarkController {
-    // 토큰기반 회원 인증 절차를 추가해야 됨.
     @Autowired
     private BookmarkService bookmarkService;
     // http://{SERVER_URL}/api/user/bookmark/select

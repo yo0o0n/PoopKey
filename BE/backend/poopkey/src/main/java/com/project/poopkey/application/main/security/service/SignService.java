@@ -69,10 +69,10 @@ public class SignService {
         return new SignResponse(member);
     }
 
-    // 추후 구현이 필요
+
     public int sendMail(String email){
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setFrom("보낸사람@daum.net"); // 필수임
+        simpleMailMessage.setFrom("보낸사람@daum.net"); // 필수
         simpleMailMessage.setTo(email);
         simpleMailMessage.setSubject("이메일 인증");
         simpleMailMessage.setText("인증번호는 아래와 같습니다.");

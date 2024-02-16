@@ -1,6 +1,3 @@
-/**
- * 회원 가입 관련 부분 검토하기
- * */
 package com.project.poopkey.application.main.security.dto;
 
 import lombok.AllArgsConstructor;
